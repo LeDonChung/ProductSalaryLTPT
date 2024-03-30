@@ -47,7 +47,7 @@ public class HopDong implements Serializable {
 	@Column(name = "TrangThai", nullable = false)
 	private boolean trangThai;
 
-	@OneToMany(mappedBy = "hopDong", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "hopDong", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
 	private Set<ChiTietHopDong> chiTietHopDongs;
 
 	public HopDong(String maHopDong, String tenHopDong, String tenKhachHang, double tongTien, double soTienCoc,

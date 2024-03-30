@@ -20,7 +20,7 @@ public class SanPhamServiceImpl implements SanPhamService {
 
 	@Override
 	public List<SanPham> timKiemTatCaSanPham() {
-		List<SanPham> sanPhams = new ArrayList<SanPham>();
+		List<SanPham> sanPhams = new ArrayList<>();
 		try {
 
 			sanPhams = sanPhamDao.timKiemTatCaSanPham();
