@@ -14,12 +14,14 @@ import com.product.salary.application.service.HopDongService;
 import javax.swing.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class HopDongServiceImpl implements HopDongService {
-	private HopDongDAO hopDongDAO;
-	private ChiTietHopDongDAO chiTietHopDongDAO;
-	private SanPhamDAO sanPhamDAO;
+	private final HopDongDAO hopDongDAO;
+	private final ChiTietHopDongDAO chiTietHopDongDAO;
+	private final SanPhamDAO sanPhamDAO;
 
 	public HopDongServiceImpl() {
 		this.hopDongDAO = new HopDongDAOImpl();
@@ -51,8 +53,11 @@ public class HopDongServiceImpl implements HopDongService {
 
 			// Thêm hợp đồng
 			hopDongNew.setTrangThai(false);
-
-			return this.hopDongDAO.themHopDong(hopDongNew, chiTietHopDongs);
+			hopDongNew.setChiTietHopDongs(new HashSet<>(chiTietHopDongs));
+			HopDong hopDong = this.hopDongDAO.themHopDong(hopDongNew);
+			hopDong.setChiTietHopDongs(new HashSet<>(chiTietHopDongs));
+			hopDongDAO.capNhatHopDong(hopDong);
+			return hopDong;
 		} catch (Exception e) {
 			JOptionPane.showMessageDialog(null, "Hệ thống đang có lỗi.");
 			e.printStackTrace();
@@ -76,23 +81,23 @@ public class HopDongServiceImpl implements HopDongService {
 				return false;
 			}
 			// Kiểm tra số lượng tồn của sản phẩm
-			List<ChiTietHopDong> chiTietHopDongs = this.chiTietHopDongDAO
-					.timTatCaChiTietHopDongBangMaHopDong(maHopDong);
-			for (ChiTietHopDong chiTietHopDong : chiTietHopDongs) {
-				if (!this.sanPhamDAO.kiemTraTonKho(chiTietHopDong.getSanPham().getMaSanPham(),
-						chiTietHopDong.getSoLuong())) {
-					String message = "";
-					if (SystemConstants.LANGUAGE == 0) {
-						message = String.format("Số lượng sản phẩm %s không đủ.",
-								chiTietHopDong.getSanPham().getTenSanPham());
-					} else {
-						message = String.format("The number of %s products is not enough.",
-								chiTietHopDong.getSanPham().getTenSanPham());
-					}
-					JOptionPane.showMessageDialog(null, message);
-					return false;
-				}
-			}
+//			List<ChiTietHopDong> chiTietHopDongs = this.chiTietHopDongDAO
+//					.timTatCaChiTietHopDongBangMaHopDong(maHopDong);
+//			for (ChiTietHopDong chiTietHopDong : chiTietHopDongs) {
+//				if (!this.sanPhamDAO.kiemTraTonKho(chiTietHopDong.getSanPham().getMaSanPham(),
+//						chiTietHopDong.getSoLuong())) {
+//					String message = "";
+//					if (SystemConstants.LANGUAGE == 0) {
+//						message = String.format("Số lượng sản phẩm %s không đủ.",
+//								chiTietHopDong.getSanPham().getTenSanPham());
+//					} else {
+//						message = String.format("The number of %s products is not enough.",
+//								chiTietHopDong.getSanPham().getTenSanPham());
+//					}
+//					JOptionPane.showMessageDialog(null, message);
+//					return false;
+//				}
+//			}
 			// Thực hiện thanh lý
 			boolean status = this.hopDongDAO.thanhLyHopDong(maHopDong);
 			if (!status) {
@@ -106,12 +111,6 @@ public class HopDongServiceImpl implements HopDongService {
 			e.printStackTrace();
 		}
 		return false;
-	}
-
-	@Override
-	public HopDong timHopDongBangMaHopDong(String maHopDong) {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 	@Override
@@ -138,18 +137,6 @@ public class HopDongServiceImpl implements HopDongService {
 			maHopDong.append("01");
 		}
 		return maHopDong.toString();
-	}
-
-	@Override
-	public HopDong capNhatHopDong(HopDong hopDong) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public boolean capNhatTrangThaiHopDong(String maHopDong, boolean trangThai) {
-		// TODO Auto-generated method stub
-		return false;
 	}
 
 	@Override

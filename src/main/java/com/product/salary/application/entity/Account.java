@@ -1,16 +1,39 @@
 package com.product.salary.application.entity;
 
-import java.io.Serializable;
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
+import java.io.Serializable;
+@Entity
+@Table(name = "Account")
+@Getter
+@ToString
+@NoArgsConstructor
 public class Account implements Serializable {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+	@Id
+	@Column(name = "TaiKhoan")
 	private String taiKhoan;
+
+	@Column(name = "MatKhau")
 	private String matKhau;
+
+	@Column(name = "RoleName")
 	private String roleName;
+
+	@OneToOne
+	@JoinColumn(name = "MaNhanVien")
 	private NhanVien nhanVien;
+
+	/**
+	 * -- SETTER --
+	 *
+	 * @param trangThai the trangThai to set
+	 */
+	@Setter
+	@Column(name = "TrangThai")
 	private boolean trangThai;
 
 	public Account(String taiKhoan, String matKhau, String roleName, NhanVien nhanVien, boolean trangThai)
@@ -22,23 +45,11 @@ public class Account implements Serializable {
 		setRoleName(roleName);
 	}
 
-	public Account() {
-		super();
-	}
-	
 
 	public Account(String taiKhoan, String matKhau) {
 		this.taiKhoan = taiKhoan;
 		this.matKhau = matKhau;
 	}
-
-	/**
-	 * @return the taiKhoan
-	 */
-	public String getTaiKhoan() {
-		return taiKhoan;
-	}
-
 	/**
 	 * @param taiKhoan the taiKhoan to set
 	 * @throws Exception
@@ -49,13 +60,6 @@ public class Account implements Serializable {
 		} else {
 			this.taiKhoan = taiKhoan;
 		}
-	}
-
-	/**
-	 * @return the matKhau
-	 */
-	public String getMatKhau() {
-		return matKhau;
 	}
 
 	/**
@@ -71,13 +75,6 @@ public class Account implements Serializable {
 	}
 
 	/**
-	 * @return the roleName
-	 */
-	public String getRoleName() {
-		return roleName;
-	}
-
-	/**
 	 * @param roleName the roleName to set
 	 * @throws Exception
 	 */
@@ -87,13 +84,6 @@ public class Account implements Serializable {
 		} else {
 			this.roleName = roleName;
 		}
-	}
-
-	/**
-	 * @return the nhanVien
-	 */
-	public NhanVien getNhanVien() {
-		return nhanVien;
 	}
 
 	/**
@@ -107,25 +97,4 @@ public class Account implements Serializable {
 			this.nhanVien = nhanVien;
 		}
 	}
-
-	/**
-	 * @return the trangThai
-	 */
-	public boolean isTrangThai() {
-		return trangThai;
-	}
-
-	/**
-	 * @param trangThai the trangThai to set
-	 */
-	public void setTrangThai(boolean trangThai) {
-		this.trangThai = trangThai;
-	}
-
-	@Override
-	public String toString() {
-		return "Account [taiKhoan=" + taiKhoan + ", matKhau=" + matKhau + ", roleName=" + roleName + ", nhanVien="
-				+ nhanVien + ", trangThai=" + trangThai + "]";
-	}
-	
 }

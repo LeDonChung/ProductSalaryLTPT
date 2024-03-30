@@ -1,23 +1,45 @@
 package com.product.salary.application.entity;
 
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.util.Set;
 
+@Entity
+@Table(name = "LuongCongNhan")
+@Getter
+@Setter
+@NoArgsConstructor
+@ToString
 public class LuongCongNhan implements Serializable {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+	@Id
+	@Column(name = "MaLuong", length = 15)
 	private String maLuong;
+
+	@Column(name = "Thang")
 	private int thang;
+
+	@Column(name = "Nam")
 	private int nam;
+
+	@Column(name = "NgayTinhLuong", columnDefinition = "DATETIME NOT NULL")
 	private LocalDate ngayTinhLuong;
+
+	@Column(name = "Luong", columnDefinition = "REAL NOT NULL")
 	private double luong;
+
+	@Column(name = "LuongThuong", columnDefinition = "REAL NOT NULL")
 	private double luongThuong;
 
-	public LuongCongNhan() {
-		
-	}
+
+	@OneToMany(mappedBy = "luongCongNhan", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	@ToString.Exclude
+	private Set<ChamCongCongNhan> chamCongCongNhans;
 
 	public LuongCongNhan(String maLuong, int thang, int nam, LocalDate ngayTinhLuong, double luong, double luongThuong)
 			throws Exception {
@@ -29,28 +51,12 @@ public class LuongCongNhan implements Serializable {
 		setLuongThuong(luongThuong);
 	}
 
-	public String getMaLuong() {
-		return maLuong;
-	}
-
-	public void setMaLuong(String maLuong) {
-		this.maLuong = maLuong;
-	}
-
-	public int getThang() {
-		return thang;
-	}
-
 	public void setThang(int thang) throws Exception {
 		if (thang > 12 || thang < 1) {
 			throw new Exception(" 1 <= Tháng <= 12");
 		} else {
 			this.thang = thang;
 		}
-	}
-
-	public int getNam() {
-		return nam;
 	}
 
 	public void setNam(int nam) throws Exception {
@@ -61,20 +67,12 @@ public class LuongCongNhan implements Serializable {
 		}
 	}
 
-	public LocalDate getNgayTinhLuong() {
-		return ngayTinhLuong;
-	}
-
 	public void setNgayTinhLuong(LocalDate ngayTinhLuong) throws Exception {
 		if (ngayTinhLuong.isAfter(LocalDate.now())) {
 			throw new Exception("Ngày tính lương <= ngày hiện tại");
 		} else {
 			this.ngayTinhLuong = ngayTinhLuong;
 		}
-	}
-
-	public double getLuong() {
-		return luong;
 	}
 
 	public void setLuong(double luong) throws Exception {
@@ -85,10 +83,6 @@ public class LuongCongNhan implements Serializable {
 		}
 	}
 
-	public double getLuongThuong() {
-		return luongThuong;
-	}
-
 	public void setLuongThuong(double luongThuong) throws Exception {
 		if (luongThuong < 0) {
 			throw new Exception("Lương thưởng phải > 0");
@@ -97,14 +91,5 @@ public class LuongCongNhan implements Serializable {
 		}
 	}
 
-	public static long getSerialversionuid() {
-		return serialVersionUID;
-	}
-
-	@Override
-	public String toString() {
-		return "LuongCongNhan [maLuong=" + maLuong + ", thang=" + thang + ", nam=" + nam + ", ngayTinhLuong="
-				+ ngayTinhLuong + ", luong=" + luong + ", luongThuong=" + luongThuong + "]";
-	}
 
 }

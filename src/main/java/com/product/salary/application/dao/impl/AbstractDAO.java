@@ -1,5 +1,8 @@
 package com.product.salary.application.dao.impl;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.Persistence;
+
 import javax.swing.*;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -8,24 +11,26 @@ import java.util.ResourceBundle;
 
 public abstract class AbstractDAO {
 
-	private final ResourceBundle BUNDLE = ResourceBundle.getBundle("app");
+	private final ResourceBundle resourceBundle = ResourceBundle.getBundle("app");
+
+	public EntityManager getEntityManager() {
+		return Persistence
+				.createEntityManagerFactory(resourceBundle.getString("persistence-unit"))
+				.createEntityManager();
+	}
 
 	public Connection getConnection() {
-		Connection conn = null;
+		Connection connect = null;
 		try {
-			Class.forName(BUNDLE.getString("driver_name"));
-			String url = BUNDLE.getString("url");
-			String userName = BUNDLE.getString("username");
-			String password = BUNDLE.getString("password");
-			conn = DriverManager.getConnection(url, userName, password);
+			Class.forName(resourceBundle.getString("driver"));
+			connect = DriverManager.getConnection(resourceBundle.getString("url"), resourceBundle.getString("user"),
+					resourceBundle.getString("password"));
 		} catch (ClassNotFoundException e) {
-			JOptionPane.showMessageDialog(null, "Cơ sở dữ liệu hiện đang lỗi. Vui lòng thử lại sau!");
-			e.printStackTrace();
+			JOptionPane.showMessageDialog(null, "Không tìm thấy driver");
 		} catch (SQLException e) {
-			e.printStackTrace();
+			JOptionPane.showMessageDialog(null, "Không thể kết nối với cơ sở dữ liệu");
 		}
-
-		return conn;
+		return connect;
 	}
 
 }

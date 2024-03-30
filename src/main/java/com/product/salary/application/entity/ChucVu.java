@@ -4,64 +4,29 @@
 
 package com.product.salary.application.entity;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 import java.util.Objects;
-
+@Entity
+@Table(name = "ChucVu")
+@NoArgsConstructor
+@AllArgsConstructor
+@Setter
+@Getter
 public class ChucVu {
+	@Id
+	@Column(name = "MaChucVu", length = 15)
 	private String maChucVu;
+
+	@Column(name = "TenChucVu", columnDefinition = "NVARCHAR(50) NOT NULL")
 	private String tenChucVu;
-
-	public ChucVu() {
-
-	}
-
-	/**
-	 * constructor đầy đủ tham số
-	 * 
-	 * @param maChucVu
-	 * @param tenChucVu
-	 * @throws Exception
-	 */
-	public ChucVu(String maChucVu, String tenChucVu) {
-		super();
-		this.maChucVu = maChucVu;
-		this.tenChucVu = tenChucVu;
-	}
-
-	/**
-	 * @return the maChucVu
-	 */
-	public String getMaChucVu() {
-		return maChucVu;
-	}
-
-	/**
-	 * mã chức vụ theo định dạng CVxx, xx là số tự nhiên tự tăng
-	 * 
-	 * @param maChucVu the maChucVu to set
-	 */
-	public void setMaChucVu(String maChucVu) {
-		this.maChucVu = maChucVu;
-	}
-
-	/**
-	 * @return the tenChucVu
-	 */
-	public String getTenChucVu() {
-		return tenChucVu;
-	}
-
-	/**
-	 * Tên chức vụ không được rỗng
-	 * 
-	 * @param tenChucVu the tenChucVu to set
-	 * @throws Exception
-	 */
-	public void setTenChucVu(String tenChucVu) throws Exception {
-		if (tenChucVu.equals(""))
-			throw new Exception("Tên chức vụ không được rỗng");
-		else
-			this.tenChucVu = tenChucVu;
-	}
 
 	@Override
 	public int hashCode() {

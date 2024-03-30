@@ -17,11 +17,10 @@ public interface HopDongDAO {
 	 * Thêm hợp đồng mới
 	 * 
 	 * @param hopDong         hợp đồng cần thêm mới
-	 * @param chiTietHopDongs danh sách chi tiết hợp đồng cần thêm
 	 * @return hopDong nếu thêm thành công, null nếu thêm không thành công
 	 */
 
-	HopDong themHopDong(HopDong hopDong, List<ChiTietHopDong> chiTietHopDongs);
+	HopDong themHopDong(HopDong hopDong);
 
 	/**
 	 * Thanh lý hợp đồng
@@ -52,4 +51,6 @@ public interface HopDongDAO {
 	 * @return tổng số lượng hợp đồng
 	 */
 	int tongSoLuongHopDong();
+
+	void capNhatHopDong(HopDong hopDong);
 }

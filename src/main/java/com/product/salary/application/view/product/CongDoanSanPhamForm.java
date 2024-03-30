@@ -452,7 +452,7 @@ public class CongDoanSanPhamForm extends JPanel {
 		int stt = 1;
 		for (SanPham sanPham : this.sanPhams) {
 			tableModelSanPham.addRow(
-					new Object[] { stt++, sanPham.getMaSanPham(), sanPham.getTenSanPham(), sanPham.getSoCongDoan() });
+					new Object[] { stt++, sanPham.getMaSanPham(), sanPham.getTenSanPham(), sanPham.getCongDoanSanPhams().size() });
 
 		}
 	}

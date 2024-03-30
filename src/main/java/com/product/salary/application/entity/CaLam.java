@@ -1,52 +1,32 @@
 package com.product.salary.application.entity;
 
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.checkerframework.checker.units.qual.C;
+
 import java.io.Serializable;
 
+@NoArgsConstructor
+@Getter
+@Setter
+@AllArgsConstructor
+@Entity
+@Table(name = "CaLam")
 public class CaLam implements Serializable{
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+
+	@Id
+	@Column(name = "MaCa", length = 15)
 	private String maCa;
+
+	@Column(name = "TenCa", length = 60,nullable = false)
 	private String tenCa;
-
-	public CaLam(String maCa, String tenCa) {
-		super();
-		this.maCa = maCa;
-		this.tenCa = tenCa;
-	}
-
-	public CaLam() {
-		super();
-	}
-
-	/**
-	 * @return the maCa
-	 */
-	public String getMaCa() {
-		return maCa;
-	}
-
-	/**
-	 * @param maCa the maCa to set
-	 */
-	public void setMaCa(String maCa) {
-		this.maCa = maCa;
-	}
-
-	/**
-	 * @return the tenCa
-	 */
-	public String getTenCa() {
-		return tenCa;
-	}
-
-	/**
-	 * @param tenCa the tenCa to set
-	 */
-	public void setTenCa(String tenCa) {
-		this.tenCa = tenCa;
-	}
 
 	@Override
 	public String toString() {

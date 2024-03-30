@@ -1,22 +1,54 @@
 package com.product.salary.application.entity;
 
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.util.Set;
 
+
+@Entity
+@Table(name = "HopDong")
+@NoArgsConstructor
+@ToString
+@Getter
+@Setter
 public class HopDong implements Serializable {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+
+	@Id
+	@Column(name = "MaHopDong", length = 15)
 	private String maHopDong;
+
+	@Column(name = "TenHopDong", length = 70, nullable = false)
 	private String tenHopDong;
+
+	@Column(name = "TenKhachHang", length = 70, nullable = false)
 	private String tenKhachHang;
+
+	@Column(name = "TongTien", nullable = false)
 	private double tongTien;
+
+	@Column(name = "SoTienCoc", nullable = false)
 	private double soTienCoc;
+
+	@Column(name = "NgayBatDau")
 	private LocalDate ngayBatDau;
+
+	@Column(name = "NgayKetThuc")
 	private LocalDate ngayKetThuc;
+
+	@Column(name = "YeuCau", length = 100, nullable = false)
 	private String yeuCau;
+
+	@Column(name = "TrangThai", nullable = false)
 	private boolean trangThai;
+
+	@OneToMany(mappedBy = "hopDong", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	private Set<ChiTietHopDong> chiTietHopDongs;
 
 	public HopDong(String maHopDong, String tenHopDong, String tenKhachHang, double tongTien, double soTienCoc,
 			LocalDate ngayBatDau, LocalDate ngayKetThuc, String yeuCau, boolean trangThai) throws Exception {
@@ -31,33 +63,9 @@ public class HopDong implements Serializable {
 		setTrangThai(trangThai);
 	}
 
-	public HopDong() {
-		super();
-	}
 
 	public HopDong(String maHopDong) {
 		this.maHopDong = maHopDong;
-	}
-
-	/**
-	 * @return the maHopDong
-	 */
-	public String getMaHopDong() {
-		return maHopDong;
-	}
-
-	/**
-	 * @param maHopDong the maHopDong to set
-	 */
-	public void setMaHopDong(String maHopDong) {
-		this.maHopDong = maHopDong;
-	}
-
-	/**
-	 * @return the tenHopDong
-	 */
-	public String getTenHopDong() {
-		return tenHopDong;
 	}
 
 	/**
@@ -73,12 +81,6 @@ public class HopDong implements Serializable {
 		}
 	}
 
-	/**
-	 * @return the tenKhachHang
-	 */
-	public String getTenKhachHang() {
-		return tenKhachHang;
-	}
 
 	/**
 	 * @param tenKhachHang the tenKhachHang to set
@@ -92,12 +94,6 @@ public class HopDong implements Serializable {
 		}
 	}
 
-	/**
-	 * @return the tongTien
-	 */
-	public double getTongTien() {
-		return tongTien;
-	}
 
 	/**
 	 * @param tongTien the tongTien to set
@@ -109,13 +105,6 @@ public class HopDong implements Serializable {
 		} else {
 			this.tongTien = tongTien;
 		}
-	}
-
-	/**
-	 * @return the soTienCoc
-	 */
-	public double getSoTienCoc() {
-		return soTienCoc;
 	}
 
 	/**
@@ -131,47 +120,11 @@ public class HopDong implements Serializable {
 	}
 
 	/**
-	 * @return the ngayBatDau
-	 */
-	public LocalDate getNgayBatDau() {
-		return ngayBatDau;
-	}
-
-	/**
 	 * @param ngayBatDau the ngayBatDau to set
 	 * @throws Exception
 	 */
 	public void setNgayBatDau(LocalDate ngayBatDau) throws Exception {
 		this.ngayBatDau = ngayBatDau;
-	}
-
-	/**
-	 * @return the ngayKetThuc
-	 */
-	public LocalDate getNgayKetThuc() {
-		return ngayKetThuc;
-	}
-
-	/**
-	 * @param ngayKetThuc the ngayKetThuc to set
-	 * @throws Exception
-	 */
-	public void setNgayKetThuc(LocalDate ngayKetThuc) throws Exception {
-		this.ngayKetThuc = ngayKetThuc;
-	}
-
-	/**
-	 * @return the yeuCau
-	 */
-	public String getYeuCau() {
-		return yeuCau;
-	}
-
-	/**
-	 * @param yeuCau the yeuCau to set
-	 */
-	public void setYeuCau(String yeuCau) {
-		this.yeuCau = yeuCau;
 	}
 
 	/**
@@ -181,18 +134,5 @@ public class HopDong implements Serializable {
 		return trangThai;
 	}
 
-	/**
-	 * @param trangThai the trangThai to set
-	 */
-	public void setTrangThai(boolean trangThai) {
-		this.trangThai = trangThai;
-	}
-
-	@Override
-	public String toString() {
-		return "HopDong [maHopDong=" + maHopDong + ", tenHopDong=" + tenHopDong + ", tenKhachHang=" + tenKhachHang
-				+ ", tongTien=" + tongTien + ", soTienCoc=" + soTienCoc + ", ngayBatDau=" + ngayBatDau
-				+ ", ngayKetThuc=" + ngayKetThuc + ", yeuCau=" + yeuCau + ", trangThai=" + trangThai + "]";
-	}
 
 }

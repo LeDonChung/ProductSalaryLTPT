@@ -1,41 +1,25 @@
 package com.product.salary.application.entity;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import lombok.*;
+
 import java.util.Objects;
-
+@Entity
+@Table(name = "TrinhDo")
+@NoArgsConstructor
+@AllArgsConstructor
+@Setter
+@Getter
 public class TrinhDo {
+	@Id
+	@Column(name = "MaTrinhDo", length = 15)
 	private String maTrinhDo;
+
+	@Column(name = "TenTrinhDo", nullable = false, length = 50)
 	private String tenTrinhDo;
-
-	public TrinhDo() {
-	}
-
-	public TrinhDo(String maTrinhDo, String tenTrinhDo) {
-		super();
-		this.maTrinhDo = maTrinhDo;
-		this.tenTrinhDo = tenTrinhDo;
-	}
-
-	public String getMaTrinhDo() {
-		return maTrinhDo;
-	}
-
-	public void setMaTrinhDo(String maTrinhDo) {
-		if (maTrinhDo.equals(""))
-			this.maTrinhDo = "Mã trình độ";
-		else
-			this.maTrinhDo = maTrinhDo;
-	}
-
-	public String getTenTrinhDo() {
-		return tenTrinhDo;
-	}
-
-	public void setTenTrinhDo(String tenTrinhDo) {
-		if (tenTrinhDo.equals(""))
-			this.tenTrinhDo = "Đại học";
-		else
-			this.tenTrinhDo = tenTrinhDo;
-	}
 
 	@Override
 	public int hashCode() {

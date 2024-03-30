@@ -1,33 +1,68 @@
 package com.product.salary.application.entity;
 
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+import org.checkerframework.checker.units.qual.C;
+
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.Period;
-import java.util.Arrays;
 import java.util.Objects;
 
+@Entity
+@Table(name="CongNhan")
+@NoArgsConstructor
+@ToString
+@Getter
+@Setter
 public class CongNhan implements Serializable {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+	@Id
+	@Column(name = "MaCongNhan", length = 15)
 	private String maCongNhan;
-	private String hoTen;
-	private String email;
-	private String diaChi;
-	private int gioiTinh;
-	private String cccd;
-	private String soDienThoai;
-	private LocalDate ngaySinh;
-	private ToNhom toNhom;
-	private LocalDate ngayVaoLam;
-	private Double troCap;
-	private byte[] hinhAnh;
-	private Boolean trangThai;
-	private TayNghe tayNghe;
 
-	public CongNhan() {
-	}
+	@Column(name = "HoTen", length = 70, nullable = false)
+	private String hoTen;
+
+	@Column(name = "Email", length = 70, nullable = false)
+	private String email;
+
+	@Column(name = "DiaChi", length = 100, nullable = false)
+	private String diaChi;
+
+	@Column(name = "GioiTinh", nullable = false)
+	private int gioiTinh;
+
+	@Column(name = "CCCD", length = 12, unique = true)
+	private String cccd;
+
+	@Column(name = "SoDienThoai", length = 10, nullable = false)
+	private String soDienThoai;
+
+	@Column(name = "NgaySinh", columnDefinition = "DATETIME NOT NULL")
+	private LocalDate ngaySinh;
+
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "MaToNhom")
+	private ToNhom toNhom;
+
+	@Column(name = "NgayVaoLam", columnDefinition = "DATETIME NOT NULL")
+	private LocalDate ngayVaoLam;
+
+	@Column(name = "TroCap", columnDefinition = "REAL NOT NULL")
+	private Double troCap;
+
+	@Column(name = "HinhAnh")
+	private byte[] hinhAnh;
+
+	@Column(name = "TrangThai", nullable = false)
+	private Boolean trangThai;
+
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "MaTayNghe")
+	private TayNghe tayNghe;
 
 	public CongNhan(String maCongNhan, String hoTen, String email, String diaChi, int gioiTinh, String cccd,
                     String soDienThoai, LocalDate ngaySinh, ToNhom toNhom, LocalDate ngayVaoLam, double troCap, byte[] hinhAnh,
@@ -104,25 +139,6 @@ public class CongNhan implements Serializable {
 		this.tayNghe = tayNghe;
 	}
 
-	public ToNhom getToNhom() {
-		return toNhom;
-	}
-
-	public void setToNhom(ToNhom toNhom) {
-		this.toNhom = toNhom;
-	}
-
-	public String getMaCongNhan() {
-		return maCongNhan;
-	}
-
-	public void setMaCongNhan(String maCongNhan) {
-		this.maCongNhan = maCongNhan;
-	}
-
-	public String getHoTen() {
-		return hoTen;
-	}
 
 	public void setHoTen(String hoTen) throws Exception {
 		if (hoTen.trim().equals("")) {
@@ -132,9 +148,6 @@ public class CongNhan implements Serializable {
 		}
 	}
 
-	public String getEmail() {
-		return email;
-	}
 
 	public void setEmail(String email) throws Exception {
 		if (email.trim().equals("")) {
@@ -142,26 +155,6 @@ public class CongNhan implements Serializable {
 		} else {
 			this.email = email;
 		}
-	}
-
-	public String getDiaChi() {
-		return diaChi;
-	}
-
-	public void setDiaChi(String diaChi) throws Exception {
-		this.diaChi = diaChi;
-	}
-
-	public int getGioiTinh() {
-		return gioiTinh;
-	}
-
-	public void setGioiTinh(int gioiTinh) {
-		this.gioiTinh = gioiTinh;
-	}
-
-	public String getCccd() {
-		return cccd;
 	}
 
 	public void setCccd(String cccd) throws Exception {
@@ -172,9 +165,6 @@ public class CongNhan implements Serializable {
 		}
 	}
 
-	public String getSoDienThoai() {
-		return soDienThoai;
-	}
 
 	public void setSoDienThoai(String soDienThoai) throws Exception {
 		if (soDienThoai.trim().equals("")) {
@@ -184,9 +174,6 @@ public class CongNhan implements Serializable {
 		}
 	}
 
-	public LocalDate getNgaySinh() {
-		return ngaySinh;
-	}
 
 	public void setNgaySinh(LocalDate ngaySinh) throws Exception {
 		int tuoi = Period.between(ngaySinh, LocalDate.now()).getYears();
@@ -197,9 +184,6 @@ public class CongNhan implements Serializable {
 		}
 	}
 
-	public LocalDate getNgayVaoLam() {
-		return ngayVaoLam;
-	}
 
 	public void setNgayVaoLam(LocalDate ngayVaoLam) throws Exception {
 		if (ngayVaoLam.isAfter(LocalDate.now())) {
@@ -210,9 +194,6 @@ public class CongNhan implements Serializable {
 
 	}
 
-	public Double getTroCap() {
-		return troCap;
-	}
 
 	public void setTroCap(Double troCap) throws Exception {
 		if (troCap < 0) {
@@ -222,40 +203,8 @@ public class CongNhan implements Serializable {
 		}
 	}
 
-	public byte[] getHinhAnh() {
-		return hinhAnh;
-	}
-
-	public void setHinhAnh(byte[] hinhAnh) {
-		this.hinhAnh = hinhAnh;
-	}
-
 	public Boolean isTrangThai() {
 		return trangThai;
-	}
-
-	public void setTrangThai(Boolean trangThai) {
-		this.trangThai = trangThai;
-	}
-
-	public TayNghe getTayNghe() {
-		return tayNghe;
-	}
-
-	public void setTayNghe(TayNghe tayNghe) {
-		this.tayNghe = tayNghe;
-	}
-
-	public static long getSerialversionuid() {
-		return serialVersionUID;
-	}
-
-	@Override
-	public String toString() {
-		return "CongNhan [maCongNhan=" + maCongNhan + ", hoTen=" + hoTen + ", email=" + email + ", diaChi=" + diaChi
-				+ ", gioiTinh=" + gioiTinh + ", cccd=" + cccd + ", soDienThoai=" + soDienThoai + ", ngaySinh="
-				+ ngaySinh + ", toNhom=" + toNhom + ", ngayVaoLam=" + ngayVaoLam + ", troCap=" + troCap + ", hinhAnh="
-				+ Arrays.toString(hinhAnh) + ", trangThai=" + trangThai + ", tayNghe=" + tayNghe + "]";
 	}
 
 	@Override
@@ -274,5 +223,4 @@ public class CongNhan implements Serializable {
 		CongNhan other = (CongNhan) obj;
 		return Objects.equals(cccd, other.cccd);
 	}
-
 }

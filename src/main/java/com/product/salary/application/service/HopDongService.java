@@ -31,20 +31,8 @@ public interface HopDongService {
 	 */
 	boolean thanhLyHopDong(String maHopDong);
 
-	/**
-	 * Tìm kiếm hợp đồng bằng mã
-	 * 
-	 * @param maHopDong mã hợp đồng cần tìm kiếm
-	 * @return hopDong nếu có tồn tại, null nếu không tồn tại
-	 */
-	HopDong timHopDongBangMaHopDong(String maHopDong);
-
 	String generateMaHopDong();
 
-	HopDong capNhatHopDong(HopDong hopDong);
-
-	boolean capNhatTrangThaiHopDong(String maHopDong, boolean trangThai);
-	
 	/*
 	 * Tìm tổng số lượng hợp đồng
 	 */

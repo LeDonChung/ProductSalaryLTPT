@@ -1,22 +1,52 @@
 package com.product.salary.application.entity;
 
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 import java.io.Serializable;
 import java.util.Objects;
+import java.util.Set;
 
+@NoArgsConstructor
+@Getter
+@Setter
+@Table(name = "SanPham")
+@Entity
 public class SanPham implements Serializable {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+
+	@Id
+	@Column(name = "MaSanPham", length = 15)
 	private String maSanPham;
+
+	@Column(name = "TenSanPham", length = 70,nullable = false)
 	private String tenSanPham;
+
+	@Column(name = "SoLuongTon", nullable = false)
 	private int soLuongTon;
+
+	@Column(name = "HinhAnh")
 	private byte[] hinhAnh;
+
+	@Column(name = "ChatLieu", length = 70)
 	private String chatLieu;
+
+	@Column(name = "DonViTinh", length = 70)
 	private String donViTinh;
-	private int soCongDoan;
+
+	@Column(name = "DonGia", columnDefinition = "REAL NOT NULL")
 	private Double donGia;
+
+	@Column(name = "SoCongDoan")
+	private int soCongDoan;
+
+	@Column(name = "TrangThai", nullable = false)
 	private Boolean trangThai;
+
+	@OneToMany(mappedBy = "sanPham", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	private Set<CongDoanSanPham> congDoanSanPhams;
 
 	public SanPham(String maSanPham, String tenSanPham, String donViTinh, int soLuongTon, String chatLieu,
 			Double donGia, byte[] hinhAnh) throws Exception {
@@ -53,13 +83,12 @@ public class SanPham implements Serializable {
 	}
 
 	public SanPham(String maSanPham, String tenSanPham, int soLuongTon, byte[] hinhAnh, String chatLieu,
-			String donViTinh, int soCongDoan, Double donGia, boolean trangThai) throws Exception {
+			String donViTinh, Double donGia, boolean trangThai) throws Exception {
 		setMaSanPham(maSanPham);
 		setTenSanPham(tenSanPham);
 		setSoLuongTon(soLuongTon);
 		setHinhAnh(hinhAnh);
 		setDonViTinh(donViTinh);
-		setSoCongDoan(soCongDoan);
 		setDonGia(donGia);
 		setTrangThai(trangThai);
 		setChatLieu(chatLieu);
@@ -69,26 +98,18 @@ public class SanPham implements Serializable {
 		this.maSanPham = maSanPham;
 	}
 
-	/**
-	 * @return the maSanPham
-	 */
-	public String getMaSanPham() {
-		return maSanPham;
-	}
-
-	/**
-	 * @param maSanPham the maSanPham to set
-	 */
-	public void setMaSanPham(String maSanPham) {
+	public SanPham(String maSanPham, String tenSanPham, int soLuongTon, byte[] hinhAnh, String chatLieu, String donViTinh, int soCongDoan, Double donGia, boolean trangThai) {
 		this.maSanPham = maSanPham;
+		this.tenSanPham = tenSanPham;
+		this.soLuongTon = soLuongTon;
+		this.hinhAnh = hinhAnh;
+		this.chatLieu = chatLieu;
+		this.donViTinh = donViTinh;
+		this.soCongDoan = soCongDoan;
+		this.donGia = donGia;
+		this.trangThai = trangThai;
 	}
 
-	/**
-	 * @return the tenSanPham
-	 */
-	public String getTenSanPham() {
-		return tenSanPham;
-	}
 
 	/**
 	 * @param tenSanPham the tenSanPham to set
@@ -103,13 +124,6 @@ public class SanPham implements Serializable {
 	}
 
 	/**
-	 * @return the soLuongTon
-	 */
-	public int getSoLuongTon() {
-		return soLuongTon;
-	}
-
-	/**
 	 * @param soLuongTon the soLuongTon to set
 	 * @throws Exception
 	 */
@@ -119,69 +133,6 @@ public class SanPham implements Serializable {
 		} else {
 			this.soLuongTon = soLuongTon;
 		}
-	}
-
-	/**
-	 * @return the hinhAnh
-	 */
-	public byte[] getHinhAnh() {
-		return hinhAnh;
-	}
-
-	/**
-	 * @param hinhAnh the hinhAnh to set
-	 */
-	public void setHinhAnh(byte[] hinhAnh) {
-		this.hinhAnh = hinhAnh;
-	}
-
-	/**
-	 * @return the chatLieu
-	 */
-	public String getChatLieu() {
-		return chatLieu;
-	}
-
-	/**
-	 * @param chatLieu the chatLieu to set
-	 */
-	public void setChatLieu(String chatLieu) {
-		this.chatLieu = chatLieu;
-	}
-
-	/**
-	 * @return the donViTinh
-	 */
-	public String getDonViTinh() {
-		return donViTinh;
-	}
-
-	/**
-	 * @param donViTinh the donViTinh to set
-	 */
-	public void setDonViTinh(String donViTinh) {
-		this.donViTinh = donViTinh;
-	}
-
-	/**
-	 * @return the soCongDoan
-	 */
-	public int getSoCongDoan() {
-		return soCongDoan;
-	}
-
-	/**
-	 * @param soCongDoan the soCongDoan to set
-	 */
-	public void setSoCongDoan(int soCongDoan) {
-		this.soCongDoan = soCongDoan;
-	}
-
-	/**
-	 * @return the donGia
-	 */
-	public Double getDonGia() {
-		return donGia;
 	}
 
 	/**
@@ -201,20 +152,6 @@ public class SanPham implements Serializable {
 	 */
 	public Boolean isTrangThai() {
 		return trangThai;
-	}
-
-	/**
-	 * @param trangThai the trangThai to set
-	 */
-	public void setTrangThai(Boolean trangThai) {
-		this.trangThai = trangThai;
-	}
-
-	/**
-	 * @return the serialversionuid
-	 */
-	public static long getSerialversionuid() {
-		return serialVersionUID;
 	}
 
 	@Override

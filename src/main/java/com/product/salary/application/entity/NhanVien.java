@@ -1,28 +1,76 @@
 package com.product.salary.application.entity;
 
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.Period;
-import java.util.Arrays;
 import java.util.Objects;
 
+@Entity
+@Table(name = "NhanVien")
+@ToString
+@NoArgsConstructor
+@Setter
+@Getter
 public class NhanVien implements Serializable {
+	@Id
+	@Column(name = "MaNhanVien", length = 15)
 	private String maNhanVien;
+
+	@Column(name = "HoTen", length = 70, nullable = false)
 	private String hoTen;
+
+	@Column(name = "Email", length = 70, nullable = false)
 	private String email;
+
+	@Column(name = "DiaChi", length = 100, nullable = false)
 	private String diaChi;
+
+	@Column(name = "GioiTinh", nullable = false)
 	private Integer gioiTinh;
+
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "MaChucVu")
 	private ChucVu chucVu;
+
+	@Column(name = "CCCD", length = 12, unique = true)
 	private String cccd;
+
+	@Column(name = "SoDienThoai", length = 10, nullable = false)
 	private String soDienThoai;
+
+	@Column(name = "NgaySinh", columnDefinition = "DATETIME NOT NULL")
 	private LocalDate ngaySinh;
+
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "MaPhongBan")
 	private PhongBan phongBan;
+
+	@Column(name = "NgayVaoLam", columnDefinition = "DATETIME NOT NULL")
 	private LocalDate ngayVaoLam;
+
+	@Column(name = "LuongCoSo", columnDefinition = "REAL NOT NULL")
 	private double luongCoSo;
+
+	@Column(name = "HeSoLuong", columnDefinition = "REAL NOT NULL")
 	private double heSoLuong;
+
+	@Column(name = "TroCap", columnDefinition = "REAL NOT NULL")
 	private double troCap;
+
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "MaTrinhDo")
 	private TrinhDo trinhDo;
+
+	@Column(name = "HinhAnh")
 	private byte[] hinhAnh;
+
+	@Column(name = "TrangThai", nullable = false)
 	private Boolean trangThai;
 
 	public NhanVien(String maNhanVien, String soDienThoai) {
@@ -31,9 +79,6 @@ public class NhanVien implements Serializable {
 
 	public NhanVien(String cccd) {
 		this.cccd = cccd;
-	}
-
-	public NhanVien() {
 	}
 
 	public NhanVien(String maNhanVien, String hoTen, String email, String diaChi, String cccd, String soDienThoai,
@@ -47,7 +92,6 @@ public class NhanVien implements Serializable {
 		this.soDienThoai = soDienThoai;
 		this.phongBan = phongBan;
 		this.trinhDo = trinhDo;
-		this.trangThai = trangThai;
 	}
 
 	public NhanVien(String maNhanVien, String hoTen, String email, String diaChi, String cccd, String soDienThoai,
@@ -64,9 +108,6 @@ public class NhanVien implements Serializable {
 		this.trangThai = trangThai;
 	}
 
-	public String getMaNhanVien() {
-		return maNhanVien;
-	}
 
 	public NhanVien(String maNhanVien, String hoTen, String email, String diaChi, Integer gioiTinh, ChucVu chucVu,
                     String cccd, String soDienThoai, LocalDate ngaySinh, PhongBan phongBan, LocalDate ngayVaoLam,
@@ -91,13 +132,7 @@ public class NhanVien implements Serializable {
 		this.trangThai = trangThai;
 	}
 
-	public void setMaNhanVien(String maNhanVien) {
-		this.maNhanVien = maNhanVien;
-	}
 
-	public String getHoTen() {
-		return hoTen;
-	}
 
 	public void setHoTen(String hoTen) throws Exception {
 		if (hoTen.trim().equals(""))
@@ -106,9 +141,6 @@ public class NhanVien implements Serializable {
 			this.hoTen = hoTen;
 	}
 
-	public String getEmail() {
-		return email;
-	}
 
 	public void setEmail(String email) throws Exception {
 		if (email.trim().equals(""))
@@ -119,9 +151,6 @@ public class NhanVien implements Serializable {
 			this.email = email;
 	}
 
-	public String getDiaChi() {
-		return diaChi;
-	}
 
 	public void setDiaChi(String diaChi) throws Exception {
 		if (diaChi.trim().equals(""))
@@ -130,9 +159,6 @@ public class NhanVien implements Serializable {
 			this.diaChi = diaChi;
 	}
 
-	public Integer getGioiTinh() {
-		return gioiTinh;
-	}
 
 	public void setGioiTinh(Integer gioiTinh) {
 		if (gioiTinh != 0 && gioiTinh != 1)
@@ -141,17 +167,8 @@ public class NhanVien implements Serializable {
 			this.gioiTinh = gioiTinh;
 	}
 
-	public ChucVu getChucVu() {
-		return chucVu;
-	}
 
-	public void setChucVu(ChucVu chucVu) {
-		this.chucVu = chucVu;
-	}
 
-	public String getCccd() {
-		return cccd;
-	}
 
 	public void setCccd(String cccd) throws Exception {
 		if (cccd.trim().equals(""))
@@ -162,9 +179,6 @@ public class NhanVien implements Serializable {
 			this.cccd = cccd;
 	}
 
-	public String getSoDienThoai() {
-		return soDienThoai;
-	}
 
 	public void setSoDienThoai(String soDienThoai) throws Exception {
 		if (soDienThoai.trim().length() != 10)
@@ -175,9 +189,6 @@ public class NhanVien implements Serializable {
 			this.soDienThoai = soDienThoai;
 	}
 
-	public LocalDate getNgaySinh() {
-		return ngaySinh;
-	}
 
 	public void setNgaySinh(LocalDate ngaySinh) throws Exception {
 		int tuoi = Period.between(ngaySinh, LocalDate.now()).getYears();
@@ -187,18 +198,6 @@ public class NhanVien implements Serializable {
 			this.ngaySinh = ngaySinh;
 	}
 
-	public PhongBan getPhongBan() {
-		return phongBan;
-	}
-
-	public void setPhongBan(PhongBan phongBan) {
-		this.phongBan = phongBan;
-	}
-
-	public LocalDate getNgayVaoLam() {
-		return ngayVaoLam;
-	}
-
 	public void setNgayVaoLam(LocalDate ngayVaoLam) throws Exception {
 		if (ngayVaoLam.isAfter(LocalDate.now()))
 			throw new Exception("Ngày vào làm phải trước hoặc bằng ngày hiện tại");
@@ -206,9 +205,6 @@ public class NhanVien implements Serializable {
 			this.ngayVaoLam = ngayVaoLam;
 	}
 
-	public double getLuongCoSo() {
-		return luongCoSo;
-	}
 
 	public void setLuongCoSo(double luongCoSo) throws Exception {
 		if (luongCoSo <= 0)
@@ -217,9 +213,6 @@ public class NhanVien implements Serializable {
 			this.luongCoSo = luongCoSo;
 	}
 
-	public double getHeSoLuong() {
-		return heSoLuong;
-	}
 
 	public void setHeSoLuong(double heSoLuong) throws Exception {
 		if (heSoLuong >= 1.86 && heSoLuong <= 4.6)
@@ -228,9 +221,6 @@ public class NhanVien implements Serializable {
 			throw new Exception("Hệ số lượng phải thuộc 1 trong các hệ số: 1,86; 2,26; 2,66; 3,06; 3,46; 3,86; 4,06");
 	}
 
-	public double getTroCap() {
-		return troCap;
-	}
 
 	public void setTroCap(double troCap) throws Exception {
 		if (troCap < 0) {
@@ -242,9 +232,6 @@ public class NhanVien implements Serializable {
 			this.troCap = troCap;
 	}
 
-	public TrinhDo getTrinhDo() {
-		return trinhDo;
-	}
 
 	public void setTrinhDo(TrinhDo trinhDo) throws Exception {
 		if (!trinhDo.getTenTrinhDo().equals("Tiến sĩ") && !trinhDo.getTenTrinhDo().equals("Thạc sĩ")
@@ -257,20 +244,8 @@ public class NhanVien implements Serializable {
 			this.trinhDo = trinhDo;
 	}
 
-	public byte[] getHinhAnh() {
-		return hinhAnh;
-	}
-
-	public void setHinhAnh(byte[] hinhAnh) {
-		this.hinhAnh = hinhAnh;
-	}
-
 	public Boolean isTrangThai() {
 		return trangThai;
-	}
-
-	public void setTrangThai(Boolean trangThai) {
-		this.trangThai = trangThai;
 	}
 
 	@Override
@@ -290,14 +265,4 @@ public class NhanVien implements Serializable {
 		return Objects.equals(cccd, other.cccd) && Objects.equals(maNhanVien, other.maNhanVien)
 				&& Objects.equals(soDienThoai, other.soDienThoai);
 	}
-
-	@Override
-	public String toString() {
-		return "NhanVien [maNhanVien=" + maNhanVien + ", hoTen=" + hoTen + ", email=" + email + ", diaChi=" + diaChi
-				+ ", gioiTinh=" + gioiTinh + ", chucVu=" + chucVu + ", cccd=" + cccd + ", soDienThoai=" + soDienThoai
-				+ ", ngaySinh=" + ngaySinh + ", phongBan=" + phongBan + ", ngayVaoLam=" + ngayVaoLam + ", luongCoSo="
-				+ luongCoSo + ", heSoLuong=" + heSoLuong + ", troCap=" + troCap + ", trinhDo=" + trinhDo + ", hinhAnh="
-				+ Arrays.toString(hinhAnh) + ", trangThai=" + trangThai + "]";
-	}
-
 }

@@ -1,21 +1,45 @@
 package com.product.salary.application.entity;
 
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.Objects;
 
+@Getter
+@Setter
+@NoArgsConstructor
+@Entity
+@Table(name = "CongDoanSanPham")
 public class CongDoanSanPham implements Serializable {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+	@Id
+	@Column(name = "MaCongDoan", length = 15)
 	private String maCongDoan;
+
+	@Column(name = "TenCongDoan", length = 70, nullable = false)
 	private String tenCongDoan;
+
+	@Column(name = "SoLuongCanLam", nullable = false)
 	private int soLuongCanLam;
+
+	@Column(name = "GiaCongDoan", columnDefinition = "REAL NOT NULL")
 	private double giaCongDoan;
+
+	@Column(name = "ThoiHan", columnDefinition = "DATETIME NOT NULL")
 	private LocalDate thoiHan;
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "MaCongDoanLamTruoc")
 	private CongDoanSanPham congDoanLamTruoc;
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "MaSanPham")
 	private SanPham sanPham;
+
+	@Column(name = "TrangThai", nullable = false)
 	private boolean trangThai;
 
 	@Override
@@ -47,10 +71,6 @@ public class CongDoanSanPham implements Serializable {
 		setCongDoanLamTruoc(congDoanLamTruoc);
 	}
 
-	public CongDoanSanPham() {
-		super();
-	}
-
 	public CongDoanSanPham(String maCongDoan, String tenCongDoan, SanPham sanPham, int soLuongCanLam) {
 		this.maCongDoan = maCongDoan;
 		this.tenCongDoan = tenCongDoan;
@@ -62,27 +82,6 @@ public class CongDoanSanPham implements Serializable {
 		this.maCongDoan = maCongDoan;
 		this.tenCongDoan = tenCongDoan;
 		this.sanPham = sanPham;
-	}
-
-	/**
-	 * @return the maCongDoan
-	 */
-	public String getMaCongDoan() {
-		return maCongDoan;
-	}
-
-	/**
-	 * @param maCongDoan the maCongDoan to set
-	 */
-	public void setMaCongDoan(String maCongDoan) {
-		this.maCongDoan = maCongDoan;
-	}
-
-	/**
-	 * @return the tenCongDoan
-	 */
-	public String getTenCongDoan() {
-		return tenCongDoan;
 	}
 
 	/**
@@ -98,13 +97,6 @@ public class CongDoanSanPham implements Serializable {
 	}
 
 	/**
-	 * @return the soLuongCanLam
-	 */
-	public int getSoLuongCanLam() {
-		return soLuongCanLam;
-	}
-
-	/**
 	 * @param soLuongCanLam the soLuongCanLam to set
 	 * @throws Exception
 	 */
@@ -117,13 +109,6 @@ public class CongDoanSanPham implements Serializable {
 	}
 
 	/**
-	 * @return the giaCongDoan
-	 */
-	public double getGiaCongDoan() {
-		return giaCongDoan;
-	}
-
-	/**
 	 * @param giaCongDoan the giaCongDoan to set
 	 * @throws Exception
 	 */
@@ -133,28 +118,6 @@ public class CongDoanSanPham implements Serializable {
 		} else {
 			this.giaCongDoan = giaCongDoan;
 		}
-	}
-
-	/**
-	 * @return the thoiHan
-	 */
-	public LocalDate getThoiHan() {
-		return thoiHan;
-	}
-
-	/**
-	 * @param thoiHan the thoiHan to set
-	 * @throws Exception
-	 */
-	public void setThoiHan(LocalDate thoiHan) throws Exception {
-		this.thoiHan = thoiHan;
-	}
-
-	/**
-	 * @return the sanPham
-	 */
-	public SanPham getSanPham() {
-		return sanPham;
 	}
 
 	/**
@@ -176,31 +139,10 @@ public class CongDoanSanPham implements Serializable {
 		return trangThai;
 	}
 
-	/**
-	 * @param trangThai the trangThai to set
-	 */
-	public void setTrangThai(boolean trangThai) {
-		this.trangThai = trangThai;
-	}
-
-	/**
-	 * @return the serialversionuid
-	 */
-	public static long getSerialversionuid() {
-		return serialVersionUID;
-	}
 
 	@Override
 	public String toString() {
 		return this.tenCongDoan;
-	}
-
-	public CongDoanSanPham getCongDoanLamTruoc() {
-		return congDoanLamTruoc;
-	}
-
-	public void setCongDoanLamTruoc(CongDoanSanPham congDoanLamTruoc) {
-		this.congDoanLamTruoc = congDoanLamTruoc;
 	}
 
 }

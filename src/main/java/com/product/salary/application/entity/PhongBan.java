@@ -1,22 +1,50 @@
 package com.product.salary.application.entity;
 
+import jakarta.persistence.*;
+import lombok.*;
+
 import java.io.Serializable;
 import java.util.Objects;
+import java.util.Set;
 
+@Entity
+@Table(name = "PhongBan")
+@Getter
+@Setter
+@NoArgsConstructor
+@ToString
 public class PhongBan implements Serializable {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+
+	@Id
+	@Column(name = "MaPhongBan", length = 15)
 	private String maPhongBan;
+
+	@Column(name = "TenPhongBan", nullable = false)
 	private String tenPhongBan;
+
+	@OneToMany(mappedBy = "phongBan", fetch = FetchType.LAZY)
+	private Set<NhanVien> nhanViens;
+
+	@Column(name = "SoLuongNhanVien")
 	private int soLuongNhanVien;
+
+	@Column(name = "TrangThai", nullable = false)
 	private Boolean trangThai;
 
-	public PhongBan(String maPhongBan, String tenPhongBan, int soLuongNhanVien, Boolean trangThai) throws Exception {
+	public Boolean isTrangThai() {
+		return trangThai;
+	}
+
+	public PhongBan(String maPhongBan, String tenPhongBan, int soLuongNhanVien, Boolean trangThai) {
+		this.maPhongBan = maPhongBan;
+		this.tenPhongBan = tenPhongBan;
+		this.soLuongNhanVien = soLuongNhanVien;
+		this.trangThai = trangThai;
+	}
+
+	public PhongBan(String maPhongBan, String tenPhongBan, Boolean trangThai) throws Exception {
 		setMaPhongBan(maPhongBan);
 		setTenPhongBan(tenPhongBan);
-		setSoLuongNhanVien(soLuongNhanVien);
 		setTrangThai(trangThai);
 	}
 
@@ -24,37 +52,6 @@ public class PhongBan implements Serializable {
 		super();
 		this.maPhongBan = maPhongBan;
 		this.tenPhongBan = tenPhongBan;
-	}
-
-	public PhongBan(String maPhongBan, String tenPhongBan, Boolean trangThai) {
-		this.maPhongBan = maPhongBan;
-		this.tenPhongBan = tenPhongBan;
-		this.trangThai = trangThai;
-	}
-
-	public PhongBan() {
-
-	}
-
-	/**
-	 * @return the maPhongBan
-	 */
-	public String getMaPhongBan() {
-		return maPhongBan;
-	}
-
-	/**
-	 * @param maPhongBan the maPhongBan to set
-	 */
-	public void setMaPhongBan(String maPhongBan) {
-		this.maPhongBan = maPhongBan;
-	}
-
-	/**
-	 * @return the tenPhongBan
-	 */
-	public String getTenPhongBan() {
-		return tenPhongBan;
 	}
 
 	/**
@@ -66,38 +63,6 @@ public class PhongBan implements Serializable {
 			throw new Exception("Tên phòng ban không được rỗng");
 		else
 			this.tenPhongBan = tenPhongBan;
-	}
-
-	/**
-	 * @return the soLuongNhanVien
-	 */
-	public int getSoLuongNhanVien() {
-		return soLuongNhanVien;
-	}
-
-	/**
-	 * @param soLuongNhanVien the soLuongNhanVien to set
-	 * @throws Exception
-	 */
-	public void setSoLuongNhanVien(int soLuongNhanVien) throws Exception {
-		if (soLuongNhanVien < 0)
-			throw new Exception("Số lượng nhân viên phải >= 0");
-		else
-			this.soLuongNhanVien = soLuongNhanVien;
-	}
-
-	/**
-	 * @return the trangThai
-	 */
-	public Boolean isTrangThai() {
-		return trangThai;
-	}
-
-	/**
-	 * @param trangThai the trangThai to set
-	 */
-	public void setTrangThai(Boolean trangThai) {
-		this.trangThai = trangThai;
 	}
 
 	@Override
@@ -117,8 +82,4 @@ public class PhongBan implements Serializable {
 		return Objects.equals(maPhongBan, other.maPhongBan);
 	}
 
-	@Override
-	public String toString() {
-		return this.tenPhongBan;
-	}
 }

@@ -1,15 +1,32 @@
 package com.product.salary.application.entity;
 
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 import java.io.Serializable;
 
+@NoArgsConstructor
+@Getter
+@Setter
+@Table(name = "ChiTietHopDong")
+@Entity
 public class ChiTietHopDong implements Serializable {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+	@Id
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "MaHopDong")
 	private HopDong hopDong;
+
+	@Id
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "MaSanPham")
 	private SanPham sanPham;
+
+	@Column(name = "SoLuong", nullable = false)
 	private int soLuong;
+
+	@Column(name = "GiaDatLam", columnDefinition = "REAL NOT NULL")
 	private double giaDatLam;
 
 	public ChiTietHopDong(HopDong hopDong, SanPham sanPham, int soLuong, double giaDatLam) throws Exception {
@@ -17,17 +34,6 @@ public class ChiTietHopDong implements Serializable {
 		setSanPham(sanPham);
 		setSoLuong(soLuong);
 		setGiaDatLam(giaDatLam);
-	}
-
-	public ChiTietHopDong() {
-		super();
-	}
-
-	/**
-	 * @return the hopDong
-	 */
-	public HopDong getHopDong() {
-		return hopDong;
 	}
 
 	/**
@@ -43,13 +49,6 @@ public class ChiTietHopDong implements Serializable {
 	}
 
 	/**
-	 * @return the sanPham
-	 */
-	public SanPham getSanPham() {
-		return sanPham;
-	}
-
-	/**
 	 * @param sanPham the sanPham to set
 	 * @throws Exception
 	 */
@@ -61,12 +60,6 @@ public class ChiTietHopDong implements Serializable {
 		}
 	}
 
-	/**
-	 * @return the soLuong
-	 */
-	public int getSoLuong() {
-		return soLuong;
-	}
 
 	/**
 	 * @param soLuong the soLuong to set
@@ -81,13 +74,6 @@ public class ChiTietHopDong implements Serializable {
 	}
 
 	/**
-	 * @return the giaDatLam
-	 */
-	public double getGiaDatLam() {
-		return giaDatLam;
-	}
-
-	/**
 	 * @param giaDatLam the giaDatLam to set
 	 * @throws Exception
 	 */
@@ -98,18 +84,4 @@ public class ChiTietHopDong implements Serializable {
 			this.giaDatLam = giaDatLam;
 		}
 	}
-
-	/**
-	 * @return the serialversionuid
-	 */
-	public static long getSerialversionuid() {
-		return serialVersionUID;
-	}
-
-	@Override
-	public String toString() {
-		return "ChiTietHopDong [hopDong=" + hopDong + ", sanPham=" + sanPham + ", soLuong=" + soLuong + ", giaDatLam="
-				+ giaDatLam + "]";
-	}
-
 }

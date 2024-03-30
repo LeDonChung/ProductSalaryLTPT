@@ -285,7 +285,7 @@ public class TimKiemPhongBanForm extends JPanel {
 				trangThai = false;
 		}
 
-		PhongBan pb = new PhongBan(maPhongBan, tenPhongBan, trangThai);
+		PhongBan pb = new PhongBan(maPhongBan, tenPhongBan, 0, trangThai);
 		danhSachPhongBan = phongBanService.timKiemPhongBan(pb);
 		int stt = 1;
 		for (PhongBan phongBan : danhSachPhongBan) {

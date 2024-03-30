@@ -1,22 +1,39 @@
 package com.product.salary.application.entity;
 
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+import org.checkerframework.checker.units.qual.C;
+
 import java.io.Serializable;
 import java.time.LocalDate;
 
+@Entity
+@Table(name = "PhanCongCongNhan")
+@Getter
+@Setter
+@NoArgsConstructor
+@ToString
 public class PhanCongCongNhan implements Serializable {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+	@Id
+	@Column(name = "MaPhanCong", length = 15)
 	private String maPhanCong;
+
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "MaCongNhan")
 	private CongNhan congNhan;
+
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "MaCongDoan")
 	private CongDoanSanPham congDoanSanPham;
+
+	@Column(name = "NgayPhanCong", columnDefinition = "DATETIME NOT NULL")
 	private LocalDate ngayPhanCong;
+
+	@Column(name = "TrangThai", nullable = false)
 	private boolean trangThai;
-
-	public PhanCongCongNhan() {
-
-	}
 
 	public PhanCongCongNhan(String maPhanCong, CongNhan congNhan, CongDoanSanPham congDoanSanPham,
                             LocalDate ngayPhanCong, boolean trangThai) throws Exception {
@@ -46,54 +63,10 @@ public class PhanCongCongNhan implements Serializable {
 		this.trangThai = trangThai;
 	}
 
-	public String getMaPhanCong() {
-		return maPhanCong;
-	}
 
-	public void setMaPhanCong(String maPhanCong) {
-		this.maPhanCong = maPhanCong;
-	}
-
-	public CongNhan getCongNhan() {
-		return congNhan;
-	}
-
-	public void setCongNhan(CongNhan congNhan) {
-		this.congNhan = congNhan;
-	}
-
-	public CongDoanSanPham getCongDoanSanPham() {
-		return congDoanSanPham;
-	}
-
-	public void setCongDoanSanPham(CongDoanSanPham congDoanSanPham) {
-		this.congDoanSanPham = congDoanSanPham;
-	}
-
-	public LocalDate getNgayPhanCong() {
-		return ngayPhanCong;
-	}
-
-	public void setNgayPhanCong(LocalDate ngayPhanCong) throws Exception {
-		this.ngayPhanCong = ngayPhanCong;
-	}
 
 	public boolean isTrangThai() {
 		return trangThai;
 	}
 
-	public void setTrangThai(boolean trangThai) {
-		this.trangThai = trangThai;
-	}
-
-	public static long getSerialversionuid() {
-		return serialVersionUID;
-	}
-
-	@Override
-	public String toString() {
-		return "PhanCongCongNhan [maPhanCong=" + maPhanCong + ", congNhan=" + congNhan + ", congDoanSanPham="
-				+ congDoanSanPham + ", ngayPhanCong=" + ngayPhanCong + ", trangThai=" + trangThai + "]";
-	}
-	
 }

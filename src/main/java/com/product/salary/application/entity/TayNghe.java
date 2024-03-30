@@ -1,38 +1,29 @@
 package com.product.salary.application.entity;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import lombok.*;
+
 import java.util.Objects;
 
+@NoArgsConstructor
+@AllArgsConstructor
+@Entity
+@Getter
+@Setter
+@Table(name = "TayNghe")
 public class TayNghe {
+	@Id
+	@Column(name = "MaTayNghe", length = 15)
 	private String maTayNghe;
+
+	@Column(name = "TenTayNghe", length = 50, nullable = false)
 	private String tenTayNghe;
-
-	public TayNghe() {
-
-	}
-
-	public TayNghe(String maTayNghe, String tenTayNghe) {
-		setMaTayNghe(maTayNghe);
-		setTenTayNghe(tenTayNghe);
-	}
 
 	public TayNghe(String maTayNghe) {
 		this.maTayNghe = maTayNghe;
-	}
-
-	public String getMaTayNghe() {
-		return maTayNghe;
-	}
-
-	public void setMaTayNghe(String maTayNghe) {
-		this.maTayNghe = maTayNghe;
-	}
-
-	public String getTenTayNghe() {
-		return tenTayNghe;
-	}
-
-	public void setTenTayNghe(String tenTayNghe) {
-		this.tenTayNghe = tenTayNghe;
 	}
 
 	@Override
