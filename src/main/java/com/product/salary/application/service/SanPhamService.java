@@ -1,6 +1,7 @@
 package com.product.salary.application.service;
 
 import com.product.salary.application.entity.SanPham;
+import jakarta.transaction.Transactional;
 
 import java.util.List;
 

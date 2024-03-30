@@ -45,7 +45,7 @@ public class SanPham implements Serializable {
 	@Column(name = "TrangThai", nullable = false)
 	private Boolean trangThai;
 
-	@OneToMany(mappedBy = "sanPham", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "sanPham", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
 	private Set<CongDoanSanPham> congDoanSanPhams;
 
 	public SanPham(String maSanPham, String tenSanPham, String donViTinh, int soLuongTon, String chatLieu,
