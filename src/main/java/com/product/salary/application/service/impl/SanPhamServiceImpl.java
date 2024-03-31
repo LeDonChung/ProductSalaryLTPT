@@ -41,8 +41,13 @@ public class SanPhamServiceImpl implements SanPhamService {
 						SystemConstants.BUNDLE.getString("sanPham.thongBao.sanPhamKhongTonTai"));
 				return null;
 			}
+			isExists.setDonGia(sanPham.getDonGia());
+			isExists.setTenSanPham(sanPham.getTenSanPham());
+			isExists.setChatLieu(sanPham.getChatLieu());
+			isExists.setTrangThai(sanPham.getTrangThai());
+			isExists.setHinhAnh(sanPham.getHinhAnh());
 
-			return sanPhamDao.capNhatSanPham(sanPham);
+			return sanPhamDao.capNhatSanPham(isExists);
 
 		} catch (Exception e) {
 			JOptionPane.showMessageDialog(null, "Hệ thống đang có lỗi.");
