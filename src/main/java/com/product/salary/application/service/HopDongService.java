@@ -37,4 +37,6 @@ public interface HopDongService {
 	 * Tìm tổng số lượng hợp đồng
 	 */
 	int tongSoLuongHopDong();
+
+	List<ChiTietHopDong> timTatCaChiTietHopDongBangMaHopDong(String maHopDong);
 }

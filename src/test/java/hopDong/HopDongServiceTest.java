@@ -30,26 +30,33 @@ public class HopDongServiceTest {
         String maHopDong = this.hopDongService.generateMaHopDong();
         HopDong hopDong = new HopDong();
         hopDong.setMaHopDong(maHopDong);
-        hopDong.setTenHopDong("Khach hang 3");
-        hopDong.setTenKhachHang("Khach hang 3");
+        hopDong.setTenHopDong("Khach hang 1");
+        hopDong.setTenKhachHang("Khach hang 1");
         hopDong.setTongTien(2000000);
         hopDong.setSoTienCoc(100000);
         hopDong.setNgayBatDau(LocalDate.now());
         hopDong.setNgayKetThuc(null);
         hopDong.setYeuCau("Yeu cau 1");
         hopDong.setTrangThai(false);
+
         List<ChiTietHopDong> chiTietHopDongs = new ArrayList<>();
-        SanPham sanPham = new SanPham();
-        sanPham.setMaSanPham("10000");
-        sanPham.setDonGia(1000.0);
+        SanPham sanPham1 = new SanPham();
+        sanPham1.setMaSanPham("300001");
+        sanPham1.setDonGia(1000.0);
+        SanPham sanPham2 = new SanPham();
+        sanPham2.setMaSanPham("300002");
+        sanPham2.setDonGia(1000.0);
         chiTietHopDongs.add(
-                new ChiTietHopDong(hopDong, sanPham, 2, 1000000)
+                new ChiTietHopDong(hopDong, sanPham1, 10, 1000000)
+        );
+        chiTietHopDongs.add(
+                new ChiTietHopDong(hopDong, sanPham2, 10, 1000000)
         );
         this.hopDongService.themHopDong(hopDong, chiTietHopDongs);
     }
     @Test
     public void testThanhLyHopDong() {
-        this.hopDongService.thanhLyHopDong("5030032406");
+        this.hopDongService.thanhLyHopDong("5031032401");
     }
 
 }

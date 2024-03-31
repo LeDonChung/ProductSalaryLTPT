@@ -8,6 +8,7 @@ import lombok.ToString;
 
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Set;
 
 
@@ -48,7 +49,7 @@ public class HopDong implements Serializable {
 	private boolean trangThai;
 
 	@OneToMany(mappedBy = "hopDong", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-	private Set<ChiTietHopDong> chiTietHopDongs;
+	private List<ChiTietHopDong> chiTietHopDongs;
 
 	public HopDong(String maHopDong, String tenHopDong, String tenKhachHang, double tongTien, double soTienCoc,
 			LocalDate ngayBatDau, LocalDate ngayKetThuc, String yeuCau, boolean trangThai) throws Exception {

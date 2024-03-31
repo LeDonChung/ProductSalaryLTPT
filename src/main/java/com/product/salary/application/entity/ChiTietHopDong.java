@@ -14,12 +14,12 @@ import java.io.Serializable;
 @Entity
 public class ChiTietHopDong implements Serializable {
 	@Id
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "MaHopDong")
 	private HopDong hopDong;
 
 	@Id
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "MaSanPham")
 	private SanPham sanPham;
 
