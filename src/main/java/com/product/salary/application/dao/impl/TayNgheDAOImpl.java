@@ -12,305 +12,55 @@ public class TayNgheDAOImpl extends AbstractDAO implements TayNgheDAO, Serializa
 
 	@Override
 	public List<TayNghe> timKiemTatCaTayNghe() {
-		Connection conn = getConnection();
-		Statement statement = null;
-		ResultSet rs = null;
-		List<TayNghe> tayNghes = new ArrayList<>();
-		if (conn != null) {
-			try {
-				String query = "SELECT *FROM TayNghe";
-
-				statement = conn.createStatement();
-				rs = statement.executeQuery(query);
-
-				while (rs.next()) {
-					String maTayNghe = rs.getString("MaTayNghe");
-					String tenTayNghe = rs.getString("TenTayNghe");
-
-					TayNghe tayNghe = new TayNghe(maTayNghe, tenTayNghe);
-
-					tayNghes.add(tayNghe);
-				}
-			} catch (SQLException e) {
-				e.printStackTrace();
-			} catch (Exception e) {
-				e.printStackTrace();
-			} finally {
-				if (conn != null) {
-					try {
-						conn.close();
-					} catch (SQLException e) {
-						e.printStackTrace();
-					}
-				}
-				if (statement != null) {
-					try {
-						statement.close();
-					} catch (SQLException e) {
-						e.printStackTrace();
-					}
-				}
-				if (rs != null) {
-					try {
-						rs.close();
-					} catch (SQLException e) {
-						e.printStackTrace();
-					}
-				}
-			}
+		try(var em = getEntityManager()) {
+			return em.createQuery("SELECT t FROM TayNghe t", TayNghe.class).getResultList();
 		}
-		return tayNghes;
 	}
 
 	@Override
 	public TayNghe capNhatTayNghe(TayNghe tayNghe) {
-		Connection conn = getConnection();
-		PreparedStatement statement = null;
-		ResultSet rs = null;
-		if (conn != null) {
-			try {
+		try(var em = getEntityManager()){
+			em.getTransaction().begin();
+			em.merge(tayNghe);
+			em.getTransaction().commit();
+			return tayNghe;
 
-				StringBuilder query = new StringBuilder("UPDATE [dbo].[TayNghe] SET [TenTayNghe] = ?");
-				query.append(" WHERE [MaTayNghe] = ?");
-
-				statement = conn.prepareStatement(query.toString());
-
-				// set statement
-				statement.setString(1, tayNghe.getTenTayNghe());
-				statement.setString(2, tayNghe.getMaTayNghe());
-				int status = statement.executeUpdate();
-
-				// Nếu số dòng lớn hơn 0 thì cập nhật thành công
-				if (status > 0) {
-					return tayNghe;
-				}
-
-			} catch (SQLException e) {
-
-				e.printStackTrace();
-			} finally {
-				if (conn != null) {
-					try {
-						conn.close();
-					} catch (SQLException e) {
-						e.printStackTrace();
-					}
-				}
-				if (statement != null) {
-					try {
-						statement.close();
-					} catch (SQLException e) {
-						e.printStackTrace();
-					}
-				}
-				if (rs != null) {
-					try {
-						rs.close();
-					} catch (SQLException e) {
-						e.printStackTrace();
-					}
-				}
-			}
 		}
-		return null;
 	}
 
 	@Override
 	public TayNghe themTayNghe(TayNghe tayNghe) {
-		Connection conn = getConnection();
-		PreparedStatement statement = null;
-		ResultSet rs = null;
-		if (conn != null) {
-			try {
-
-				StringBuilder query = new StringBuilder("INSERT INTO [dbo].[TayNghe] ([MaTayNghe], [TenTayNghe])");
-				query.append(" VALUES (?, ?)");
-
-				statement = conn.prepareStatement(query.toString());
-
-				// set statement
-				statement.setString(1, tayNghe.getMaTayNghe());
-				statement.setString(2, tayNghe.getTenTayNghe());
-
-				int status = statement.executeUpdate();
-
-				// Nếu số dòng lớn hơn 0 thì thêm thành công
-				if (status > 0) {
-					return tayNghe;
-				}
-
-			} catch (SQLException e) {
-
-				e.printStackTrace();
-			} finally {
-				if (conn != null) {
-					try {
-						conn.close();
-					} catch (SQLException e) {
-						e.printStackTrace();
-					}
-				}
-				if (statement != null) {
-					try {
-						statement.close();
-					} catch (SQLException e) {
-						e.printStackTrace();
-					}
-				}
-				if (rs != null) {
-					try {
-						rs.close();
-					} catch (SQLException e) {
-						e.printStackTrace();
-					}
-				}
-			}
+		try(var em = getEntityManager()){
+			em.getTransaction().begin();
+			em.persist(tayNghe);
+			em.getTransaction().commit();
+			return tayNghe;
 		}
-		return null;
 	}
 
 	@Override
 	public TayNghe timKiemBangMaTayNghe(String maTayNgheSearch) {
-		Connection conn = getConnection();
-		Statement statement = null;
-		ResultSet rs = null;
-		TayNghe tayNghe = null;
-		if (conn != null) {
-			try {
-				String query = "SELECT *FROM TayNghe WHERE MaTayNghe = " + maTayNgheSearch;
-
-				statement = conn.createStatement();
-				rs = statement.executeQuery(query);
-
-				while (rs.next()) {
-					String maTayNghe = rs.getString("MaTayNghe");
-					String tenTayNghe = rs.getString("TenTayNghe");
-
-					tayNghe = new TayNghe(maTayNghe, tenTayNghe);
-
-				}
-			} catch (SQLException e) {
-				e.printStackTrace();
-			} catch (Exception e) {
-				e.printStackTrace();
-			} finally {
-				if (conn != null) {
-					try {
-						conn.close();
-					} catch (SQLException e) {
-						e.printStackTrace();
-					}
-				}
-				if (statement != null) {
-					try {
-						statement.close();
-					} catch (SQLException e) {
-						e.printStackTrace();
-					}
-				}
-				if (rs != null) {
-					try {
-						rs.close();
-					} catch (SQLException e) {
-						e.printStackTrace();
-					}
-				}
-			}
+		try(var em = getEntityManager()){
+			return em.find(TayNghe.class, maTayNgheSearch);
 		}
-		return tayNghe;
 	}
 
 	@Override
 	public String timMaTayNgheCuoiCung() {
-		Connection conn = getConnection();
-		Statement statement = null;
-		ResultSet rs = null;
-		String maTayNghe = null;
-		if (conn != null) {
-			try {
-				String query = "SELECT TOP 1 MaTayNghe FROM TayNghe ORDER BY MaTayNghe DESC";
-
-				statement = conn.createStatement();
-				rs = statement.executeQuery(query);
-
-				while (rs.next()) {
-					maTayNghe = rs.getString("MaTayNghe");
-				}
-			} catch (SQLException e) {
-				e.printStackTrace();
-			} catch (Exception e) {
-				e.printStackTrace();
-			} finally {
-				if (conn != null) {
-					try {
-						conn.close();
-					} catch (SQLException e) {
-						e.printStackTrace();
-					}
-				}
-				if (statement != null) {
-					try {
-						statement.close();
-					} catch (SQLException e) {
-						e.printStackTrace();
-					}
-				}
-				if (rs != null) {
-					try {
-						rs.close();
-					} catch (SQLException e) {
-						e.printStackTrace();
-					}
-				}
-			}
+		try(var em = getEntityManager()){
+			return em.createQuery("SELECT MAX(t.maTayNghe) FROM TayNghe t", String.class).getSingleResult();
 		}
-		return maTayNghe;
 	}
 
 	@Override
 	public boolean xoaTayNgheBangMa(String maTayNghe) {
-		Connection conn = getConnection();
-		Statement statement = null;
-		ResultSet rs = null;
-		if (conn != null) {
-			try {
-				String query = "DELETE FROM TayNghe WHERE MaTayNghe = " + maTayNghe;
-
-				statement = conn.createStatement();
-				int rowCount = statement.executeUpdate(query);
-
-				if (rowCount > 0) {
-					return true;
-				}
-			} catch (SQLException e) {
-				e.printStackTrace();
-			} catch (Exception e) {
-				e.printStackTrace();
-			} finally {
-				if (conn != null) {
-					try {
-						conn.close();
-					} catch (SQLException e) {
-						e.printStackTrace();
-					}
-				}
-				if (statement != null) {
-					try {
-						statement.close();
-					} catch (SQLException e) {
-						e.printStackTrace();
-					}
-				}
-				if (rs != null) {
-					try {
-						rs.close();
-					} catch (SQLException e) {
-						e.printStackTrace();
-					}
-				}
-			}
+		try(var em = getEntityManager()){
+			em.getTransaction().begin();
+			TayNghe tayNghe = em.find(TayNghe.class, maTayNghe);
+			em.remove(tayNghe);
+			em.getTransaction().commit();
+			return true;
 		}
-		return false;
 	}
 
 }
