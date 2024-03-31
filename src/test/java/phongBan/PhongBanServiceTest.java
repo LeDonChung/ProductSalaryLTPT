@@ -38,6 +38,22 @@ public class PhongBanServiceTest {
         phongBan.setTrangThai(true);
         System.out.println(phongBanService.capNhatPhongBan(phongBan));
     }
+
+    @Test
+    void capNhatTrangThaiPhongBanTest(){
+        System.out.println(phongBanService.capNhatTrangThaiPhongBan("400001", false));
+    }
+
+    @Test
+    void capNhatSoLuongNhanVienBangMaPhongBanTest(){
+        System.out.println(phongBanService.capNhatSoLuongNhanVienBangMaPhongBan("400001", 0));
+    }
+
+    @Test
+    void timKiemTatCaPhongBanDangHoatDongTest(){
+        phongBanService.timKiemTatCaPhongBanDangHoatDong().forEach(System.out::println);
+    }
+
     @Test
     void timKiemTatCaPhongBanTest(){
         phongBanService.timKiemTatCaPhongBan().forEach(System.out::println);
