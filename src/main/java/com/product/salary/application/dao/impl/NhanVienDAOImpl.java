@@ -7,102 +7,19 @@ import com.product.salary.application.entity.TrinhDo;
 import com.product.salary.application.dao.NhanVienDAO;
 import org.apache.commons.lang3.StringUtils;
 
+import java.io.Serializable;
 import java.sql.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-public class NhanVienDAOImpl extends AbstractDAO implements NhanVienDAO {
+public class NhanVienDAOImpl extends AbstractDAO implements NhanVienDAO, Serializable {
 
 	@Override
 	public List<NhanVien> timKiemTatCaNhanVien() {
-		List<NhanVien> dsNhanVien = new ArrayList<NhanVien>();
-		Connection connect = getConnection();
-		ResultSet rs = null;
-		Statement state = null;
-		if (connect != null) {
-			try {
-				StringBuilder query = new StringBuilder(
-						"SELECT NV.MaNhanVien, NV.HoTen, NV.Email, NV.DiaChi, NV.GioiTinh, NV.MaChucVu, ");
-				query.append("CV.TenChucVu, NV.Cccd, NV.SoDienThoai, Nv.NgaySinh, NV.MaPhongBan, PB.TenPhongBan, ");
-				query.append(
-						"NV.NgayVaoLam, NV.LuongCoSo, NV.HeSoLuong, NV.TroCap, NV.MaTrinhDo, TD.TenTrinhDo, NV.TrangThai, NV.HinhAnh ");
-				query.append("FROM NhanVien AS NV\n");
-				query.append("JOIN ChucVu AS CV ON NV.MaChucVu = CV.MaChucVu\n");
-				query.append("JOIN TrinhDo AS TD ON NV.MaTrinhDo = TD.MaTrinhDo\n");
-				query.append("JOIN PhongBan AS PB ON NV.MaPhongBan = PB.MaPhongBan");
-
-				state = connect.createStatement();
-				rs = state.executeQuery(query.toString());
-				while (rs.next()) {
-					String maNhanVien = rs.getString("MaNhanVien");
-					String hoTen = rs.getString("HoTen");
-					String email = rs.getString("Email");
-					String diaChi = rs.getString("DiaChi");
-					int gioiTinh = rs.getInt("GioiTinh");
-
-					String maChucVu = rs.getString("MaChucVu");
-					String chucVu = rs.getString("TenChucVu");
-					ChucVu cv = new ChucVu(maChucVu, chucVu);
-
-					String cccd = rs.getString("Cccd");
-					String dienThoai = rs.getString("SoDienThoai");
-					LocalDate ngaySinh = rs.getDate("NgaySinh").toLocalDate();
-
-					String maPhongBan = rs.getString("MaPhongBan");
-					String phongBan = rs.getString("TenPhongBan");
-					PhongBan pb = new PhongBan(maPhongBan, phongBan, 0, true);
-
-					LocalDate ngayVaoLam = rs.getDate("NgayVaoLam").toLocalDate();
-					double luongCoSo = rs.getDouble("LuongCoSo");
-					double heSoLuong = rs.getDouble("HeSoLuong");
-					double troCap = rs.getDouble("TroCap");
-
-					String maTrinhDo = rs.getString("MaTrinhDo");
-					String trinhDo = rs.getString("TenTrinhDo");
-					TrinhDo td = new TrinhDo(maTrinhDo, trinhDo);
-
-					byte[] hinhAnh = rs.getBytes("HinhAnh");
-					boolean trangThai = rs.getBoolean("TrangThai");
-					String heSoLuongFm = String.format("%.2f", heSoLuong);
-					NhanVien nhanVien = new NhanVien(maNhanVien, hoTen, email, diaChi, gioiTinh, cv, cccd, dienThoai,
-							ngaySinh, pb, ngayVaoLam, luongCoSo, Double.parseDouble(heSoLuongFm), troCap, td, hinhAnh,
-							trangThai);
-
-					dsNhanVien.add(nhanVien);
-
-				}
-
-			} catch (SQLException e) {
-				e.getStackTrace();
-			} catch (Exception e) {
-				e.getStackTrace();
-			} finally {
-				if (connect != null) {
-					try {
-						connect.close();
-					} catch (SQLException e) {
-						e.printStackTrace();
-					}
-				}
-				if (state != null) {
-					try {
-						state.close();
-					} catch (SQLException e) {
-						e.printStackTrace();
-					}
-				}
-				if (rs != null) {
-					try {
-						rs.close();
-					} catch (SQLException e) {
-						e.printStackTrace();
-					}
-				}
-			}
+		try (var em = getEntityManager()){
+			return em.createQuery("SELECT nv FROM NhanVien nv", NhanVien.class).getResultList();
 		}
-
-		return dsNhanVien;
 	}
 
 	@Override
