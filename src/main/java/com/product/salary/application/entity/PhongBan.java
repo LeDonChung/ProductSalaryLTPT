@@ -2,6 +2,8 @@ package com.product.salary.application.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.NotFound;
+import org.hibernate.annotations.NotFoundAction;
 
 import java.io.Serializable;
 import java.util.Objects;
@@ -22,11 +24,12 @@ public class PhongBan implements Serializable {
 	@Column(name = "TenPhongBan", nullable = false)
 	private String tenPhongBan;
 
-	@OneToMany(mappedBy = "phongBan", fetch = FetchType.LAZY)
+	@OneToMany(mappedBy = "phongBan", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+	@ToString.Exclude
 	private Set<NhanVien> nhanViens;
 
 	@Column(name = "SoLuongNhanVien")
-	private int soLuongNhanVien;
+	private Integer soLuongNhanVien;
 
 	@Column(name = "TrangThai", nullable = false)
 	private Boolean trangThai;
