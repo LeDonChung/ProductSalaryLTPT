@@ -6,8 +6,6 @@ package com.product.salary.application.view.contract;
  */
 
 import com.product.salary.application.common.SystemConstants;
-import com.product.salary.application.dao.ChiTietHopDongDAO;
-import com.product.salary.application.dao.impl.ChiTietHopDongDAOImpl;
 import com.product.salary.application.entity.ChiTietHopDong;
 import com.product.salary.application.entity.HopDong;
 import com.product.salary.application.interfaces.ISendChiTietHopDong;
@@ -56,7 +54,6 @@ public class HopDongForm extends JPanel {
 	private JLabel lblLoiNgayKetThuc;
 	private JLabel lblLoiNgayBatDau;
 	private JLabel lblLoiTrangThai;
-	private ChiTietHopDongDAO chiTietHopDongDAO;
 	private HopDongService hopDongService;
 	private List<HopDong> hopDongs;
 	private List<ChiTietHopDong> chiTietHopDongs;
@@ -758,7 +755,6 @@ public class HopDongForm extends JPanel {
 
 	private void init() {
 		this.hopDongService = new HopDongServiceImpl();
-		this.chiTietHopDongDAO = new ChiTietHopDongDAOImpl();
 		this.hopDongs = new ArrayList<HopDong>();
 		this.chiTietHopDongs = new ArrayList<ChiTietHopDong>();
 		loadTableHopDong();
@@ -799,7 +795,7 @@ public class HopDongForm extends JPanel {
 
 	private void loadTableSanPham(String maHopDong) {
 		tableModelChiTietHopDong.setRowCount(0);
-		chiTietHopDongs = chiTietHopDongDAO.timTatCaChiTietHopDongBangMaHopDong(maHopDong);
+		chiTietHopDongs = hopDongService.timTatCaChiTietHopDongBangMaHopDong(maHopDong);
 
 		int stt = 1;
 		for (ChiTietHopDong chiTietHopDong : chiTietHopDongs) {

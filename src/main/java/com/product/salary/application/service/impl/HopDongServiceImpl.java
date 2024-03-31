@@ -1,14 +1,13 @@
 package com.product.salary.application.service.impl;
 
 import com.product.salary.application.common.SystemConstants;
-import com.product.salary.application.dao.ChiTietHopDongDAO;
 import com.product.salary.application.dao.HopDongDAO;
 import com.product.salary.application.dao.SanPhamDAO;
-import com.product.salary.application.dao.impl.ChiTietHopDongDAOImpl;
 import com.product.salary.application.dao.impl.HopDongDAOImpl;
 import com.product.salary.application.dao.impl.SanPhamDAOImpl;
 import com.product.salary.application.entity.ChiTietHopDong;
 import com.product.salary.application.entity.HopDong;
+import com.product.salary.application.entity.SanPham;
 import com.product.salary.application.service.HopDongService;
 
 import javax.swing.*;
@@ -20,12 +19,10 @@ import java.util.stream.Collectors;
 
 public class HopDongServiceImpl implements HopDongService {
 	private final HopDongDAO hopDongDAO;
-	private final ChiTietHopDongDAO chiTietHopDongDAO;
 	private final SanPhamDAO sanPhamDAO;
 
 	public HopDongServiceImpl() {
 		this.hopDongDAO = new HopDongDAOImpl();
-		this.chiTietHopDongDAO = new ChiTietHopDongDAOImpl();
 		this.sanPhamDAO = new SanPhamDAOImpl();
 	}
 
@@ -53,11 +50,8 @@ public class HopDongServiceImpl implements HopDongService {
 
 			// Thêm hợp đồng
 			hopDongNew.setTrangThai(false);
-			hopDongNew.setChiTietHopDongs(new HashSet<>(chiTietHopDongs));
-			HopDong hopDong = this.hopDongDAO.themHopDong(hopDongNew);
-			hopDong.setChiTietHopDongs(new HashSet<>(chiTietHopDongs));
-			hopDongDAO.capNhatHopDong(hopDong);
-			return hopDong;
+			hopDongNew.setChiTietHopDongs(chiTietHopDongs);
+            return this.hopDongDAO.themHopDong(hopDongNew);
 		} catch (Exception e) {
 			JOptionPane.showMessageDialog(null, "Hệ thống đang có lỗi.");
 			e.printStackTrace();
@@ -80,24 +74,24 @@ public class HopDongServiceImpl implements HopDongService {
 						SystemConstants.BUNDLE.getString("hopDong.thongBao.hopDongDaThanhLy"));
 				return false;
 			}
-			// Kiểm tra số lượng tồn của sản phẩm
-//			List<ChiTietHopDong> chiTietHopDongs = this.chiTietHopDongDAO
-//					.timTatCaChiTietHopDongBangMaHopDong(maHopDong);
-//			for (ChiTietHopDong chiTietHopDong : chiTietHopDongs) {
-//				if (!this.sanPhamDAO.kiemTraTonKho(chiTietHopDong.getSanPham().getMaSanPham(),
-//						chiTietHopDong.getSoLuong())) {
-//					String message = "";
-//					if (SystemConstants.LANGUAGE == 0) {
-//						message = String.format("Số lượng sản phẩm %s không đủ.",
-//								chiTietHopDong.getSanPham().getTenSanPham());
-//					} else {
-//						message = String.format("The number of %s products is not enough.",
-//								chiTietHopDong.getSanPham().getTenSanPham());
-//					}
-//					JOptionPane.showMessageDialog(null, message);
-//					return false;
-//				}
-//			}
+			//  Kiểm tra số lượng tồn của sản phẩm
+			List<ChiTietHopDong> chiTietHopDongs = hopDong.getChiTietHopDongs();
+
+			for (ChiTietHopDong chiTietHopDong : chiTietHopDongs) {
+				if (!this.sanPhamDAO.kiemTraTonKho(chiTietHopDong.getSanPham().getMaSanPham(),
+						chiTietHopDong.getSoLuong())) {
+					String message = "";
+					if (SystemConstants.LANGUAGE == 0) {
+						message = String.format("Số lượng sản phẩm %s không đủ.",
+								chiTietHopDong.getSanPham().getTenSanPham());
+					} else {
+						message = String.format("The number of %s products is not enough.",
+								chiTietHopDong.getSanPham().getTenSanPham());
+					}
+					JOptionPane.showMessageDialog(null, message);
+					return false;
+				}
+			}
 			// Thực hiện thanh lý
 			boolean status = this.hopDongDAO.thanhLyHopDong(maHopDong);
 			if (!status) {
@@ -149,5 +143,17 @@ public class HopDongServiceImpl implements HopDongService {
 			e.printStackTrace();
 		}
 		return soLuong;
+	}
+
+	@Override
+	public List<ChiTietHopDong> timTatCaChiTietHopDongBangMaHopDong(String maHopDong) {
+		List<ChiTietHopDong> chiTietHopDongs = new ArrayList<>();
+		try {
+			HopDong hopDong = hopDongDAO.timHopDongBangMaHopDong(maHopDong);
+			chiTietHopDongs =  hopDong.getChiTietHopDongs();
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		return chiTietHopDongs;
 	}
 }
