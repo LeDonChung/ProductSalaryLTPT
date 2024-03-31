@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ChucVuServiceImpl implements ChucVuService {
-	private ChucVuDAO chucVuDao;
+	private final ChucVuDAO chucVuDao;
 
 	public ChucVuServiceImpl() {
 		this.chucVuDao = new ChucVuDAOImpl();
@@ -36,12 +36,12 @@ public class ChucVuServiceImpl implements ChucVuService {
 		try {
 			ChucVu isExists = chucVuDao.timKiemBangMaChucVu(chucVu.getMaChucVu());
 			if (isExists == null) {
-				JOptionPane.showMessageDialog(null, String.format("<html><p>%s</p></html>",
-						SystemConstants.BUNDLE.getString("chucVu.thongBaoKhongTonTai")));
+				JOptionPane.showMessageDialog(null,
+						SystemConstants.BUNDLE.getString("chucVu.thongBaoKhongTonTai"));
 				return null;
 			}
-
-			return chucVuDao.capNhatChucVu(chucVu);
+			isExists.setTenChucVu(chucVu.getTenChucVu());
+			return chucVuDao.capNhatChucVu(isExists);
 
 		} catch (Exception e) {
 			JOptionPane.showMessageDialog(null, "Hệ thống đang có lỗi.");
@@ -53,10 +53,11 @@ public class ChucVuServiceImpl implements ChucVuService {
 	@Override
 	public ChucVu themChucVu(ChucVu chucVu) {
 		try {
+			chucVu.setMaChucVu(generateMaChucVu());
 			ChucVu isExists = chucVuDao.timKiemBangMaChucVu(chucVu.getMaChucVu());
 			if (isExists != null) {
-				JOptionPane.showMessageDialog(null, String.format("<html><p>%s</p></html>",
-						SystemConstants.BUNDLE.getString("chucVu.thongBaoDaTonTai")));
+				JOptionPane.showMessageDialog(null,
+						SystemConstants.BUNDLE.getString("chucVu.thongBaoDaTonTai"));
 				return null;
 			}
 			return chucVuDao.themChucVu(chucVu);

@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PhongBanServiceImpl implements PhongBanService {
-    PhongBanDAO phongBanDAO;
+    private final PhongBanDAO phongBanDAO;
 
     public PhongBanServiceImpl() {
         this.phongBanDAO = new PhongBanDAOImpl();
