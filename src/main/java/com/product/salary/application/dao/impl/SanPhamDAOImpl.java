@@ -89,8 +89,10 @@ public class SanPhamDAOImpl extends AbstractDAO implements SanPhamDAO, Serializa
 		try(var em = getEntityManager()) {
 			em.getTransaction().begin();
 			em.persist(sanPham);
-			sanPham = timKiemBangMaSanPham(sanPham.getMaSanPham());
 			em.getTransaction().commit();
+
+			sanPham = timKiemBangMaSanPham(sanPham.getMaSanPham());
+
 			return sanPham;
 		}
 	}
@@ -98,7 +100,8 @@ public class SanPhamDAOImpl extends AbstractDAO implements SanPhamDAO, Serializa
 	@Override
 	public SanPham timKiemBangMaSanPham(String maSanPhamSeach) {
 		try(var em = getEntityManager()) {
-			return em.find(SanPham.class, maSanPhamSeach);
+			SanPham sanPham = em.find(SanPham.class, maSanPhamSeach);
+			return sanPham;
 		}
 	}
 
@@ -114,7 +117,7 @@ public class SanPhamDAOImpl extends AbstractDAO implements SanPhamDAO, Serializa
 	@Override
 	public List<SanPham> timTatCaSanPhamDangSanXuat() {
 		try(var em = getEntityManager()) {
-			String query = "SELECT sp FROM SanPham sp WHERE sp.trangThai = 1";
+			String query = "SELECT sp FROM SanPham sp WHERE sp.trangThai = true";
 			return em.createQuery(query, SanPham.class).getResultList();
 		}
 	}

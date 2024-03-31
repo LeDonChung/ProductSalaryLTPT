@@ -5,6 +5,7 @@ import com.product.salary.application.entity.HopDong;
 import com.product.salary.application.entity.SanPham;
 import com.product.salary.application.service.HopDongService;
 import com.product.salary.application.service.impl.HopDongServiceImpl;
+import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -19,6 +20,7 @@ public class HopDongServiceTest {
         hopDongService = new HopDongServiceImpl();
     }
     @Test
+    @Transactional
     public void testTimTatCaHopDong() {
         List<HopDong> hopDongs = hopDongService.timTatCaHopDong();
         hopDongs.forEach(System.out::println);
