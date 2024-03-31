@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
@@ -46,7 +47,7 @@ public class SanPham implements Serializable {
 	private Boolean trangThai;
 
 	@OneToMany(mappedBy = "sanPham", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-	private Set<CongDoanSanPham> congDoanSanPhams;
+	private List<CongDoanSanPham> congDoanSanPhams;
 
 	public SanPham(String maSanPham, String tenSanPham, String donViTinh, int soLuongTon, String chatLieu,
 			Double donGia, byte[] hinhAnh) throws Exception {
