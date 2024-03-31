@@ -89,7 +89,7 @@ public class CongNhanServiceImpl implements CongNhanService {
 			}
 
 		} catch (Exception e) {
-			JOptionPane.showMessageDialog(null, SystemConstants.BUNDLE.getString("congNhan.loiHeThong"));
+			JOptionPane.showMessageDialog(null, "Hệ thống đang có lỗi.");
 			e.printStackTrace();
 			return false;
 		}

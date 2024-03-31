@@ -352,40 +352,16 @@ public class ToNhomDAOImpl extends AbstractDAO implements ToNhomDAO {
 
 	@Override
 	public boolean capNhatSoLuongCongNhanBangMaToNhom(String maToNhom, int soLuong) {
-		Connection connect = getConnection();
-		PreparedStatement state = null;
-		int status = 0;
-		if (connect != null) {
-			try {
-				StringBuilder query = new StringBuilder("UPDATE ToNhom SET SoLuongCongNhan = " + soLuong);
-				query.append(" WHERE MaToNhom = ?");
-				state = connect.prepareStatement(query.toString());
-				state.setString(1, maToNhom);
-
-				status = state.executeUpdate();
-
-				if (status > 0)
-					return true;
-			} catch (SQLException e) {
-				e.printStackTrace();
-			} catch (Exception e) {
-				e.printStackTrace();
-			} finally {
-				if (connect != null) {
-					try {
-						connect.close();
-					} catch (SQLException e) {
-						e.printStackTrace();
-					}
-				}
-				if (state != null) {
-					try {
-						state.close();
-					} catch (SQLException e) {
-						e.printStackTrace();
-					}
-				}
+		try(var em = getEntityManager()) {
+			ToNhom toNhom = em.find(ToNhom.class, maToNhom);
+			if(toNhom != null) {
+				em.getTransaction().begin();
+				toNhom.setSoLuongCongNhan(soLuong);
+				em.merge(toNhom);
+				em.getTransaction().commit();
+				return true;
 			}
+
 		}
 		return false;
 	}

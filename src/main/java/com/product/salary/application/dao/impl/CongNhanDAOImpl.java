@@ -1,9 +1,15 @@
 package com.product.salary.application.dao.impl;
 
 import com.product.salary.application.entity.CongNhan;
+import com.product.salary.application.entity.SanPham;
 import com.product.salary.application.entity.TayNghe;
 import com.product.salary.application.entity.ToNhom;
 import com.product.salary.application.dao.CongNhanDAO;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.Serializable;
@@ -16,230 +22,97 @@ public class CongNhanDAOImpl extends AbstractDAO implements CongNhanDAO, Seriali
 
 	@Override
 	public List<CongNhan> timKiemTatCaCongNhan() {
-		Connection conn = getConnection();
-		Statement statement = null;
-		ResultSet rs = null;
-		List<CongNhan> dsCongNhan = new ArrayList<>();
-		if (conn != null) {
-			try {
-				String query = "SELECT * FROM CongNhan JOIN ToNhom ON CongNhan.MaToNhom = ToNhom.MaToNhom JOIN TayNghe ON CongNhan.MaTayNghe = TayNghe.MaTayNghe";
-				statement = conn.createStatement();
-				rs = statement.executeQuery(query);
-
-				while (rs.next()) {
-					String maCongNhan = rs.getString("MaCongNhan");
-					String hoTen = rs.getString("HoTen");
-					String email = rs.getString("Email");
-					String diaChi = rs.getString("DiaChi");
-					int gioiTinh = rs.getInt("GioiTinh");
-					String cccd = rs.getString("Cccd");
-					String soDienThoai = rs.getString("SoDienThoai");
-					ToNhom toNhom = new ToNhom(rs.getString("MaToNhom"), rs.getString("TenToNhom"),
-							rs.getInt("SoLuongCongNhan"), rs.getBoolean("TrangThai"));
-					LocalDate ngayVaoLam = rs.getDate("NgayVaoLam").toLocalDate();
-					Double troCap = rs.getDouble("TroCap");
-					boolean trangThai = rs.getBoolean("TrangThai");
-					LocalDate ngaySinh = rs.getDate("NgaySinh").toLocalDate();
-					byte[] hinhAnh = rs.getBytes("HinhAnh");
-					TayNghe tayNghe = new TayNghe(rs.getString("MaTayNghe"), rs.getString("TenTayNghe"));
-					CongNhan congNhan = new CongNhan(maCongNhan, hoTen, email, diaChi, gioiTinh, cccd, soDienThoai,
-							ngaySinh, toNhom, ngayVaoLam, troCap, hinhAnh, trangThai, tayNghe);
-					dsCongNhan.add(congNhan);
-				}
-			} catch (SQLException e) {
-				e.printStackTrace();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-
+		try(var em = getEntityManager()) {
+			return em.createQuery("SELECT c FROM CongNhan c", CongNhan.class).getResultList();
 		}
-		return dsCongNhan;
 	}
 
 	@Override
 	public CongNhan capNhatCongNhan(CongNhan congNhan) {
-		Connection connect = getConnection();
-		PreparedStatement statement = null;
-		ResultSet rs = null;
-		int status = 0;
-		if (connect != null) {
-			try {
-				StringBuilder query = new StringBuilder(
-						"UPDATE [CongNhan] SET [HoTen] = ?, [Email] = ?, [DiaChi] = ?, [GioiTinh] = ?, [Cccd] = ?, [SoDienThoai] = ?, [MaToNhom] = ?, [NgayVaoLam] = ?, [TroCap] = ?, [TrangThai] = ?, [NgaySinh] = ?, [HinhAnh] = ?, [MaTayNghe] = ?");
-				query.append(" WHERE [MaCongNhan] = ?");
-				statement = connect.prepareStatement(query.toString());
-
-				statement.setString(1, congNhan.getHoTen());
-				statement.setString(2, congNhan.getEmail());
-				statement.setString(3, congNhan.getDiaChi());
-				statement.setInt(4, congNhan.getGioiTinh());
-				statement.setString(5, congNhan.getCccd());
-				statement.setString(6, congNhan.getSoDienThoai());
-				statement.setString(7, congNhan.getToNhom().getMaToNhom());
-				statement.setDate(8, Date.valueOf(congNhan.getNgayVaoLam()));
-				statement.setDouble(9, congNhan.getTroCap());
-				statement.setBoolean(10, congNhan.isTrangThai());
-				statement.setDate(11, Date.valueOf(congNhan.getNgaySinh()));
-				statement.setBytes(12, congNhan.getHinhAnh());
-				statement.setString(13, congNhan.getTayNghe().getMaTayNghe());
-				statement.setString(14, congNhan.getMaCongNhan());
-				System.out.println(query);
-				status = statement.executeUpdate();
-				if (status > 0)
-					return congNhan;
-
-			} catch (SQLException e) {
-				e.printStackTrace();
-			} catch (Exception e) {
-				e.printStackTrace();
-			} finally {
-				if (connect != null) {
-					try {
-						connect.close();
-					} catch (SQLException e) {
-						e.printStackTrace();
-					}
-				}
-				if (statement != null) {
-					try {
-						statement.close();
-					} catch (SQLException e) {
-						e.printStackTrace();
-					}
-				}
-				if (rs != null) {
-					try {
-						rs.close();
-					} catch (SQLException e) {
-						e.printStackTrace();
-					}
-				}
-			}
+		try(var em = getEntityManager()) {
+			em.getTransaction().begin();
+			em.merge(congNhan);
+			em.getTransaction().commit();
+			return congNhan;
 		}
-		return null;
 	}
 
 	@Override
 	public boolean capNhatTrangThaiCongNhan(String maCongNhan, boolean trangThai) {
-		Connection conn = getConnection();
-		PreparedStatement statement = null;
-		ResultSet rs = null;
-		if (conn != null) {
-			try {
-
-				StringBuilder query = new StringBuilder("UPDATE [dbo].[CongNhan] SET [TrangThai] = ?");
-				query.append(" WHERE [MaCongNhan] = ?");
-
-				System.out.println(query);
-				statement = conn.prepareStatement(query.toString());
-
-				statement.setBoolean(1, trangThai);
-				statement.setString(2, maCongNhan);
-
-				int status = statement.executeUpdate();
-
-				// Nếu số dòng lớn hơn 0 thì cập nhật trạng thái thành công
-				if (status > 0) {
-					return true;
-				}
-
-			} catch (SQLException e) {
-
-				e.printStackTrace();
-			} finally {
-				if (conn != null) {
-					try {
-						conn.close();
-					} catch (SQLException e) {
-						e.printStackTrace();
-					}
-				}
-				if (statement != null) {
-					try {
-						statement.close();
-					} catch (SQLException e) {
-						e.printStackTrace();
-					}
-				}
-				if (rs != null) {
-					try {
-						rs.close();
-					} catch (SQLException e) {
-						e.printStackTrace();
-					}
-				}
+		try(var em = getEntityManager()) {
+			CongNhan congNhan = em.find(CongNhan.class, maCongNhan);
+			if(congNhan != null) {
+				em.getTransaction().begin();
+				congNhan.setTrangThai(trangThai);
+				em.getTransaction().commit();
+				return true;
 			}
+			return false;
 		}
-		return false;
 	}
 
 	@Override
 	public List<CongNhan> timKiemCongNhan(CongNhan congNhan) {
-		Connection conn = getConnection();
-		Statement statement = null;
-		ResultSet rs = null;
-		List<CongNhan> dsCongNhan = new ArrayList<>();
-		if (conn != null) {
-			try {
-				String conditions = getConditions(congNhan);
+		try(var em = getEntityManager()) {
 
-				String query = "SELECT * FROM CongNhan JOIN ToNhom ON CongNhan.MaToNhom = ToNhom.MaToNhom JOIN TayNghe ON CongNhan.MaTayNghe = TayNghe.MaTayNghe"
-						+ conditions;
-				System.out.println(query);
-				statement = conn.createStatement();
-				rs = statement.executeQuery(query);
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<CongNhan> cq = cb.createQuery(CongNhan.class);
+			Root<CongNhan> congNhanRoot = cq.from(CongNhan.class);
 
-				while (rs.next()) {
+			List<Predicate> predicates = new ArrayList<>();
+			if (!StringUtils.isBlank(congNhan.getMaCongNhan())) {
+				predicates.add(cb.like(congNhanRoot.get("maCongNhan"), "%" + congNhan.getMaCongNhan() + "%"));
+			}
+			if (!StringUtils.isBlank(congNhan.getEmail())) {
+				predicates.add(cb.like(congNhanRoot.get("email"), "%" + congNhan.getEmail() + "%"));
+			}
+			if (!StringUtils.isBlank(congNhan.getCccd())) {
+				predicates.add(cb.like(congNhanRoot.get("cccd"), "%" + congNhan.getCccd() + "%"));
+			}
+			if (!StringUtils.isBlank(congNhan.getDiaChi())) {
+				predicates.add(cb.like(congNhanRoot.get("diaChi"), "%" + congNhan.getDiaChi() + "%"));
+			}
+			if (!StringUtils.isBlank(congNhan.getHoTen())) {
+				predicates.add(cb.like(congNhanRoot.get("hoTen"), "%" + congNhan.getHoTen() + "%"));
+			}
+			if (!StringUtils.isBlank(congNhan.getSoDienThoai())) {
+				predicates.add(cb.like(congNhanRoot.get("soDienThoai"), "%" + congNhan.getSoDienThoai() + "%"));
+			}
+			if (congNhan.getGioiTinh() != 2) {
+				predicates.add(cb.equal(congNhanRoot.get("gioiTinh"), congNhan.getGioiTinh()));
+			}
 
-					String maCongNhan = rs.getString("MaCongNhan");
-					String hoTen = rs.getString("HoTen");
-					String email = rs.getString("Email");
-					String diaChi = rs.getString("DiaChi");
-					int gioiTinh = rs.getInt("GioiTinh");
-					String cccd = rs.getString("Cccd");
-					String soDienThoai = rs.getString("SoDienThoai");
-					ToNhom toNhom = new ToNhom(rs.getString("MaToNhom"), rs.getString("TenToNhom"),
-							rs.getInt("SoLuongCongNhan"), rs.getBoolean("TrangThai"));
-					LocalDate ngayVaoLam = rs.getDate("NgayVaoLam").toLocalDate();
-					Double troCap = rs.getDouble("TroCap");
-					boolean trangThai = rs.getBoolean("TrangThai");
-					LocalDate ngaySinh = rs.getDate("NgaySinh").toLocalDate();
-					byte[] hinhAnh = rs.getBytes("HinhAnh");
-					TayNghe tayNghe = new TayNghe(rs.getString("MaTayNghe"), rs.getString("TenTayNghe"));
-					CongNhan cn = new CongNhan(maCongNhan, hoTen, email, diaChi, gioiTinh, cccd, soDienThoai, ngaySinh,
-							toNhom, ngayVaoLam, troCap, hinhAnh, trangThai, tayNghe);
-					dsCongNhan.add(cn);
-					System.out.println(dsCongNhan);
-				}
-			} catch (SQLException e) {
-				e.printStackTrace();
-			} catch (Exception e) {
-				e.printStackTrace();
-			} finally {
-				if (conn != null) {
-					try {
-						conn.close();
-					} catch (SQLException e) {
-						e.printStackTrace();
-					}
-				}
-				if (statement != null) {
-					try {
-						statement.close();
-					} catch (SQLException e) {
-						e.printStackTrace();
-					}
-				}
-				if (rs != null) {
-					try {
-						rs.close();
-					} catch (SQLException e) {
-						e.printStackTrace();
-					}
+			if (congNhan.getNgaySinh() != null) {
+				predicates.add(cb.equal(congNhanRoot.get("ngaySinh"), congNhan.getNgaySinh()));
+			}
+			if (congNhan.getNgayVaoLam() != null) {
+				predicates.add(cb.equal(congNhanRoot.get("ngayVaoLam"), congNhan.getNgayVaoLam()));
+			}
+			if (congNhan.getTroCap() != null && congNhan.getTroCap() >= 0 ) {
+				predicates.add(cb.greaterThanOrEqualTo(congNhanRoot.get("troCap"), congNhan.getTroCap()));
+			}
+			if (congNhan.getHinhAnh() != null) {
+				predicates.add(cb.equal(congNhanRoot.get("hinhAnh"), congNhan.getHinhAnh()));
+			}
+			if (congNhan.isTrangThai() != null) {
+				predicates.add(cb.equal(congNhanRoot.get("trangThai"), congNhan.isTrangThai()));
+			}
+			if (congNhan.getToNhom() != null) {
+				if (!congNhan.getToNhom().getMaToNhom().equals("XXXX")) {
+					predicates.add(cb.equal(congNhanRoot.get("toNhom"), congNhan.getToNhom()));
 				}
 			}
+			if (congNhan.getTayNghe() != null) {
+				if (!congNhan.getTayNghe().getMaTayNghe().equals("XXXX")) {
+					predicates.add(cb.equal(congNhanRoot.get("tayNghe"), congNhan.getTayNghe()));
+				}
+			}
+
+			cq.where(cb.and(predicates.toArray(new Predicate[0])));
+
+			TypedQuery<CongNhan> query = em.createQuery(cq);
+			return query.getResultList();
 		}
-		return dsCongNhan;
 	}
 
 	private String getConditions(CongNhan congNhan) {
@@ -335,304 +208,52 @@ public class CongNhanDAOImpl extends AbstractDAO implements CongNhanDAO, Seriali
 
 	@Override
 	public CongNhan themCongNhan(CongNhan congNhan) {
-		Connection connect = getConnection();
-		PreparedStatement state = null;
-		int status = 0;
-		if (connect != null) {
-			try {
-				StringBuilder query = new StringBuilder(
-						"INSERT INTO CongNhan (MaCongNhan, HoTen, Email, DiaChi, GioiTinh, Cccd, SoDienThoai, MaToNhom, NgayVaoLam, TroCap, NgaySinh, HinhAnh, MaTayNghe)");
-				query.append(" VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-
-				state = connect.prepareStatement(query.toString());
-
-				state.setString(1, congNhan.getMaCongNhan());
-				state.setString(2, congNhan.getHoTen());
-				state.setString(3, congNhan.getEmail());
-				state.setString(4, congNhan.getDiaChi());
-				state.setInt(5, congNhan.getGioiTinh());
-				state.setString(6, congNhan.getCccd());
-				state.setString(7, congNhan.getSoDienThoai());
-				state.setString(8, congNhan.getToNhom().getMaToNhom());
-				state.setDate(9, Date.valueOf(congNhan.getNgayVaoLam()));
-				state.setDouble(10, congNhan.getTroCap());
-				state.setDate(11, Date.valueOf(congNhan.getNgaySinh()));
-				state.setBytes(12, congNhan.getHinhAnh());
-				state.setString(13, congNhan.getTayNghe().getMaTayNghe());
-
-				status = state.executeUpdate();
-				if (status > 0)
-					return congNhan;
-
-			} catch (SQLException e) {
-				e.printStackTrace();
-			} catch (Exception e) {
-				e.printStackTrace();
-			} finally {
-				if (connect != null) {
-					try {
-						connect.close();
-					} catch (SQLException e) {
-						e.printStackTrace();
-					}
-				}
-				if (state != null) {
-					try {
-						state.close();
-					} catch (SQLException e) {
-						e.printStackTrace();
-					}
-				}
-			}
+		try(var em = getEntityManager()) {
+			em.getTransaction().begin();
+			em.persist(congNhan);
+			em.getTransaction().commit();
+			return congNhan;
 		}
-		return null;
 	}
 
 	@Override
 	public CongNhan timKiemBangMaCongNhan(String maCongNhan) {
-		Connection conn = getConnection();
-		Statement statement = null;
-		ResultSet rs = null;
-		CongNhan congNhan = null;
-		if (conn != null) {
-			try {
-				String query = "SELECT * FROM CongNhan JOIN ToNhom ON CongNhan.MaToNhom = ToNhom.MaToNhom JOIN TayNghe ON CongNhan.MaTayNghe = TayNghe.MaTayNghe WHERE CongNhan.MaCongNhan = "
-						+ maCongNhan;
-
-				statement = conn.createStatement();
-				rs = statement.executeQuery(query);
-
-				while (rs.next()) {
-					String maCN = rs.getString("MaCongNhan");
-					String hoTen = rs.getString("HoTen");
-					String email = rs.getString("Email");
-					String diaChi = rs.getString("DiaChi");
-					int gioiTinh = rs.getInt("GioiTinh");
-					String cccd = rs.getString("Cccd");
-					String soDienThoai = rs.getString("SoDienThoai");
-					ToNhom toNhom = new ToNhom(rs.getString("MaToNhom"), rs.getString("TenToNhom"),
-							rs.getInt("SoLuongCongNhan"), rs.getBoolean("TrangThai"));
-					LocalDate ngayVaoLam = rs.getDate("NgayVaoLam").toLocalDate();
-					Double troCap = rs.getDouble("TroCap");
-					boolean trangThai = rs.getBoolean("TrangThai");
-					LocalDate ngaySinh = rs.getDate("NgaySinh").toLocalDate();
-					byte[] hinhAnh = rs.getBytes("HinhAnh");
-					TayNghe tayNghe = new TayNghe(rs.getString("MaTayNghe"), rs.getString("TenTayNghe"));
-					congNhan = new CongNhan(maCN, hoTen, email, diaChi, gioiTinh, cccd, soDienThoai, ngaySinh, toNhom,
-							ngayVaoLam, troCap, hinhAnh, trangThai, tayNghe);
-
-				}
-			} catch (SQLException e) {
-				e.printStackTrace();
-			} catch (Exception e) {
-				e.printStackTrace();
-			} finally {
-				if (conn != null) {
-					try {
-						conn.close();
-					} catch (SQLException e) {
-						e.printStackTrace();
-					}
-				}
-				if (statement != null) {
-					try {
-						statement.close();
-					} catch (SQLException e) {
-						e.printStackTrace();
-					}
-				}
-				if (rs != null) {
-					try {
-						rs.close();
-					} catch (SQLException e) {
-						e.printStackTrace();
-					}
-				}
-			}
+		try(var em = getEntityManager()) {
+			return em.find(CongNhan.class, maCongNhan);
 		}
-		return congNhan;
-	}
-
-	@Override
-	public String layMaCongNhan() {
-		return null;
 	}
 
 	@Override
 	public CongNhan timKiemBangCCCD(String cccdS) {
-		Connection conn = getConnection();
-		Statement statement = null;
-		ResultSet rs = null;
-		CongNhan congNhan = null;
-		if (conn != null) {
-			try {
-				String query = String.format("SELECT * FROM CongNhan JOIN ToNhom ON CongNhan.MaToNhom = ToNhom.MaToNhom JOIN TayNghe ON CongNhan.MaTayNghe = TayNghe.MaTayNghe WHERE Cccd = '%s'", cccdS);
-				statement = conn.createStatement();
-				rs = statement.executeQuery(query);
-
-				while (rs.next()) {
-					String maCN = rs.getString("MaCongNhan");
-					String hoTen = rs.getString("HoTen");
-					String email = rs.getString("Email");
-					String diaChi = rs.getString("DiaChi");
-					int gioiTinh = rs.getInt("GioiTinh");
-					String cccd = rs.getString("Cccd");
-					String soDienThoai = rs.getString("SoDienThoai");
-					ToNhom toNhom = new ToNhom(rs.getString("MaToNhom"), rs.getString("TenToNhom"),
-							rs.getInt("SoLuongCongNhan"), rs.getBoolean("TrangThai"));
-					LocalDate ngayVaoLam = rs.getDate("NgayVaoLam").toLocalDate();
-					Double troCap = rs.getDouble("TroCap");
-					boolean trangThai = rs.getBoolean("TrangThai");
-					LocalDate ngaySinh = rs.getDate("NgaySinh").toLocalDate();
-					byte[] hinhAnh = rs.getBytes("HinhAnh");
-					TayNghe tayNghe = new TayNghe(rs.getString("MaTayNghe"), rs.getString("TenTayNghe"));
-					congNhan = new CongNhan(maCN, hoTen, email, diaChi, gioiTinh, cccd, soDienThoai, ngaySinh, toNhom,
-							ngayVaoLam, troCap, hinhAnh, trangThai, tayNghe);
-
-				}
-			} catch (SQLException e) {
-				e.printStackTrace();
-			} catch (Exception e) {
-				e.printStackTrace();
-			} finally {
-				if (conn != null) {
-					try {
-						conn.close();
-					} catch (SQLException e) {
-						e.printStackTrace();
-					}
-				}
-				if (statement != null) {
-					try {
-						statement.close();
-					} catch (SQLException e) {
-						e.printStackTrace();
-					}
-				}
-				if (rs != null) {
-					try {
-						rs.close();
-					} catch (SQLException e) {
-						e.printStackTrace();
-					}
-				}
-			}
+		try(var em = getEntityManager()) {
+			String query = "SELECT c FROM CongNhan c WHERE c.cccd = :cccd";
+			return em.createQuery(query, CongNhan.class).setParameter("cccd", cccdS).getSingleResult();
 		}
-		return congNhan;
 	}
 
 	@Override
 	public List<CongNhan> timKiemCongNhanBangMaToNhom(String maToNhom) {
-		Connection conn = getConnection();
-		Statement statement = null;
-		ResultSet rs = null;
-		List<CongNhan> dsCongNhan = new ArrayList<>();
-		if (conn != null) {
-			try {
-				String query = String.format(
-						"SELECT * FROM CongNhan JOIN ToNhom ON CongNhan.MaToNhom = ToNhom.MaToNhom JOIN TayNghe ON CongNhan.MaTayNghe = TayNghe.MaTayNghe WHERE CongNhan.TrangThai = 1 AND CongNhan.MaToNhom = '%s'",
-						maToNhom);
-				statement = conn.createStatement();
-				rs = statement.executeQuery(query);
-
-				while (rs.next()) {
-					String maCongNhan = rs.getString("MaCongNhan");
-					String hoTen = rs.getString("HoTen");
-					String email = rs.getString("Email");
-					String diaChi = rs.getString("DiaChi");
-					int gioiTinh = rs.getInt("GioiTinh");
-					String cccd = rs.getString("Cccd");
-					String soDienThoai = rs.getString("SoDienThoai");
-					ToNhom toNhom = new ToNhom(rs.getString("MaToNhom"), rs.getString("TenToNhom"),
-							rs.getInt("SoLuongCongNhan"), rs.getBoolean("TrangThai"));
-					LocalDate ngayVaoLam = rs.getDate("NgayVaoLam").toLocalDate();
-					Double troCap = rs.getDouble("TroCap");
-					boolean trangThai = rs.getBoolean("TrangThai");
-					LocalDate ngaySinh = rs.getDate("NgaySinh").toLocalDate();
-					byte[] hinhAnh = rs.getBytes("HinhAnh");
-					TayNghe tayNghe = new TayNghe(rs.getString("MaTayNghe"), rs.getString("TenTayNghe"));
-					CongNhan congNhan = new CongNhan(maCongNhan, hoTen, email, diaChi, gioiTinh, cccd, soDienThoai,
-							ngaySinh, toNhom, ngayVaoLam, troCap, hinhAnh, trangThai, tayNghe);
-					dsCongNhan.add(congNhan);
-				}
-			} catch (SQLException e) {
-				e.printStackTrace();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-
+		try(var em = getEntityManager()) {
+			String query = "SELECT c FROM CongNhan c WHERE c.toNhom.maToNhom = :maToNhom";
+			return em.createQuery(query, CongNhan.class).setParameter("maToNhom", maToNhom).getResultList();
 		}
-		return dsCongNhan;
 	}
 
 	@Override
 	public String layMaCongNhanCuoiCungCuaNam(int nam) {
-		Connection connect = getConnection();
-		Statement state = null;
-		ResultSet rs = null;
-		String maCongNhan = null;
-		if (connect != null) {
-			try {
-				String query = "SELECT TOP 1 MaCongNhan FROM CongNhan WHERE YEAR(NgayVaoLam) = " + nam
-						+ " ORDER BY MaCongNhan DESC";
-				state = connect.createStatement();
-				rs = state.executeQuery(query);
-				while (rs.next()) {
-					maCongNhan = rs.getString("MaCongNhan");
-				}
-			} catch (SQLException e) {
-				e.printStackTrace();
-			} catch (Exception e) {
-				e.printStackTrace();
-			} finally {
-				if (connect != null) {
-					try {
-						connect.close();
-					} catch (SQLException e) {
-						e.printStackTrace();
-					}
-				}
-				if (state != null) {
-					try {
-						state.close();
-					} catch (SQLException e) {
-						e.printStackTrace();
-					}
-				}
-				if (rs != null) {
-					try {
-						rs.close();
-					} catch (SQLException e) {
-						e.printStackTrace();
-					}
-				}
-			}
+		try(var em = getEntityManager()) {
+			String query = "SELECT c FROM CongNhan c WHERE c.maCongNhan LIKE :maCongNhan ORDER BY c.maCongNhan DESC";
+			List<CongNhan> congNhans = em.createQuery(query, CongNhan.class).setParameter("maCongNhan", "20" + nam + "%")
+					.setMaxResults(1).getResultList();
+			return congNhans.isEmpty() ? null : congNhans.get(0).getMaCongNhan();
 		}
-		return maCongNhan;
 	}
 
 	@Override
 	public int tongSoLuongCongNhan() {
-		Connection conn = getConnection();
-		Statement statement = null;
-		ResultSet rs = null;
-		int soLuong = 0;
-		if (conn != null) {
-			try {
-				String query = "SELECT COUNT(*) FROM CongNhan";
-				statement = conn.createStatement();
-				rs = statement.executeQuery(query);
-
-				while (rs.next()) {
-					soLuong = rs.getInt(1);
-				}
-			} catch (SQLException e) {
-				e.printStackTrace();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-
+		try(var em = getEntityManager()) {
+			String query = "SELECT COUNT(c) FROM CongNhan c";
+			return em.createQuery(query, Long.class).getSingleResult().intValue();
 		}
-		return soLuong;
 	}
 }

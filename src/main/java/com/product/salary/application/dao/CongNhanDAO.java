@@ -62,12 +62,6 @@ public interface CongNhanDAO {
 	 */
 	CongNhan timKiemBangMaCongNhan(String maCongNhan);
 
-	/**
-	 * Tìm mã công nhân cuối cùng
-	 * 
-	 * @return mã công nhân cuối cùng
-	 */
-	String layMaCongNhan();
 
 	/**
 	 * Tìm kiếm bằng mã công nhân
