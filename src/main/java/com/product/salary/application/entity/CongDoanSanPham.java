@@ -31,11 +31,11 @@ public class CongDoanSanPham implements Serializable {
 	@Column(name = "ThoiHan", columnDefinition = "DATETIME NOT NULL")
 	private LocalDate thoiHan;
 
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "MaCongDoanLamTruoc")
 	private CongDoanSanPham congDoanLamTruoc;
 
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "MaSanPham")
 	private SanPham sanPham;
 

@@ -42,6 +42,7 @@ public class SanPhamDAOImpl extends AbstractDAO implements SanPhamDAO, Serializa
 			if(sanPham != null) {
 				em.getTransaction().begin();
 				sanPham.setTrangThai(trangThai);
+				em.merge(sanPham);
 				em.getTransaction().commit();
 				return true;
 			}
@@ -128,7 +129,7 @@ public class SanPhamDAOImpl extends AbstractDAO implements SanPhamDAO, Serializa
 			SanPham sanPham = em.find(SanPham.class, maSanPham);
 			if(sanPham != null) {
 				em.getTransaction().begin();
-				sanPham.setSoCongDoan(sanPham.getSoCongDoan());
+				sanPham.setSoCongDoan(i);
 				em.merge(sanPham);
 				em.getTransaction().commit();
 			}

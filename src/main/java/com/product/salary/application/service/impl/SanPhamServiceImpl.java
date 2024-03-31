@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SanPhamServiceImpl implements SanPhamService {
-	private SanPhamDAO sanPhamDao;
+	private final SanPhamDAO sanPhamDao;
 
 	public SanPhamServiceImpl() {
 		this.sanPhamDao = new SanPhamDAOImpl();

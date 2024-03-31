@@ -14,8 +14,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CongDoanSanPhamServiceImpl implements CongDoanSanPhamService {
-	private CongDoanSanPhamDAO congDoanSanPhamDAO;
-	private SanPhamDAO sanPhamDAO;
+	private final CongDoanSanPhamDAO congDoanSanPhamDAO;
+	private final SanPhamDAO sanPhamDAO;
 
 	public CongDoanSanPhamServiceImpl() {
 		this.congDoanSanPhamDAO = new CongDoanSanPhamDAOImpl();
@@ -120,7 +120,7 @@ public class CongDoanSanPhamServiceImpl implements CongDoanSanPhamService {
 			congDoanSanPham = congDoanSanPhamDAO.themCongDoanSanPham(congDoanSanPham);
 			if (congDoanSanPham != null) {
 				SanPham sanPham = this.sanPhamDAO.timKiemBangMaSanPham(congDoanSanPham.getSanPham().getMaSanPham());
-				this.sanPhamDAO.capNhatSoLuongCongDoan(congDoanSanPham.getSanPham().getMaSanPham(),
+				this.sanPhamDAO.capNhatSoLuongCongDoan(sanPham.getMaSanPham(),
 						sanPham.getSoCongDoan() + 1);
 			}
 			return congDoanSanPham;
@@ -158,9 +158,9 @@ public class CongDoanSanPhamServiceImpl implements CongDoanSanPhamService {
 				String maCongDoan = generateMaCongDoanSanPham(sanPham.getMaSanPham());
 				congDoanSanPham.setMaCongDoan(maCongDoan);
 				congDoanSanPham.setSanPham(sanPham);
-				if(congDoanSanPham.getCongDoanLamTruoc().getMaCongDoan().trim().equals("")) {
-					congDoanSanPham.getCongDoanLamTruoc().setMaCongDoan(null);
-				}
+//				if(congDoanSanPham.getCongDoanLamTruoc().getMaCongDoan().trim().equals("")) {
+//					congDoanSanPham.getCongDoanLamTruoc().setMaCongDoan(null);
+//				}
 				CongDoanSanPham congDoanSanPhamDaThem = themCongDoanSanPham(congDoanSanPham);
 				if (congDoanSanPhamDaThem != null) {
 					congDoanSanPhamThems.add(congDoanSanPhamDaThem);
