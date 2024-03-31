@@ -112,6 +112,7 @@ public class CongNhanServiceImpl implements CongNhanService {
 	@Override
 	public CongNhan themCongNhan(CongNhan congNhan) {
 		try {
+			System.out.println(congNhan);
 			congNhan.setMaCongNhan(generateMaCongNhan(congNhan));
 
 			CongNhan isExists = congNhanDao.timKiemBangMaCongNhan(congNhan.getMaCongNhan());

@@ -1,7 +1,13 @@
 package com.product.salary.application.dao.impl;
 
+import com.product.salary.application.entity.SanPham;
 import com.product.salary.application.entity.ToNhom;
 import com.product.salary.application.dao.ToNhomDAO;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 import org.apache.commons.lang3.StringUtils;
 
 import java.sql.*;
@@ -12,140 +18,44 @@ public class ToNhomDAOImpl extends AbstractDAO implements ToNhomDAO {
 
 	@Override
 	public List<ToNhom> timKiemTatCaToNhom() {
-		Connection connect = getConnection();
-		Statement state = null;
-		ResultSet rs = null;
-		List<ToNhom> dsToNhom = new ArrayList<ToNhom>();
-		if (connect != null) {
-			try {
-				String query = "SELECT * FROM ToNhom";
-				state = connect.createStatement();
-				rs = state.executeQuery(query);
-
-				while (rs.next()) {
-					String maToNhom = rs.getString("MaToNhom");
-					String tenToNhom = rs.getString("TenToNhom");
-					int soLuongCongNhan = rs.getInt("SoLuongCongNhan");
-					boolean trangThai = rs.getBoolean("TrangThai");
-
-					ToNhom toNhom = new ToNhom(maToNhom, tenToNhom, soLuongCongNhan, trangThai);
-					dsToNhom.add(toNhom);
-				}
-			} catch (SQLException e) {
-				e.printStackTrace();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} finally {
-				if (connect != null) {
-					try {
-						connect.close();
-					} catch (SQLException e) {
-						e.printStackTrace();
-					}
-				}
-				if (state != null) {
-					try {
-						state.close();
-					} catch (SQLException e) {
-						e.printStackTrace();
-					}
-				}
-			}
+		try (var em = getEntityManager()) {
+			return em.createQuery("SELECT t FROM ToNhom t", ToNhom.class).getResultList();
 		}
-		return dsToNhom;
 	}
 
 	@Override
 	public List<ToNhom> timKiemTatCaToNhomDangHoatDong() {
-		Connection connect = getConnection();
-		Statement state = null;
-		ResultSet rs = null;
-		List<ToNhom> dsToNhom = new ArrayList<ToNhom>();
-		if (connect != null) {
-			try {
-				String query = "SELECT * FROM ToNhom WHERE TrangThai = 1";
-				state = connect.createStatement();
-				rs = state.executeQuery(query);
-
-				while (rs.next()) {
-					String maToNhom = rs.getString("MaToNhom");
-					String tenToNhom = rs.getString("TenToNhom");
-					int soLuongCongNhan = rs.getInt("SoLuongCongNhan");
-					boolean trangThai = rs.getBoolean("TrangThai");
-
-					ToNhom toNhom = new ToNhom(maToNhom, tenToNhom, soLuongCongNhan, trangThai);
-					dsToNhom.add(toNhom);
-				}
-			} catch (SQLException e) {
-				e.printStackTrace();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} finally {
-				if (connect != null) {
-					try {
-						connect.close();
-					} catch (SQLException e) {
-						e.printStackTrace();
-					}
-				}
-				if (state != null) {
-					try {
-						state.close();
-					} catch (SQLException e) {
-						e.printStackTrace();
-					}
-				}
-			}
+		try (var em = getEntityManager()) {
+			return em.createQuery("SELECT t FROM ToNhom t WHERE t.trangThai = true", ToNhom.class).getResultList();
 		}
-		return dsToNhom;
 	}
 
 	@Override
 	public List<ToNhom> timKiemToNhom(ToNhom toNhom) {
-		Connection connect = getConnection();
-		Statement state = null;
-		ResultSet rs = null;
-		List<ToNhom> dsToNhom = new ArrayList<ToNhom>();
-		if (connect != null) {
-			try {
-				String conditions = getConditions(toNhom);
-				String query = "SELECT * FROM ToNhom" + conditions;
-				state = connect.createStatement();
-				rs = state.executeQuery(query);
-				while (rs.next()) {
-					String maToNhom = rs.getString("MaToNhom");
-					String tenToNhom = rs.getString("TenToNhom");
-					int soLuongCongNhan = rs.getInt("SoLuongCongNhan");
-					boolean trangThai = rs.getBoolean("TrangThai");
+		try(var em = getEntityManager()) {
 
-					ToNhom tNhom = new ToNhom(maToNhom, tenToNhom, soLuongCongNhan, trangThai);
-					dsToNhom.add(tNhom);
-				}
-			} catch (SQLException e) {
-				e.printStackTrace();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} finally {
-				if (connect != null) {
-					try {
-						connect.close();
-					} catch (SQLException e) {
-						e.printStackTrace();
-					}
-				}
-				if (state != null) {
-					try {
-						state.close();
-					} catch (SQLException e) {
-						e.printStackTrace();
-					}
-				}
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<ToNhom> cq = cb.createQuery(ToNhom.class);
+			Root<ToNhom> toNhomS = cq.from(ToNhom.class);
+
+			List<Predicate> predicates = new ArrayList<>();
+			if (!StringUtils.isBlank(toNhom.getMaToNhom())) {
+				predicates.add(cb.like(toNhomS.get("maToNhom"), "%" + toNhom.getMaToNhom() + "%"));
 			}
+			if (!StringUtils.isBlank(toNhom.getTenToNhom())) {
+				predicates.add(cb.like(toNhomS.get("tenToNhom"), "%" + toNhom.getTenToNhom() + "%"));
+			}
+			if (toNhom.isTrangThai() != null) {
+				predicates.add(cb.equal(toNhomS.get("trangThai"), toNhom.isTrangThai()));
+			}
+
+
+
+			cq.where(cb.and(predicates.toArray(new Predicate[0])));
+
+			TypedQuery<ToNhom> query = em.createQuery(cq);
+			return query.getResultList();
 		}
-		return dsToNhom;
 	}
 
 	private String getConditions(ToNhom toNhom) {
@@ -174,133 +84,31 @@ public class ToNhomDAOImpl extends AbstractDAO implements ToNhomDAO {
 
 	@Override
 	public ToNhom timKiemBangMaToNhom(String maToNhom) {
-		Connection connect = getConnection();
-		Statement state = null;
-		ResultSet rs = null;
-		ToNhom toNhom = null;
-		if (connect != null) {
-			try {
-				String query = "SELECT * FROM ToNhom WHERE MaToNhom = " + maToNhom;
-				state = connect.createStatement();
-				rs = state.executeQuery(query);
-				while (rs.next()) {
-					String tenToNhom = rs.getString("TenToNhom");
-					int soLuongCongNhan = rs.getInt("SoLuongCongNhan");
-					boolean trangThai = rs.getBoolean("TrangThai");
-
-					toNhom = new ToNhom(maToNhom, tenToNhom, soLuongCongNhan, trangThai);
-
-				}
-			} catch (SQLException e) {
-				e.printStackTrace();
-			} catch (Exception e) {
-				e.printStackTrace();
-			} finally {
-				if (connect != null) {
-					try {
-						connect.close();
-					} catch (SQLException e) {
-						e.printStackTrace();
-					}
-				}
-				if (state != null) {
-					try {
-						state.close();
-					} catch (SQLException e) {
-						e.printStackTrace();
-					}
-				}
-				if (rs != null) {
-					try {
-						rs.close();
-					} catch (SQLException e) {
-						e.printStackTrace();
-					}
-				}
-			}
+		try (var em = getEntityManager()) {
+			return em.find(ToNhom.class, maToNhom);
 		}
-		return toNhom;
 	}
 
 	@Override
 	public ToNhom capNhatToNhom(ToNhom toNhom) {
-		Connection connect = getConnection();
-		PreparedStatement state = null;
-		int status = 0;
-		if (connect != null) {
-			try {
-				StringBuilder query = new StringBuilder("UPDATE ToNhom SET TenToNhom = ?, TrangThai = ?");
-				query.append(" WHERE MaToNhom = ?");
-				state = connect.prepareStatement(query.toString());
-
-				state.setString(1, toNhom.getTenToNhom());
-				state.setBoolean(2, toNhom.isTrangThai());
-				state.setString(3, toNhom.getMaToNhom());
-
-				status = state.executeUpdate();
-
-				if (status > 0)
-					return toNhom;
-			} catch (SQLException e) {
-				e.printStackTrace();
-			} catch (Exception e) {
-				e.printStackTrace();
-			} finally {
-				if (connect != null) {
-					try {
-						connect.close();
-					} catch (SQLException e) {
-						e.printStackTrace();
-					}
-				}
-				if (state != null) {
-					try {
-						state.close();
-					} catch (SQLException e) {
-						e.printStackTrace();
-					}
-				}
-			}
+		try (var em = getEntityManager()) {
+			em.getTransaction().begin();
+			em.merge(toNhom);
+			em.getTransaction().commit();
+			return toNhom;
 		}
-		return null;
 	}
 
 	@Override
 	public boolean capNhatTrangThaiToNhom(String maToNhom, boolean trangThai) {
-		Connection connect = getConnection();
-		PreparedStatement state = null;
-		int status = 0;
-		if (connect != null) {
-			try {
-				StringBuilder query = new StringBuilder("UPDATE ToNhom SET TrangThai = ?");
-				query.append(" WHERE MaToNhom = ?");
-				state = connect.prepareStatement(query.toString());
-				state.setBoolean(1, trangThai);
-				state.setString(2, maToNhom);
-
-				status = state.executeUpdate();
-
-				if (status > 0)
-					return true;
-			} catch (SQLException e) {
-				e.printStackTrace();
-			} catch (Exception e) {
-				e.printStackTrace();
-			} finally {
-				if (connect != null) {
-					try {
-						connect.close();
-					} catch (SQLException e) {
-						e.printStackTrace();
-					}
-				}
-				if (state != null) {
-					try {
-						state.close();
-					} catch (SQLException e) {
-						e.printStackTrace();
-					}
-				}
+		try (var em = getEntityManager()) {
+			ToNhom toNhom = em.find(ToNhom.class, maToNhom);
+			if (toNhom != null) {
+				em.getTransaction().begin();
+				toNhom.setTrangThai(trangThai);
+				em.merge(toNhom);
+				em.getTransaction().commit();
+				return true;
 			}
 		}
 		return false;
@@ -308,46 +116,13 @@ public class ToNhomDAOImpl extends AbstractDAO implements ToNhomDAO {
 
 	@Override
 	public ToNhom themToNhom(ToNhom toNhom) {
-		Connection connect = getConnection();
-		PreparedStatement state = null;
-		int status = 0;
-		if (connect != null) {
-			try {
-				StringBuilder query = new StringBuilder(
-						"INSERT INTO ToNhom(MaToNhom, TenToNhom, SoLuongCongNhan, TrangThai)");
-				query.append(" VALUES(?, ?, ?, ?)");
-				state = connect.prepareStatement(query.toString());
-				state.setString(1, toNhom.getMaToNhom());
-				state.setString(2, toNhom.getTenToNhom());
-				state.setInt(3, toNhom.getSoLuongCongNhan());
-				state.setBoolean(4, toNhom.isTrangThai());
-
-				status = state.executeUpdate();
-
-				if (status > 0)
-					return toNhom;
-			} catch (SQLException e) {
-				e.printStackTrace();
-			} catch (Exception e) {
-				e.printStackTrace();
-			} finally {
-				if (connect != null) {
-					try {
-						connect.close();
-					} catch (SQLException e) {
-						e.printStackTrace();
-					}
-				}
-				if (state != null) {
-					try {
-						state.close();
-					} catch (SQLException e) {
-						e.printStackTrace();
-					}
-				}
-			}
+		try (var em = getEntityManager()) {
+			em.getTransaction().begin();
+			em.persist(toNhom);
+			em.getTransaction().commit();
+			return toNhom;
 		}
-		return null;
+
 	}
 
 	@Override
@@ -361,54 +136,22 @@ public class ToNhomDAOImpl extends AbstractDAO implements ToNhomDAO {
 				em.getTransaction().commit();
 				return true;
 			}
-
 		}
 		return false;
 	}
 
 	@Override
 	public String timMaToNhomCuoiCung() {
-		Connection connect = getConnection();
-		Statement state = null;
-		ResultSet rs = null;
-		String maToNhom = null;
-		if (connect != null) {
-			try {
-				String query = "SELECT TOP 1 MaToNhom FROM ToNhom ORDER BY MaToNhom DESC";
-				state = connect.createStatement();
-				rs = state.executeQuery(query);
-				while (rs.next()) {
-					maToNhom = rs.getString("MaToNhom");
-				}
-			} catch (SQLException e) {
-				e.printStackTrace();
-			} catch (Exception e) {
-				e.printStackTrace();
-			} finally {
-				if (connect != null) {
-					try {
-						connect.close();
-					} catch (SQLException e) {
-						e.printStackTrace();
-					}
-				}
-				if (state != null) {
-					try {
-						state.close();
-					} catch (SQLException e) {
-						e.printStackTrace();
-					}
-				}
-				if (rs != null) {
-					try {
-						rs.close();
-					} catch (SQLException e) {
-						e.printStackTrace();
-					}
-				}
-			}
+		try (var em = getEntityManager()) {
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<String> cq = cb.createQuery(String.class);
+			Root<ToNhom> toNhomS = cq.from(ToNhom.class);
+			cq.select(toNhomS.get("maToNhom"));
+			cq.orderBy(cb.desc(toNhomS.get("maToNhom")));
+			TypedQuery<String> query = em.createQuery(cq);
+			query.setMaxResults(1);
+			return query.getSingleResult();
 		}
-		return maToNhom;
 	}
 
 }
