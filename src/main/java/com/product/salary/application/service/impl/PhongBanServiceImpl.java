@@ -80,7 +80,10 @@ public class PhongBanServiceImpl implements PhongBanService {
                         }
                     }
                 }
-                return phongBanDAO.capNhatPhongBan(phongBan);
+
+                exists.setTenPhongBan(phongBan.getTenPhongBan());
+
+                return phongBanDAO.capNhatPhongBan(exists);
             }
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, "Hệ thống đang có lỗi!");
@@ -94,14 +97,14 @@ public class PhongBanServiceImpl implements PhongBanService {
         try {
             PhongBan exists = phongBanDAO.timKiemBangMaPhongBan(maPhongBan);
             if (exists == null) {
-                JOptionPane.showMessageDialog(null, String.format("<html><p>%s</p></html>",
-                        SystemConstants.BUNDLE.getString("quanLyPhongBan.thongBaoKhongTonTai")));
+                JOptionPane.showMessageDialog(null,
+                        SystemConstants.BUNDLE.getString("quanLyPhongBan.thongBaoKhongTonTai"));
                 return false;
             } else {
-                if (exists.isTrangThai() == true && trangThai == false) {
+                if (exists.isTrangThai() && trangThai == false) {
                     if (exists.getSoLuongNhanVien() != 0) {
-                        JOptionPane.showMessageDialog(null, String.format("<html><p>%s</p></html>",
-                                SystemConstants.BUNDLE.getString("quanLyPhongBan.thongBaoKhongTheTatTrangThaiHoatDong")));
+                        JOptionPane.showMessageDialog(null,
+                                SystemConstants.BUNDLE.getString("quanLyPhongBan.thongBaoKhongTheTatTrangThaiHoatDong"));
                         return false;
                     }
                 }
@@ -143,8 +146,8 @@ public class PhongBanServiceImpl implements PhongBanService {
         try {
             PhongBan exists = phongBanDAO.timKiemBangMaPhongBan(maPhongBan);
             if (exists == null) {
-                JOptionPane.showMessageDialog(null, String.format("<html><p>%s</p></html>",
-                        SystemConstants.BUNDLE.getString("quanLyPhongBan.thongBaoKhongTonTai")));
+                JOptionPane.showMessageDialog(null,
+                        SystemConstants.BUNDLE.getString("quanLyPhongBan.thongBaoKhongTonTai"));
                 return false;
             } else
                 return phongBanDAO.capNhatSoLuongNhanVienBangMaPhongBan(maPhongBan, soLuong);

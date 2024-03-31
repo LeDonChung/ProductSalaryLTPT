@@ -72,43 +72,17 @@ public class PhongBanDAOImpl extends AbstractDAO implements PhongBanDAO {
 
     @Override
     public boolean capNhatTrangThaiPhongBan(String maPhongBan, boolean trangThai) {
-        Connection connect = getConnection();
-        PreparedStatement state = null;
-        int status = 0;
-        if (connect != null) {
-            try {
-                StringBuilder query = new StringBuilder("UPDATE PhongBan SET TrangThai = ?");
-                query.append(" WHERE MaPhongBan = ?");
-                state = connect.prepareStatement(query.toString());
-                state.setBoolean(1, trangThai);
-                state.setString(2, maPhongBan);
-
-                status = state.executeUpdate();
-
-                if (status > 0)
-                    return true;
-            } catch (SQLException e) {
-                e.printStackTrace();
-            } catch (Exception e) {
-                e.printStackTrace();
-            } finally {
-                if (connect != null) {
-                    try {
-                        connect.close();
-                    } catch (SQLException e) {
-                        e.printStackTrace();
-                    }
-                }
-                if (state != null) {
-                    try {
-                        state.close();
-                    } catch (SQLException e) {
-                        e.printStackTrace();
-                    }
-                }
+        try (var em = getEntityManager()){
+            PhongBan phongBan = timKiemBangMaPhongBan(maPhongBan);
+            if (phongBan != null){
+                em.getTransaction().begin();
+                phongBan.setTrangThai(trangThai);
+                em.merge(phongBan);
+                em.getTransaction().commit();
+                return true;
             }
+            return false;
         }
-        return false;
     }
 
     @Override
@@ -127,42 +101,17 @@ public class PhongBanDAOImpl extends AbstractDAO implements PhongBanDAO {
 
     @Override
     public boolean capNhatSoLuongNhanVienBangMaPhongBan(String maPhongBan, int soLuong) {
-        Connection connect = getConnection();
-        PreparedStatement state = null;
-        int status = 0;
-        if (connect != null) {
-            try {
-                StringBuilder query = new StringBuilder("UPDATE PhongBan SET SoLuongNhanVien = " + soLuong);
-                query.append(" WHERE MaPhongBan = ?");
-                state = connect.prepareStatement(query.toString());
-                state.setString(1, maPhongBan);
-
-                status = state.executeUpdate();
-
-                if (status > 0)
-                    return true;
-            } catch (SQLException e) {
-                e.printStackTrace();
-            } catch (Exception e) {
-                e.printStackTrace();
-            } finally {
-                if (connect != null) {
-                    try {
-                        connect.close();
-                    } catch (SQLException e) {
-                        e.printStackTrace();
-                    }
-                }
-                if (state != null) {
-                    try {
-                        state.close();
-                    } catch (SQLException e) {
-                        e.printStackTrace();
-                    }
-                }
+        try (var em = getEntityManager()){
+            PhongBan phongBan = timKiemBangMaPhongBan(maPhongBan);
+            if (phongBan != null){
+                em.getTransaction().begin();
+                phongBan.setSoLuongNhanVien(soLuong);
+                em.merge(phongBan);
+                em.getTransaction().commit();
+                return true;
             }
+            return false;
         }
-        return false;
     }
 
     @Override
@@ -176,47 +125,9 @@ public class PhongBanDAOImpl extends AbstractDAO implements PhongBanDAO {
 
     @Override
     public List<PhongBan> timKiemTatCaPhongBanDangHoatDong() {
-        Connection connect = getConnection();
-        Statement state = null;
-        ResultSet rs = null;
-        List<PhongBan> dsPhongBan = new ArrayList<PhongBan>();
-        if (connect != null) {
-            try {
-                String query = "SELECT * FROM PhongBan WHERE TrangThai = 1";
-                state = connect.createStatement();
-                rs = state.executeQuery(query);
-
-                while (rs.next()) {
-                    String maPhongBan = rs.getString("MaPhongBan");
-                    String tenPhongBan = rs.getString("TenPhongBan");
-                    int soLuongNhanVien = rs.getInt("SoLuongNhanVien");
-                    boolean trangThai = rs.getBoolean("TrangThai");
-
-                    PhongBan pb = new PhongBan(maPhongBan, tenPhongBan, soLuongNhanVien, trangThai);
-                    dsPhongBan.add(pb);
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-            } catch (Exception e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            } finally {
-                if (connect != null) {
-                    try {
-                        connect.close();
-                    } catch (SQLException e) {
-                        e.printStackTrace();
-                    }
-                }
-                if (state != null) {
-                    try {
-                        state.close();
-                    } catch (SQLException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
+        try (var em = getEntityManager()){
+            String query = "SELECT pb FROM PhongBan pb WHERE pb.trangThai = true ";
+            return em.createQuery(query, PhongBan.class).getResultList();
         }
-        return dsPhongBan;
     }
 }
