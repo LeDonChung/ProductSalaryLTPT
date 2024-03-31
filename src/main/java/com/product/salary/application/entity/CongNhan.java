@@ -139,6 +139,9 @@ public class CongNhan implements Serializable {
 		this.tayNghe = tayNghe;
 	}
 
+	public CongNhan(String maCongNhan) {
+		this.maCongNhan = maCongNhan;
+	}
 
 	public void setHoTen(String hoTen) throws Exception {
 		if (hoTen.trim().equals("")) {
