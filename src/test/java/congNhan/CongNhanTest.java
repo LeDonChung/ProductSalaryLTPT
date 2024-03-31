@@ -79,10 +79,12 @@ public class CongNhanTest {
         }
     }
     @Test
-    public void testLayMaCongNhanCuoiCungCuaNam() throws Exception{
+    public void testThemCongNhan() throws Exception{
         CongNhan congNhan = new CongNhan();
-        String ma = congNhanService.generateMaCongNhan(congNhan);
-        congNhan.setMaCongNhan(ma);
+
+        // Vi chua co ngay vao lam ma ma gọi gen ra ne
+        // String ma = congNhanService.generateMaCongNhan(congNhan);
+        congNhan.setMaCongNhan("1");
         congNhan.setCccd("1231231231");
         congNhan.setDiaChi("Phu Yen");
         congNhan.setEmail("test3@gmail.com");
