@@ -26,7 +26,7 @@ public class AccountServiceImpl implements AccountService {
 			String matKhauMaHoa = PasswordUtils.toSHA1(matKhau);
 			account = this.accountDAO.timKiemTaiKhoanHoatDongBangTaiKhoanVaMatKhau(taiKhoan, matKhauMaHoa);
 		} catch (Exception e) {
-			JOptionPane.showMessageDialog(null, SystemConstants.BUNDLE.getString("congNhan.loiHeThong"));
+			//JOptionPane.showMessageDialog(null, SystemConstants.BUNDLE.getString("congNhan.loiHeThong"));
 			e.printStackTrace();
 		}
 		return account;
@@ -47,75 +47,16 @@ public class AccountServiceImpl implements AccountService {
 	}
 
 	@Override
-	public Account capNhatTaiKhoan(Account account) {
-		try {
-			Account isExists = accountDAO.timTaiKhoanBangTaiKhoan(account.getTaiKhoan(), account.getMatKhau());
-			if (isExists == null) {
-				JOptionPane.showMessageDialog(null, SystemConstants.BUNDLE.getString("Account.taiKhoangKhongTonTai"));
-				return null;
-			}
-
-			return accountDAO.capNhatTaiKhoan(account);
-
-		} catch (Exception e) {
-			JOptionPane.showMessageDialog(null, SystemConstants.BUNDLE.getString("congNhan.loiHeThong"));
-			e.printStackTrace();
-			return null;
-		}
-	}
-
-	@Override
-	public Account themTaiKhoan(Account account) {
-		try {
-			Account isExists = accountDAO.timTaiKhoanBangTaiKhoan(account.getTaiKhoan(), account.getMatKhau());
-			if (isExists != null) {
-				JOptionPane.showMessageDialog(null, SystemConstants.BUNDLE.getString("Account.taiKhoangTonTai"));
-				return null;
-			}
-			return accountDAO.themTaiKhoan(account);
-
-		} catch (Exception e) {
-			JOptionPane.showMessageDialog(null, SystemConstants.BUNDLE.getString("congNhan.loiHeThong"));
-			e.printStackTrace();
-			return null;
-		}
-	}
-
-	@Override
-	public boolean capNhatTrangThaiTaiKhoan(String taiKhoan, boolean trangThai) {
-		try {
-			return accountDAO.capNhatTrangThaiTaiKhoan(taiKhoan, trangThai);
-
-		} catch (Exception e) {
-			JOptionPane.showMessageDialog(null, SystemConstants.BUNDLE.getString("congNhan.loiHeThong"));
-			e.printStackTrace();
-			return false;
-		}
-	}
-
-	@Override
 	public boolean capNhatMatKhau(String taiKhoan, String matKhau) {
 		try {
 			// Kiểm tra tồn tại bằng cách mã hóa thông tin mật khẩu nhập vào
 			String matKhauMaHoa = PasswordUtils.toSHA1(matKhau);
-			return accountDAO.capNhatMatKhau(taiKhoan, matKhauMaHoa);
+			return accountDAO.capNhatMatKhau(taiKhoan, matKhau);
 		} catch (Exception e) {
 			JOptionPane.showMessageDialog(null, SystemConstants.BUNDLE.getString("congNhan.loiHeThong"));
 			e.printStackTrace();
 			return false;
 		}
-	}
-
-	@Override
-	public Account timTaiKhoanBangTaiKhoan(String taiKhoanS, String matKhauS) {
-		Account account = null;
-		try {
-			account = this.accountDAO.timTaiKhoanBangTaiKhoan(taiKhoanS, matKhauS);
-		} catch (Exception e) {
-			JOptionPane.showMessageDialog(null, SystemConstants.BUNDLE.getString("congNhan.loiHeThong"));
-			e.printStackTrace();
-		}
-		return account;
 	}
 
 	@Override
