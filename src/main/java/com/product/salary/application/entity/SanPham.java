@@ -22,7 +22,7 @@ public class SanPham implements Serializable {
 	@Column(name = "MaSanPham", length = 15)
 	private String maSanPham;
 
-	@Column(name = "TenSanPham", length = 70,nullable = false)
+	@Column(name = "TenSanPham", columnDefinition = "NVARCHAR(70) NOT NULL")
 	private String tenSanPham;
 
 	@Column(name = "SoLuongTon", nullable = false)
@@ -31,10 +31,10 @@ public class SanPham implements Serializable {
 	@Column(name = "HinhAnh")
 	private byte[] hinhAnh;
 
-	@Column(name = "ChatLieu", length = 70)
+	@Column(name = "ChatLieu", columnDefinition = "NVARCHAR(70)")
 	private String chatLieu;
 
-	@Column(name = "DonViTinh", length = 70)
+	@Column(name = "DonViTinh", columnDefinition = "NVARCHAR(70)")
 	private String donViTinh;
 
 	@Column(name = "DonGia", columnDefinition = "REAL NOT NULL")

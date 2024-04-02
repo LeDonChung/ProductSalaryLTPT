@@ -17,9 +17,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PhanCongCongViecServiceImpl implements PhanCongCongViecService {
-	private CongNhanDAO congNhanDAO;
-	private PhanCongCongViecDAO phanCongDAO;
-	private CongDoanSanPhamDAO congDoanDAO;
+	private final CongNhanDAO congNhanDAO;
+	private final PhanCongCongViecDAO phanCongDAO;
+	private final CongDoanSanPhamDAO congDoanDAO;
 
 	public PhanCongCongViecServiceImpl() {
 		congNhanDAO = new CongNhanDAOImpl();
@@ -27,16 +27,6 @@ public class PhanCongCongViecServiceImpl implements PhanCongCongViecService {
 		congDoanDAO = new CongDoanSanPhamDAOImpl();
 	}
 
-	@Override
-	public List<PhanCongCongNhan> timTatCaPhanCong() {
-		List<PhanCongCongNhan> dsPhanCong = new ArrayList<PhanCongCongNhan>();
-		try {
-			dsPhanCong = this.phanCongDAO.timTatCaPhanCong();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return dsPhanCong;
-	}
 
 	@Override
 	public PhanCongCongNhan capNhatPhanCongCongNhan(PhanCongCongNhan phanCongCongNhan) {
@@ -121,28 +111,6 @@ public class PhanCongCongViecServiceImpl implements PhanCongCongViecService {
 			rs = String.format("%s%s%03d", maCuoiCongNhan, maCuoiCongDoan, 1);
 		}
 		return rs;
-	}
-
-	@Override
-	public List<PhanCongCongNhan> timTatCaPhanCongTheoMaCongNhan(String maCongNhan) {
-		List<PhanCongCongNhan> dsPhanCong = new ArrayList<PhanCongCongNhan>();
-		try {
-			dsPhanCong = this.phanCongDAO.timTatCaPhanCongTheoMaCongNhan(maCongNhan);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return dsPhanCong;
-	}
-
-	@Override
-	public List<PhanCongCongNhan> timTatCaPhanCongTheoMaCongNhanDaHoanThanh(String maCongNhan) {
-		List<PhanCongCongNhan> dsPhanCong = new ArrayList<PhanCongCongNhan>();
-		try {
-			dsPhanCong = this.phanCongDAO.timTatCaPhanCongTheoMaCongNhanDaHoanThanh(maCongNhan);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return dsPhanCong;
 	}
 
 	@Override

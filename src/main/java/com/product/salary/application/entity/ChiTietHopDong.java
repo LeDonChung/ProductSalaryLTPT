@@ -23,10 +23,10 @@ public class ChiTietHopDong implements Serializable {
 	@JoinColumn(name = "MaSanPham")
 	private SanPham sanPham;
 
-	@Column(name = "SoLuong", nullable = false)
+	@Column(name = "SoLuong")
 	private int soLuong;
 
-	@Column(name = "GiaDatLam", columnDefinition = "REAL NOT NULL")
+	@Column(name = "GiaDatLam", columnDefinition = "REAL NULL")
 	private double giaDatLam;
 
 	public ChiTietHopDong(HopDong hopDong, SanPham sanPham, int soLuong, double giaDatLam) throws Exception {

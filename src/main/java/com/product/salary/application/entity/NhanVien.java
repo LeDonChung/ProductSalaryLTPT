@@ -22,13 +22,13 @@ public class NhanVien implements Serializable {
 	@Column(name = "MaNhanVien", length = 15)
 	private String maNhanVien;
 
-	@Column(name = "HoTen", length = 70, nullable = false)
+	@Column(name = "HoTen", columnDefinition = "NVARCHAR(70) NOT NULL")
 	private String hoTen;
 
 	@Column(name = "Email", length = 70, nullable = false)
 	private String email;
 
-	@Column(name = "DiaChi", length = 100, nullable = false)
+	@Column(name = "DiaChi", columnDefinition = "NVARCHAR(100) NOT NULL")
 	private String diaChi;
 
 	@Column(name = "GioiTinh", nullable = false)

@@ -19,7 +19,7 @@ public class TayNghe {
 	@Column(name = "MaTayNghe", length = 15)
 	private String maTayNghe;
 
-	@Column(name = "TenTayNghe", length = 50, nullable = false)
+	@Column(name = "TenTayNghe", columnDefinition = "NVARCHAR(70) NOT NULL")
 	private String tenTayNghe;
 
 	public TayNghe(String maTayNghe) {

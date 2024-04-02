@@ -22,7 +22,7 @@ public class ToNhom implements Serializable {
 	@Column(name = "MaToNhom", length = 15)
 	private String maToNhom;
 
-	@Column(name = "TenToNhom", length = 50, nullable = false)
+	@Column(name = "TenToNhom", columnDefinition = "NVARCHAR(50) NOT NULL")
 	private String tenToNhom;
 
 	@Column(name = "SoLuongCongNhan")

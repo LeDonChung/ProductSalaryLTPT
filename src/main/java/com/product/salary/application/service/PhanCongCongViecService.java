@@ -6,12 +6,6 @@ import com.product.salary.application.entity.PhanCongCongNhan;
 import java.util.List;
 
 public interface PhanCongCongViecService {
-	/**
-	 * Tìm tất cả phân công công việc
-	 * 
-	 * @return danhSachPhanCong
-	 */
-	List<PhanCongCongNhan> timTatCaPhanCong();
 
 	/**
 	 * Cập nhật phân công công nhân
@@ -39,21 +33,6 @@ public interface PhanCongCongViecService {
 
 	public String generateMaPhanCongCongNhan(String maCongNhan, String maCongDoan);
 
-	/**
-	 * Tìm tất cả phân công bằng mã công nhân
-	 * 
-	 * @param maCongNhan
-	 * @return danh sách phân công của một công nhân
-	 */
-	List<PhanCongCongNhan> timTatCaPhanCongTheoMaCongNhan(String maCongNhan);
-
-	/**
-	 * Tìm tất cả phân công bằng mã công nhân đã hoàn thành công việc
-	 * 
-	 * @param maCongNhan
-	 * @return danh sách phân công của một công nhân
-	 */
-	List<PhanCongCongNhan> timTatCaPhanCongTheoMaCongNhanDaHoanThanh(String maCongNhan);
 
 	List<PhanCongCongNhan> timTatCaPhanCongTheoMaCongNhanChuaHoanThanh(String maCongNhan);
 
