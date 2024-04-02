@@ -78,6 +78,7 @@ public class CongNhanDAOImpl extends AbstractDAO implements CongNhanDAO, Seriali
 			if (!StringUtils.isBlank(congNhan.getSoDienThoai())) {
 				predicates.add(cb.like(congNhanRoot.get("soDienThoai"), "%" + congNhan.getSoDienThoai() + "%"));
 			}
+			// int -> 0
 			if (congNhan.getGioiTinh() != 2) {
 				predicates.add(cb.equal(congNhanRoot.get("gioiTinh"), congNhan.getGioiTinh()));
 			}

@@ -19,13 +19,13 @@ public class CongDoanSanPham implements Serializable {
 	@Column(name = "MaCongDoan", length = 15)
 	private String maCongDoan;
 
-	@Column(name = "TenCongDoan", columnDefinition = "NVARCHAR(50) NOT NULL")
+	@Column(name = "TenCongDoan", columnDefinition = "NVARCHAR(70) NOT NULL")
 	private String tenCongDoan;
 
-	@Column(name = "SoLuongCanLam", nullable = false)
+	@Column(name = "SoLuongCanLam", columnDefinition = "INT NOT NULL DEFAULT 0")
 	private int soLuongCanLam;
 
-	@Column(name = "GiaCongDoan", columnDefinition = "REAL NOT NULL")
+	@Column(name = "GiaCongDoan", columnDefinition = "FLOAT NOT NULL DEFAULT 0")
 	private double giaCongDoan;
 
 	@Column(name = "ThoiHan", columnDefinition = "DATETIME")
@@ -39,7 +39,7 @@ public class CongDoanSanPham implements Serializable {
 	@JoinColumn(name = "MaSanPham")
 	private SanPham sanPham;
 
-	@Column(name = "TrangThai", nullable = false)
+	@Column(name = "TrangThai", columnDefinition = "BIT NOT NULL DEFAULT 1")
 	private boolean trangThai;
 
 	@Override

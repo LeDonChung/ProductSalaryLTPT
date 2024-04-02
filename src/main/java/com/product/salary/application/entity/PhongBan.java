@@ -28,10 +28,10 @@ public class PhongBan implements Serializable {
 	@ToString.Exclude
 	private Set<NhanVien> nhanViens;
 
-	@Column(name = "SoLuongNhanVien")
+	@Column(name = "SoLuongNhanVien", columnDefinition = "INT NOT NULL DEFAULT 0")
 	private Integer soLuongNhanVien;
 
-	@Column(name = "TrangThai", nullable = false)
+	@Column(name = "TrangThai", columnDefinition = "BIT NOT NULL DEFAULT 1")
 	private Boolean trangThai;
 
 	public Boolean isTrangThai() {

@@ -26,17 +26,17 @@ public class ChamCongCongNhan implements Serializable {
 	@JoinColumn(name = "MaPhanCong")
 	private PhanCongCongNhan phanCongCongNhan;
 
-	@Column(name = "SoLuongHoanThanh", nullable = false)
+	@Column(name = "SoLuongHoanThanh", columnDefinition = "INT NOT NULL CHECK(SoLuongHoanThanh > 0)")
 	private int soLuongHoanThanh;
 
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "MaCa")
 	private CaLam caLam;
 
-	@Column(name = "NgayChamCong", columnDefinition = "DATETIME")
+	@Column(name = "NgayChamCong", columnDefinition = "DATETIME CHECK(NgayChamCong <= GETDATE())")
 	private LocalDate ngayChamCong;
 
-	@Column(name = "TrangThai", nullable = false)
+	@Column(name = "TrangThai", columnDefinition = "INT NOT NULL DEFAULT 1")
 	private int trangThai;
 
 	@ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)

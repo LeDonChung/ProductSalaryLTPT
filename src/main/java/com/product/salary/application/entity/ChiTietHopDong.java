@@ -26,7 +26,7 @@ public class ChiTietHopDong implements Serializable {
 	@Column(name = "SoLuong")
 	private int soLuong;
 
-	@Column(name = "GiaDatLam", columnDefinition = "REAL NULL")
+	@Column(name = "GiaDatLam", columnDefinition = "FLOAT NULL")
 	private double giaDatLam;
 
 	public ChiTietHopDong(HopDong hopDong, SanPham sanPham, int soLuong, double giaDatLam) throws Exception {

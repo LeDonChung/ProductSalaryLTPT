@@ -18,7 +18,7 @@ import java.util.Set;
 @ToString
 public class LuongCongNhan implements Serializable {
 	@Id
-	@Column(name = "MaLuong", length = 15)
+	@Column(name = "MaLuong", length = 16)
 	private String maLuong;
 
 	@Column(name = "Thang")
@@ -27,17 +27,17 @@ public class LuongCongNhan implements Serializable {
 	@Column(name = "Nam")
 	private int nam;
 
-	@Column(name = "NgayTinhLuong", columnDefinition = "DATETIME NOT NULL")
+	@Column(name = "NgayTinhLuong", columnDefinition = "DATETIME NOT NULL DEFAULT GETDATE()")
 	private LocalDate ngayTinhLuong;
 
-	@Column(name = "Luong", columnDefinition = "REAL NOT NULL")
+	@Column(name = "Luong", columnDefinition = "FLOAT NOT NULL")
 	private double luong;
 
-	@Column(name = "LuongThuong", columnDefinition = "REAL NOT NULL")
+	@Column(name = "LuongThuong", columnDefinition = "FLOAT NOT NULL")
 	private double luongThuong;
 
 
-	@OneToMany(mappedBy = "luongCongNhan", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "luongCongNhan", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
 	@ToString.Exclude
 	private Set<ChamCongCongNhan> chamCongCongNhans;
 

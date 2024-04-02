@@ -19,7 +19,7 @@ import java.util.Set;
 public class LuongNhanVien {
 
 	@Id
-	@Column(name = "MaLuong", length = 15)
+	@Column(name = "MaLuong", length = 16)
 	private String maLuong;
 
 	@Column(name = "Thang", nullable = false)
@@ -28,17 +28,17 @@ public class LuongNhanVien {
 	@Column(name = "Nam", nullable = false)
 	private int nam;
 
-	@Column(name = "NgayTinhLuong", columnDefinition = "DATETIME NOT NULL")
+	@Column(name = "NgayTinhLuong", columnDefinition = "DATETIME NOT NULL DEFAULT GETDATE()")
 	private LocalDate ngayTinhLuong;
 
-	@Column(name = "Luong", columnDefinition = "REAL NOT NULL")
+	@Column(name = "Luong", columnDefinition = "FLOAT NOT NULL")
 	private double luong;
 
-	@Column(name = "LuongThuong", columnDefinition = "REAL NOT NULL")
+	@Column(name = "LuongThuong", columnDefinition = "FLOAT NOT NULL")
 	private double luongThuong;
 
 	@ToString.Exclude
-	@OneToMany(mappedBy = "luongNhanVien", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "luongNhanVien", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
 	private Set<ChamCongNhanVien> chamCongNhanViens;
 
 	public LuongNhanVien(String maLuong, int thang, int nam, LocalDate ngayTinhLuong, double luong,
