@@ -21,7 +21,7 @@ public class PhongBan implements Serializable {
 	@Column(name = "MaPhongBan", length = 15)
 	private String maPhongBan;
 
-	@Column(name = "TenPhongBan", nullable = false)
+	@Column(name = "TenPhongBan", columnDefinition = "NVARCHAR(70) NOT NULL")
 	private String tenPhongBan;
 
 	@OneToMany(mappedBy = "phongBan", fetch = FetchType.EAGER, cascade = CascadeType.ALL)

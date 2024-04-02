@@ -19,7 +19,7 @@ public class CongDoanSanPham implements Serializable {
 	@Column(name = "MaCongDoan", length = 15)
 	private String maCongDoan;
 
-	@Column(name = "TenCongDoan", length = 70, nullable = false)
+	@Column(name = "TenCongDoan", columnDefinition = "NVARCHAR(50) NOT NULL")
 	private String tenCongDoan;
 
 	@Column(name = "SoLuongCanLam", nullable = false)
@@ -28,7 +28,7 @@ public class CongDoanSanPham implements Serializable {
 	@Column(name = "GiaCongDoan", columnDefinition = "REAL NOT NULL")
 	private double giaCongDoan;
 
-	@Column(name = "ThoiHan", columnDefinition = "DATETIME NOT NULL")
+	@Column(name = "ThoiHan", columnDefinition = "DATETIME")
 	private LocalDate thoiHan;
 
 	@ManyToOne(fetch = FetchType.EAGER)

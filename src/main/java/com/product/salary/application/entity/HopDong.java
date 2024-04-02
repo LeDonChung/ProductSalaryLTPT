@@ -24,25 +24,25 @@ public class HopDong implements Serializable {
 	@Column(name = "MaHopDong", length = 15)
 	private String maHopDong;
 
-	@Column(name = "TenHopDong", length = 70, nullable = false)
+	@Column(name = "TenHopDong", columnDefinition = "NVARCHAR(70) NOT NULL")
 	private String tenHopDong;
 
-	@Column(name = "TenKhachHang", length = 70, nullable = false)
+	@Column(name = "TenKhachHang", columnDefinition = "NVARCHAR(70) NOT NULL")
 	private String tenKhachHang;
 
-	@Column(name = "TongTien", nullable = false)
+	@Column(name = "TongTien", columnDefinition = "REAL NOT NULL")
 	private double tongTien;
 
-	@Column(name = "SoTienCoc", nullable = false)
+	@Column(name = "SoTienCoc", columnDefinition = "REAL NOT NULL")
 	private double soTienCoc;
 
-	@Column(name = "NgayBatDau")
+	@Column(name = "NgayBatDau", columnDefinition = "DATETIME")
 	private LocalDate ngayBatDau;
 
-	@Column(name = "NgayKetThuc")
+	@Column(name = "NgayKetThuc", columnDefinition = "DATETIME")
 	private LocalDate ngayKetThuc;
 
-	@Column(name = "YeuCau", length = 100, nullable = false)
+	@Column(name = "YeuCau", columnDefinition = "NVARCHAR(100)")
 	private String yeuCau;
 
 	@Column(name = "TrangThai", nullable = false)

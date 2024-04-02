@@ -18,7 +18,7 @@ public class TrinhDo {
 	@Column(name = "MaTrinhDo", length = 15)
 	private String maTrinhDo;
 
-	@Column(name = "TenTrinhDo", nullable = false, length = 50)
+	@Column(name = "TenTrinhDo", columnDefinition = "NVARCHAR(50) NOT NULL")
 	private String tenTrinhDo;
 
 	@Override

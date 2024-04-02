@@ -25,7 +25,7 @@ public class CaLam implements Serializable{
 	@Column(name = "MaCa", length = 15)
 	private String maCa;
 
-	@Column(name = "TenCa", length = 60,nullable = false)
+	@Column(name = "TenCa", columnDefinition = "nvarchar(50) not null")
 	private String tenCa;
 
 	@Override

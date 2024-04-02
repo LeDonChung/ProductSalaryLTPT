@@ -14,13 +14,13 @@ import java.io.Serializable;
 @NoArgsConstructor
 public class Account implements Serializable {
 	@Id
-	@Column(name = "TaiKhoan")
+	@Column(name = "TaiKhoan", columnDefinition = "nvarchar(255)")
 	private String taiKhoan;
 
-	@Column(name = "MatKhau")
+	@Column(name = "MatKhau", columnDefinition = "nvarchar(255) not null")
 	private String matKhau;
 
-	@Column(name = "RoleName")
+	@Column(name = "RoleName", columnDefinition = "nvarchar(50) not null")
 	private String roleName;
 
 	@OneToOne

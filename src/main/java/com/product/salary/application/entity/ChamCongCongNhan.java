@@ -33,13 +33,13 @@ public class ChamCongCongNhan implements Serializable {
 	@JoinColumn(name = "MaCa")
 	private CaLam caLam;
 
-	@Column(name = "NgayChamCong", columnDefinition = "DATETIME NOT NULL")
+	@Column(name = "NgayChamCong", columnDefinition = "DATETIME")
 	private LocalDate ngayChamCong;
 
 	@Column(name = "TrangThai", nullable = false)
 	private int trangThai;
 
-	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	@ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
 	@JoinColumn(name = "MaLuong")
 	private LuongCongNhan luongCongNhan;
 
