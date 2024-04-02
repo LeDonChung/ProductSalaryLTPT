@@ -5,17 +5,16 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import org.checkerframework.checker.units.qual.C;
 
 import java.io.Serializable;
 import java.time.LocalDate;
 
-@Entity
-@Table(name = "ChamCongNhanVien")
+@NoArgsConstructor
 @Getter
 @Setter
-@NoArgsConstructor
 @ToString
+@Entity
+@Table(name = "ChamCongNhanVien")
 public class ChamCongNhanVien implements Serializable {
 
     @Id
@@ -30,10 +29,10 @@ public class ChamCongNhanVien implements Serializable {
     @JoinColumn(name = "MaCa")
     private CaLam caLam;
 
-    @Column(name = "NgayChamCong", columnDefinition = "DATETIME")
+    @Column(name = "NgayChamCong", columnDefinition = "DATETIME CHECK (NgayChamCong <= GETDATE())")
     private LocalDate ngayChamCong;
 
-    @Column(name = "TrangThai", nullable = false)
+    @Column(name = "TrangThai", columnDefinition = "INT NOT NULL DEFAULT 1")
     private int trangThai;
 
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)

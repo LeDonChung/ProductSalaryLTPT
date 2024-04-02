@@ -29,10 +29,10 @@ public class CongNhan implements Serializable {
 	@Column(name = "Email", length = 70, nullable = false)
 	private String email;
 
-	@Column(name = "DiaChi", columnDefinition = "NVARCHAR(100) NOT NULL")
+	@Column(name = "DiaChi", columnDefinition = "NVARCHAR(100)")
 	private String diaChi;
 
-	@Column(name = "GioiTinh", nullable = false)
+	@Column(name = "GioiTinh", columnDefinition = "INT NOT NULL DEFAULT 0")
 	private int gioiTinh;
 
 	@Column(name = "CCCD", length = 12, unique = true)
@@ -41,7 +41,7 @@ public class CongNhan implements Serializable {
 	@Column(name = "SoDienThoai", length = 10, nullable = false)
 	private String soDienThoai;
 
-	@Column(name = "NgaySinh", columnDefinition = "DATETIME NOT NULL")
+	@Column(name = "NgaySinh", columnDefinition = "DATETIME")
 	private LocalDate ngaySinh;
 
 	@ManyToOne(fetch = FetchType.EAGER)
@@ -51,13 +51,13 @@ public class CongNhan implements Serializable {
 	@Column(name = "NgayVaoLam", columnDefinition = "DATETIME NOT NULL")
 	private LocalDate ngayVaoLam;
 
-	@Column(name = "TroCap", columnDefinition = "REAL NOT NULL")
+	@Column(name = "TroCap", columnDefinition = "FLOAT NOT NULL")
 	private Double troCap;
 
-	@Column(name = "HinhAnh")
+	@Column(name = "HinhAnh", columnDefinition = "IMAGE")
 	private byte[] hinhAnh;
 
-	@Column(name = "TrangThai", nullable = false)
+	@Column(name = "TrangThai", columnDefinition = "BIT NOT NULL DEFAULT 1")
 	private Boolean trangThai;
 
 	@ManyToOne(fetch = FetchType.EAGER)

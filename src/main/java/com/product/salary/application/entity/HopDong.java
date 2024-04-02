@@ -30,10 +30,10 @@ public class HopDong implements Serializable {
 	@Column(name = "TenKhachHang", columnDefinition = "NVARCHAR(70) NOT NULL")
 	private String tenKhachHang;
 
-	@Column(name = "TongTien", columnDefinition = "REAL NOT NULL")
+	@Column(name = "TongTien", columnDefinition = "FLOAT NOT NULL CHECK(TongTien >= 0)")
 	private double tongTien;
 
-	@Column(name = "SoTienCoc", columnDefinition = "REAL NOT NULL")
+	@Column(name = "SoTienCoc", columnDefinition = "FLOAT NOT NULL")
 	private double soTienCoc;
 
 	@Column(name = "NgayBatDau", columnDefinition = "DATETIME")
@@ -45,7 +45,7 @@ public class HopDong implements Serializable {
 	@Column(name = "YeuCau", columnDefinition = "NVARCHAR(100)")
 	private String yeuCau;
 
-	@Column(name = "TrangThai", nullable = false)
+	@Column(name = "TrangThai", columnDefinition = "BIT NOT NULL DEFAULT 0")
 	private boolean trangThai;
 
 	@OneToMany(mappedBy = "hopDong", fetch = FetchType.EAGER, cascade = CascadeType.ALL)

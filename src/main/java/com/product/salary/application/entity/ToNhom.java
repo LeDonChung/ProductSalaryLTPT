@@ -25,13 +25,13 @@ public class ToNhom implements Serializable {
 	@Column(name = "TenToNhom", columnDefinition = "NVARCHAR(50) NOT NULL")
 	private String tenToNhom;
 
-	@Column(name = "SoLuongCongNhan")
+	@Column(name = "SoLuongCongNhan", columnDefinition = "INT NOT NULL DEFAULT 0")
 	private int soLuongCongNhan;
 
 	@OneToMany(mappedBy = "toNhom", fetch = FetchType.LAZY)
 	private Set<CongNhan> congNhans;
 
-	@Column(name = "TrangThai", nullable = false)
+	@Column(name = "TrangThai", columnDefinition = "BIT NOT NULL DEFAULT 1")
 	private Boolean trangThai;
 
 	public ToNhom(String maToNhom, String tenToNhom) {

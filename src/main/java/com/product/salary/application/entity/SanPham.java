@@ -25,10 +25,10 @@ public class SanPham implements Serializable {
 	@Column(name = "TenSanPham", columnDefinition = "NVARCHAR(70) NOT NULL")
 	private String tenSanPham;
 
-	@Column(name = "SoLuongTon", nullable = false)
+	@Column(name = "SoLuongTon", columnDefinition = "INT NOT NULL CHECK(SoLuongTon >= 0) DEFAULT 0")
 	private int soLuongTon;
 
-	@Column(name = "HinhAnh")
+	@Column(name = "HinhAnh", columnDefinition = "IMAGE")
 	private byte[] hinhAnh;
 
 	@Column(name = "ChatLieu", columnDefinition = "NVARCHAR(70)")
@@ -37,13 +37,13 @@ public class SanPham implements Serializable {
 	@Column(name = "DonViTinh", columnDefinition = "NVARCHAR(70)")
 	private String donViTinh;
 
-	@Column(name = "DonGia", columnDefinition = "REAL NOT NULL")
+	@Column(name = "DonGia", columnDefinition = "FLOAT NOT NULL DEFAULT 0")
 	private Double donGia;
 
-	@Column(name = "SoCongDoan")
+	@Column(name = "SoCongDoan", columnDefinition = "INT DEFAULT 0")
 	private int soCongDoan;
 
-	@Column(name = "TrangThai", nullable = false)
+	@Column(name = "TrangThai", columnDefinition = "BIT NOT NULL DEFAULT 1")
 	private Boolean trangThai;
 
 	@OneToMany(mappedBy = "sanPham", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
