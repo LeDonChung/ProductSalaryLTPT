@@ -70,7 +70,22 @@ public class NhanVienServiceImpl implements NhanVienService {
                             phBan.getSoLuongNhanVien() - 1);
             }
 
-            return nhanVienDAO.capNhatNhanVien(nhanVien);
+            isExists.setNgayVaoLam(nhanVien.getNgayVaoLam());
+            isExists.setHeSoLuong(nhanVien.getHeSoLuong());
+            isExists.setLuongCoSo(nhanVien.getLuongCoSo());
+            isExists.setPhongBan(nhanVien.getPhongBan());
+            isExists.setTrinhDo(nhanVien.getTrinhDo());
+            isExists.setChucVu(nhanVien.getChucVu());
+            isExists.setTrangThai(nhanVien.isTrangThai());
+            isExists.setSoDienThoai(nhanVien.getSoDienThoai());
+            isExists.setDiaChi(nhanVien.getDiaChi());
+            isExists.setTroCap(nhanVien.getTroCap());
+            isExists.setCccd(nhanVien.getCccd());
+            isExists.setEmail(nhanVien.getEmail());
+            isExists.setHinhAnh(nhanVien.getHinhAnh());
+            isExists.setHoTen(nhanVien.getHoTen());
+
+            return nhanVienDAO.capNhatNhanVien(isExists);
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, "Hệ thống đang có lỗi!");
             e.printStackTrace();
@@ -132,6 +147,7 @@ public class NhanVienServiceImpl implements NhanVienService {
     public NhanVien themNhanVien(NhanVien nhanVien) {
         try {
             nhanVien.setMaNhanVien(generateMaNhanVien(nhanVien));
+            nhanVien.setTrangThai(true);
 
             NhanVien isExists = nhanVienDAO.timKiemBangMaNhanVien(nhanVien.getMaNhanVien());
             if (isExists != null) {
@@ -257,8 +273,8 @@ public class NhanVienServiceImpl implements NhanVienService {
             if (nhanVien != null)
                 return nhanVien;
             else {
-                JOptionPane.showMessageDialog(null, String.format("<html><p>%s</p></html>",
-                        SystemConstants.BUNDLE.getString("quanLyNhanVien.thongBaoNhanVienKhongTonTai")));
+                JOptionPane.showMessageDialog(null,
+                        SystemConstants.BUNDLE.getString("quanLyNhanVien.thongBaoNhanVienKhongTonTai"));
                 return null;
             }
         } catch (Exception e) {
