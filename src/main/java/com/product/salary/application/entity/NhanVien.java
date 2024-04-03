@@ -233,16 +233,16 @@ public class NhanVien implements Serializable {
 	}
 
 
-	public void setTrinhDo(TrinhDo trinhDo) throws Exception {
-		if (!trinhDo.getTenTrinhDo().equals("Tiến sĩ") && !trinhDo.getTenTrinhDo().equals("Thạc sĩ")
-				&& !trinhDo.getTenTrinhDo().equals("Cử nhân") && !trinhDo.getTenTrinhDo().equals("Kỹ sư")
-				&& !trinhDo.getTenTrinhDo().equals("Cao đẳng") && !trinhDo.getTenTrinhDo().equals("Sơ cấp")
-				&& !trinhDo.getTenTrinhDo().equals("Trung cấp"))
-			throw new Exception(
-					"Trình độ phải thuộc 1 trong các cấp bậc: Tiến sĩ, Thạc sĩ, Cử nhân, Kỹ sư, Cao đẳng, Trung cấp, Sơ cấp");
-		else
-			this.trinhDo = trinhDo;
-	}
+//	public void setTrinhDo(TrinhDo trinhDo) throws Exception {
+//		if (!trinhDo.getTenTrinhDo().equals("Tiến sĩ") && !trinhDo.getTenTrinhDo().equals("Thạc sĩ")
+//				&& !trinhDo.getTenTrinhDo().equals("Cử nhân") && !trinhDo.getTenTrinhDo().equals("Kỹ sư")
+//				&& !trinhDo.getTenTrinhDo().equals("Cao đẳng") && !trinhDo.getTenTrinhDo().equals("Sơ cấp")
+//				&& !trinhDo.getTenTrinhDo().equals("Trung cấp"))
+//			throw new Exception(
+//					"Trình độ phải thuộc 1 trong các cấp bậc: Tiến sĩ, Thạc sĩ, Cử nhân, Kỹ sư, Cao đẳng, Trung cấp, Sơ cấp");
+//		else
+//			this.trinhDo = trinhDo;
+//	}
 
 	public Boolean isTrangThai() {
 		return trangThai;
