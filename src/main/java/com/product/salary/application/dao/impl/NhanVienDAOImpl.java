@@ -45,6 +45,7 @@ public class NhanVienDAOImpl extends AbstractDAO implements NhanVienDAO, Seriali
             if (nhanVien != null) {
                 em.getTransaction().begin();
                 nhanVien.setTrangThai(!nhanVien.isTrangThai());
+                em.merge(nhanVien);
                 em.getTransaction().commit();
                 return true;
             }
@@ -118,126 +119,6 @@ public class NhanVienDAOImpl extends AbstractDAO implements NhanVienDAO, Seriali
             TypedQuery<NhanVien> query = em.createQuery(criteriaQuery);
             return query.getResultList();
         }
-    }
-
-    private String getConditions(NhanVien search) {
-        // Câu truy vấn tìm kiếm
-        StringBuilder query = new StringBuilder("");
-
-        // Danh sách cá điều kiện truy vấn
-        List<String> conditions = new ArrayList<String>();
-
-        // Mã nhân viên
-        conditions.add(!StringUtils.isBlank(search.getMaNhanVien())
-                ? String.format("NV.MaNhanVien LIKE N'%%%s%%'", search.getMaNhanVien())
-                : "");
-
-        // Phòng Ban
-        if (search.getPhongBan() != null) {
-            if (!search.getPhongBan().getMaPhongBan().equals("xxxx")) {
-                conditions.add(!StringUtils.isBlank(search.getPhongBan().getMaPhongBan())
-                        ? String.format("NV.MaPhongBan = '%s'", search.getPhongBan().getMaPhongBan())
-                        : "");
-            }
-        }
-
-        // Họ tên
-        conditions.add(
-                !StringUtils.isBlank(search.getHoTen()) ? String.format("NV.HoTen LIKE N'%%%s%%'", search.getHoTen())
-                        : "");
-
-        // Số điện thoại
-        conditions.add(!StringUtils.isBlank(search.getSoDienThoai())
-                ? String.format("NV.SoDienThoai LIKE N'%%%s%%'", search.getSoDienThoai())
-                : "");
-
-        // Địa chỉ
-        conditions.add(
-                !StringUtils.isBlank(search.getDiaChi()) ? String.format("NV.DiaChi LIKE N'%%%s%%'", search.getDiaChi())
-                        : "");
-
-        // CCCD
-        conditions
-                .add(!StringUtils.isBlank(search.getCccd()) ? String.format("NV.Cccd LIKE N'%%%s%%'", search.getCccd())
-                        : "");
-
-        // Email
-        conditions.add(
-                !StringUtils.isBlank(search.getEmail()) ? String.format("NV.Email LIKE N'%%%s%%'", search.getEmail())
-                        : "");
-
-        // Trình độ
-        if (search.getTrinhDo() != null) {
-            if (!search.getTrinhDo().getMaTrinhDo().equals("xxxx")) {
-                conditions.add(!StringUtils.isBlank(search.getTrinhDo().getMaTrinhDo())
-                        ? String.format("NV.MaTrinhDo = '%s'", search.getTrinhDo().getMaTrinhDo())
-                        : "");
-            }
-        }
-
-        // Chức vụ
-        if (search.getChucVu() != null) {
-            if (!search.getChucVu().getMaChucVu().equals("xxxx")) {
-                conditions.add(!StringUtils.isBlank(search.getChucVu().getMaChucVu())
-                        ? String.format("NV.MaChucVu = '%s'", search.getChucVu().getMaChucVu())
-                        : "");
-            }
-        }
-
-        // Giới tính
-        if (search.getGioiTinh() != null) {
-            conditions.add(String.format("NV.GioiTinh = %d", search.getGioiTinh()));
-        } else
-            conditions.add("");
-
-        // Ngày sinh
-        if (search.getNgaySinh() != null) {
-            conditions.add(String.format("NV.NgaySinh = '%s'", search.getNgaySinh()));
-        } else {
-            conditions.add("");
-        }
-
-        // Ngày vào làm
-        if (search.getNgayVaoLam() != null) {
-            conditions.add(String.format("NV.NgayVaoLam = '%s'", search.getNgayVaoLam()));
-        } else {
-            conditions.add("");
-        }
-
-        // Lương cơ sở
-        if (search.getLuongCoSo() != 0) {
-            conditions.add(String.format("NV.LuongCoSo >= %f", search.getLuongCoSo()));
-        } else
-            conditions.add("");
-
-        // Trợ cấp
-        if (search.getTroCap() != 0) {
-            conditions.add(String.format("NV.TroCap >= %f", search.getTroCap()));
-        } else
-            conditions.add("");
-
-        // Hệ số lương
-        if (search.getHeSoLuong() != 0) {
-            conditions.add(String.format("NV.HeSoLuong = %f", search.getHeSoLuong()));
-        } else
-            conditions.add("");
-
-        // Trạng thái
-        if (search.isTrangThai() != null) {
-            conditions.add(search.isTrangThai() ? "NV.TrangThai = 1" : "NV.TrangThai = 0");
-        } else
-            conditions.add("");
-
-        // Xóa các điều kiện rỗng
-        conditions.removeIf((v) -> v.equals(""));
-
-        // Thêm AND vào giữa các điều kiện
-        if (!conditions.isEmpty()) {
-            String conditionValue = StringUtils.join(conditions, " AND ");
-            query.append(String.format(" WHERE %s", conditionValue));
-        }
-
-        return query.toString();
     }
 
     @Override
