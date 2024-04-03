@@ -4,9 +4,7 @@ import com.product.salary.application.entity.*;
 import com.product.salary.application.dao.ChamCongNhanVienDAO;
 import jakarta.persistence.Query;
 
-import java.sql.*;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 
 public class ChamCongNhanVienDAOImpl extends AbstractDAO implements ChamCongNhanVienDAO {
@@ -24,8 +22,8 @@ public class ChamCongNhanVienDAOImpl extends AbstractDAO implements ChamCongNhan
 	@Override
 	public List<NhanVien> timKiemNhanVienChuaChamCongBangCaLamVaNgayChamCong(LocalDate ngayChamCong, String caLam) {
 		try (var em = getEntityManager()){
-			Query query = em.createQuery("SELECT nv FROM NhanVien nv WHERE nv.maNhanVien NOT IN \n" +
-					"(SELECT ccnv.nhanVien.maNhanVien FROM ChamCongNhanVien ccnv \n" +
+			Query query = em.createQuery("SELECT nv FROM NhanVien nv WHERE nv.maNhanVien NOT IN " +
+					"(SELECT ccnv.nhanVien.maNhanVien FROM ChamCongNhanVien ccnv " +
 					" WHERE ccnv.ngayChamCong = :ngayChamCong AND ccnv.caLam.maCa = :maCa)");
 			query.setParameter("ngayChamCong", ngayChamCong);
 			query.setParameter("maCa", caLam);
@@ -58,7 +56,7 @@ public class ChamCongNhanVienDAOImpl extends AbstractDAO implements ChamCongNhan
 			Query query = em.createQuery("SELECT ccnv FROM ChamCongNhanVien ccnv WHERE ccnv.ngayChamCong = :ngayChamCong AND ccnv.caLam.maCa = :maCa ORDER BY ccnv.maChamCong DESC", ChamCongNhanVien.class);
 			query.setParameter("ngayChamCong", ngayChamCong);
 			query.setParameter("maCa", caLam);
-			List<ChamCongNhanVien> dsChamCong = (List<ChamCongNhanVien>) query.setMaxResults(1).getSingleResult();
+			List<ChamCongNhanVien> dsChamCong = (List<ChamCongNhanVien>) query.setMaxResults(1).getResultList();
 			return dsChamCong.isEmpty() ? null : dsChamCong.get(0).getMaChamCong();
 		}
 	}
@@ -83,7 +81,7 @@ public class ChamCongNhanVienDAOImpl extends AbstractDAO implements ChamCongNhan
 	@Override
 	public List<NhanVien> timKiemDanhSachNhanVienDiLamBangThangVaNam(int thang, int nam) {
 		try (var em = getEntityManager()){
-			Query query = em.createQuery("SELECT nv FROM NhanVien nv WHERE nv.maNhanVien IN \n" +
+			Query query = em.createQuery("SELECT nv FROM NhanVien nv WHERE nv.maNhanVien IN " +
 					"(SELECT ccnv.nhanVien.maNhanVien FROM ChamCongNhanVien ccnv WHERE MONTH(ccnv.ngayChamCong) = :thang AND YEAR(ccnv.ngayChamCong) = :nam)");
 			query.setParameter("thang", thang);
 			query.setParameter("nam", nam);

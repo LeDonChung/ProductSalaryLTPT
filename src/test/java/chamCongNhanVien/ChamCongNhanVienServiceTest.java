@@ -1,6 +1,8 @@
 package chamCongNhanVien;
 
+import com.product.salary.application.entity.CaLam;
 import com.product.salary.application.entity.ChamCongNhanVien;
+import com.product.salary.application.entity.NhanVien;
 import com.product.salary.application.service.ChamCongNhanVienService;
 import com.product.salary.application.service.impl.ChamCongNhanVienServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
@@ -10,38 +12,53 @@ import java.time.LocalDate;
 
 public class ChamCongNhanVienServiceTest {
     private ChamCongNhanVienService chamCongNhanVienService;
-
     @BeforeEach
-    void setUp(){
+    void setUp() {
         chamCongNhanVienService = new ChamCongNhanVienServiceImpl();
     }
-
     @Test
-    void timKiemTatCaChamCongNhanVienTheoCaVaNgayTest(){
-        chamCongNhanVienService.timKiemTatCaChamCongNhanVienTheoCaVaNgay(LocalDate.of(2022, 2, 3), "CH").forEach(System.out::println);
+    void timKiemTatCaChamCongNhanVienTheoCaVaNgay() {
+
+        CaLam caLam = new CaLam();
+        caLam.setMaCa("SA");
+
+        LocalDate ngayChamCong = LocalDate.of(2023, 1, 1);
+        var result = chamCongNhanVienService.timKiemTatCaChamCongNhanVienTheoCaVaNgay(ngayChamCong, caLam.getMaCa());
+        result.forEach(System.out::println);
     }
 
     @Test
-    void timKiemNhanVienChuaChamCongBangCaLamVaNgayChamCongTest(){
-        chamCongNhanVienService.timKiemNhanVienChuaChamCongBangCaLamVaNgayChamCong(LocalDate.of(2024, 2, 3), "CH").forEach(System.out::println);
+    void timKiemNhanVienChuaChamCongBangCaLamVaNgayChamCong() {
+        LocalDate ngayChamCong = LocalDate.of(2023, 1, 1);
+        var result = chamCongNhanVienService.timKiemNhanVienChuaChamCongBangCaLamVaNgayChamCong(ngayChamCong, "SA");
+        result.forEach(System.out::println);
     }
 
     @Test
-    void themChamCongNhanVienTest() throws Exception {
-        ChamCongNhanVien ccnv = new ChamCongNhanVien();
-        ccnv.setNgayChamCong(LocalDate.of(2024, 2, 3));
-        ccnv.getCaLam().setMaCa("CH");
-        ccnv.getNhanVien().setMaNhanVien("1020210003");
-         chamCongNhanVienService.themChamCongNhanVien(ccnv);
+    void themChamCongNhanVien() throws Exception {
+        ChamCongNhanVien chamCongNhanVien = new ChamCongNhanVien();
+        NhanVien nhanVien = new NhanVien();
+        nhanVien.setMaNhanVien("1020220002");
+        CaLam caLam = new CaLam();
+        caLam.setMaCa("CH");
+        chamCongNhanVien.setNhanVien(nhanVien);
+        chamCongNhanVien.setCaLam(caLam);
+        chamCongNhanVien.setNgayChamCong(LocalDate.now());
+        chamCongNhanVien.setTrangThai(1);
+        chamCongNhanVien.setLuongNhanVien(null);
+        chamCongNhanVien = chamCongNhanVienService.themChamCongNhanVien(chamCongNhanVien);
+        System.out.println(chamCongNhanVien);
     }
 
     @Test
-    void timKiemBangMaChamCongNhanVienTest(){
-        System.out.println(chamCongNhanVienService.timKiemBangMaChamCongNhanVien("CH0311230001"));
+    void timKiemBangMaChamCongNhanVien() {
+        var result = chamCongNhanVienService.timKiemBangMaChamCongNhanVien("SA0304240001");
+        System.out.println(result);
     }
 
     @Test
-    void capNhatTrangThaiDiLamCuaNhanVienTest(){
-        chamCongNhanVienService.capNhatTrangThaiDiLamCuaNhanVien("CH0302220002", 2);
+    void capNhatTrangThaiDiLamCuaNhanVien() {
+        var result = chamCongNhanVienService.capNhatTrangThaiDiLamCuaNhanVien("SA0304240001", 0);
+        System.out.println(result);
     }
 }
