@@ -7,15 +7,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 public interface ChamCongCongNhanDAO {
-	/**
-	 * Tìm danh sách công nhân đi làm bằng tháng, năm
-	 * 
-	 * @param thang là tháng cần tìm
-	 * @param nam   là năm cần tìm
-	 * @return danh sách công nhân đi làm
-	 */
-	List<ChamCongCongNhan> timtatCaChamCongCongNhanBangThangVaNam(int thang, int nam);
-	
+
 	/**
 	 * Tìm tất cả chấm công của công nhân
 	 * @return danh sách chấm công

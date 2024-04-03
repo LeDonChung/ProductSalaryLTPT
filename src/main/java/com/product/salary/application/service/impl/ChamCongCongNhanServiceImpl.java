@@ -38,8 +38,8 @@ public class ChamCongCongNhanServiceImpl implements ChamCongCongNhanService {
 		try {
 			dsCongNhanChuaChamCong = chamCongDAO.timTatCaCongNhanChuaChamCongTheoCaVaNgayChamCong(ngayChamCong, caLam);
 		} catch (Exception e) {
-			JOptionPane.showMessageDialog(null, SystemConstants.BUNDLE.getString("congNhan.loiHeThong"));
 			e.printStackTrace();
+			JOptionPane.showMessageDialog(null, SystemConstants.BUNDLE.getString("congNhan.loiHeThong"));
 		}
 		return dsCongNhanChuaChamCong;
 	}
@@ -53,10 +53,8 @@ public class ChamCongCongNhanServiceImpl implements ChamCongCongNhanService {
 				//JOptionPane.showMessageDialog(null, "Chấm công công nhân đã tồn tại!");
 				return null;
 			}
-			
-			ChamCongCongNhan cc = chamCongDAO.themChamCongCongNhan(chamCong);
-			
-			return cc;
+
+            return chamCongDAO.themChamCongCongNhan(chamCong);
 		} catch (Exception e) {
 			JOptionPane.showMessageDialog(null, SystemConstants.BUNDLE.getString("congNhan.loiHeThong"));
 			e.printStackTrace();
@@ -66,7 +64,7 @@ public class ChamCongCongNhanServiceImpl implements ChamCongCongNhanService {
 
 	public String genertateMaChamCongCongNhan(LocalDate ngayChamCong, CaLam caLam) {
 		String maChamCong = "";
-		String maChamCongCuoiCungTheoCa = chamCongDAO.timKiemMaChamCongCongNhanCuoiCungTheoNgayVaCaLam(ngayChamCong, caLam.getTenCa());
+		String maChamCongCuoiCungTheoCa = chamCongDAO.timKiemMaChamCongCongNhanCuoiCungTheoNgayVaCaLam(ngayChamCong, caLam.getMaCa());
 		int soTuTang = 0;
 		String nam = String.format("%s", ngayChamCong.getYear());
 		if (maChamCongCuoiCungTheoCa == null) {
