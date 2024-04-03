@@ -24,7 +24,8 @@ public class LuongCongNhanServiceTest {
 
     @Test
     void testGenerateMaLuong() {
-
+        var result = luongCongNhanService.generateMaLuong("2020220001", 1, 2023);
+        System.out.println(result);
     }
 
     @Test
