@@ -16,9 +16,9 @@ import java.time.LocalDate;
 import java.util.*;
 
 public class LuongCongNhanServiceImpl implements LuongCongNhanService {
-	private LuongCongNhanDAO luongCongNhanDAO;
-	private ChamCongCongNhanDAO chamCongCongNhanDAO;
-	private CongNhanDAO congNhanDAO;
+	private final LuongCongNhanDAO luongCongNhanDAO;
+	private final ChamCongCongNhanDAO chamCongCongNhanDAO;
+	private final CongNhanDAO congNhanDAO;
 
 	public LuongCongNhanServiceImpl() {
 		this.luongCongNhanDAO = new LuongCongNhanDAOImpl();
@@ -32,7 +32,7 @@ public class LuongCongNhanServiceImpl implements LuongCongNhanService {
 			// Tìm công nhân làm vào tháng và năm
 			List<CongNhan> congNhans = chamCongCongNhanDAO.timDanhSachCongNhanDiLamBangThangVaNam(thang, nam);
 			if (congNhans.isEmpty()) {
-				String message = "";
+				String message;
 				if (SystemConstants.LANGUAGE == 1) {
 					message = String.format("There are no workers working on %02d/%04d", thang, nam);
 				} else {
@@ -81,17 +81,16 @@ public class LuongCongNhanServiceImpl implements LuongCongNhanService {
 
 	@Override
 	public String generateMaLuong(String maCongNhan, int thang, int nam) {
-		String maLuong = String.format("%02d%04d%s", thang, nam, maCongNhan);
-		return maLuong;
+        return String.format("%02d%04d%s", thang, nam, maCongNhan);
 	}
 
 	@Override
 	public List<Map<String, Object>> timTatCaLuongCongNhanTheoThangVaNam(int thang, int nam) {
-		List<Map<String, Object>> results = new ArrayList<Map<String, Object>>();
+		List<Map<String, Object>> results = new ArrayList<>();
 		try {
 			List<LuongCongNhan> luongCongNhans = this.luongCongNhanDAO.timTatCaLuongCongNhanTheoThangVaNam(thang, nam);
 			for (LuongCongNhan luongCongNhan : luongCongNhans) {
-				Map<String, Object> result = new HashMap<String, Object>();
+				Map<String, Object> result = new HashMap<>();
 				String maCongNhan = luongCongNhan.getMaLuong().substring(6, 16);
 				CongNhan congNhan = this.congNhanDAO.timKiemBangMaCongNhan(maCongNhan);
 				result.put("MaLuong", luongCongNhan.getMaLuong());
@@ -114,7 +113,7 @@ public class LuongCongNhanServiceImpl implements LuongCongNhanService {
 
 	@Override
 	public List<Map<String, Object>> timTatCaChiTietLuongTheoThangVaNam(String maCongNhan, int thang, int nam) {
-		List<Map<String, Object>> results = new ArrayList<Map<String, Object>>();
+		List<Map<String, Object>> results = new ArrayList<>();
 		try {
 			return this.luongCongNhanDAO.timTatCaChiTietLuongTheoThangVaNam(maCongNhan, thang, nam);
 		} catch (Exception e) {
@@ -125,7 +124,7 @@ public class LuongCongNhanServiceImpl implements LuongCongNhanService {
 
 	@Override
 	public Map<String, Double> thongKeLuongCongNhanTheoNam() {
-		Map<String, Double> results = new HashMap<String, Double>();
+		Map<String, Double> results = new HashMap<>();
 		try {
 			return this.luongCongNhanDAO.thongKeLuongCongNhanTheoNam();
 		} catch (Exception e) {
@@ -136,7 +135,7 @@ public class LuongCongNhanServiceImpl implements LuongCongNhanService {
 
 	@Override
 	public Map<String, Object> thongKeLuongCongNhanBangThangVaNam(int thang, int nam) {
-		Map<String, Object> results = new HashMap<String, Object>();
+		Map<String, Object> results = new HashMap<>();
 		try {
 			List<Map<String, Object>> luongCongNhans = getLuongCongNhanTheoThangVaNam(thang, nam);
 			int tongSoCongNhan = luongCongNhans.size();
@@ -163,21 +162,15 @@ public class LuongCongNhanServiceImpl implements LuongCongNhanService {
 		if (luongCongNhans.isEmpty()) {
 			return "";
 		}
-		luongCongNhans.sort(new Comparator<Map<String, Object>>() {
-
-			@Override
-			public int compare(Map<String, Object> o1, Map<String, Object> o2) {
-				return (int) (Double.valueOf(o2.get("TongLuong").toString())
-						- Double.valueOf(o1.get("TongLuong").toString()));
-			}
-		});
+		luongCongNhans.sort((o1, o2) -> (int) (Double.parseDouble(o2.get("TongLuong").toString())
+                - Double.parseDouble(o1.get("TongLuong").toString())));
 		return luongCongNhans.get(0).get("TenCongNhan") + " - " + luongCongNhans.get(0).get("MaCongNhan");
 	}
 
 	private double getTongSoTienLuong(List<Map<String, Object>> luongCongNhans) {
-		Double tongSoTienLuong = 0.0;
+		double tongSoTienLuong = 0.0;
 		for (Map<String, Object> t : luongCongNhans) {
-			tongSoTienLuong += Double.valueOf(t.get("TongLuong").toString());
+			tongSoTienLuong += Double.parseDouble(t.get("TongLuong").toString());
 		}
 		return tongSoTienLuong;
 	}
@@ -186,37 +179,25 @@ public class LuongCongNhanServiceImpl implements LuongCongNhanService {
 		if (luongCongNhans.isEmpty()) {
 			return 0;
 		}
-		luongCongNhans.sort(new Comparator<Map<String, Object>>() {
-
-			@Override
-			public int compare(Map<String, Object> o1, Map<String, Object> o2) {
-				return (int) (Double.valueOf(o2.get("TongLuong").toString())
-						- Double.valueOf(o1.get("TongLuong").toString()));
-			}
-		});
-		return Double.valueOf(luongCongNhans.get(0).get("TongLuong").toString());
+		luongCongNhans.sort((o1, o2) -> (int) (Double.parseDouble(o2.get("TongLuong").toString())
+                - Double.parseDouble(o1.get("TongLuong").toString())));
+		return Double.parseDouble(luongCongNhans.get(0).get("TongLuong").toString());
 	}
 
 	private double getTienLuongThapNhat(List<Map<String, Object>> luongCongNhans) {
 		if (luongCongNhans.isEmpty()) {
 			return 0;
 		}
-		luongCongNhans.sort(new Comparator<Map<String, Object>>() {
-
-			@Override
-			public int compare(Map<String, Object> o1, Map<String, Object> o2) {
-				return (int) (Double.valueOf(o1.get("TongLuong").toString())
-						- Double.valueOf(o2.get("TongLuong").toString()));
-			}
-		});
-		return Double.valueOf(luongCongNhans.get(0).get("TongLuong").toString());
+		luongCongNhans.sort((o1, o2) -> (int) (Double.parseDouble(o1.get("TongLuong").toString())
+                - Double.parseDouble(o2.get("TongLuong").toString())));
+		return Double.parseDouble(luongCongNhans.get(0).get("TongLuong").toString());
 	}
 
 	private List<Map<String, Object>> getLuongCongNhanTheoThangVaNam(int thang, int nam) {
-		List<Map<String, Object>> results = new ArrayList<Map<String, Object>>();
+		List<Map<String, Object>> results = new ArrayList<>();
 		List<LuongCongNhan> luongCongNhans = this.luongCongNhanDAO.timTatCaLuongCongNhanTheoThangVaNam(thang, nam);
 		for (LuongCongNhan luongCongNhan : luongCongNhans) {
-			Map<String, Object> result = new HashMap<String, Object>();
+			Map<String, Object> result = new HashMap<>();
 			String maCongNhan = luongCongNhan.getMaLuong().substring(6, 16);
 			CongNhan congNhan = this.congNhanDAO.timKiemBangMaCongNhan(maCongNhan);
 			result.put("MaLuong", luongCongNhan.getMaLuong());

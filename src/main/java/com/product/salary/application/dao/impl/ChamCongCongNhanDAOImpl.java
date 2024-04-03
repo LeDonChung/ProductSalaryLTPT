@@ -16,10 +16,13 @@ public class ChamCongCongNhanDAOImpl extends AbstractDAO implements ChamCongCong
 	public List<CongNhan> timDanhSachCongNhanDiLamBangThangVaNam(int thang, int nam) {
 
 		try(var em = getEntityManager()) {
-			var query = em.createQuery("SELECT DISTINCT cn FROM ChamCongCongNhan cc " +
+			var query = em.createQuery("SELECT cn FROM CongNhan cn WHERE cn.maCongNhan IN " +
+					"(" +
+					"SELECT cn.maCongNhan FROM ChamCongCongNhan cc " +
 					"JOIN PhanCongCongNhan pc ON cc.phanCongCongNhan.maPhanCong = pc.maPhanCong " +
 					"JOIN CongNhan cn ON pc.congNhan.maCongNhan = cn.maCongNhan " +
-					"WHERE MONTH(cc.ngayChamCong) = :thang AND YEAR(cc.ngayChamCong) = :nam", CongNhan.class);
+					"WHERE MONTH(cc.ngayChamCong) = :thang AND YEAR(cc.ngayChamCong) = :nam " +
+					")", CongNhan.class);
 			query.setParameter("thang", thang);
 			query.setParameter("nam", nam);
 			return query.getResultList();
