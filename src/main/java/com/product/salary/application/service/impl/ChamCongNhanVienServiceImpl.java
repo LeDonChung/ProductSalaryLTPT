@@ -48,6 +48,7 @@ public class ChamCongNhanVienServiceImpl implements ChamCongNhanVienService {
 	@Override
 	public ChamCongNhanVien themChamCongNhanVien(ChamCongNhanVien chamCongNV) {
 		try {
+			chamCongNV.setMaChamCong(genertateMaChamCongNhanVien(chamCongNV.getNgayChamCong(), chamCongNV.getCaLam()));
 			ChamCongNhanVien isExists = chamCongNhanVienDAO.timKiemBangMaChamCongNhanVien(chamCongNV.getMaChamCong());
 			if (isExists != null) {
 				JOptionPane.showMessageDialog(null, String.format("<html><p>%s</p></html>",
@@ -77,9 +78,6 @@ public class ChamCongNhanVienServiceImpl implements ChamCongNhanVienService {
 					}
 					return null;
 				}
-
-				chamCongNV.setMaChamCong(
-						genertateMaChamCongNhanVien(chamCongNV.getNgayChamCong(), chamCongNV.getCaLam()));
 
 				return chamCongNhanVienDAO.themChamCongNhanVien(chamCongNV);
 			}
