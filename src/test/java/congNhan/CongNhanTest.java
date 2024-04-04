@@ -81,9 +81,6 @@ public class CongNhanTest {
     @Test
     public void testThemCongNhan() throws Exception{
         CongNhan congNhan = new CongNhan();
-
-        // Vi chua co ngay vao lam ma ma gọi gen ra ne
-        // String ma = congNhanService.generateMaCongNhan(congNhan);
         congNhan.setMaCongNhan("1");
         congNhan.setCccd("1231231231");
         congNhan.setDiaChi("Phu Yen");

@@ -5,7 +5,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import org.checkerframework.checker.units.qual.C;
 
 import java.io.Serializable;
 import java.time.LocalDate;
@@ -35,8 +34,8 @@ public class PhanCongCongNhan implements Serializable {
 	@Column(name = "TrangThai", columnDefinition = "BIT NOT NULL DEFAULT 0")
 	private boolean trangThai;
 
-	public PhanCongCongNhan(String maPhanCong, CongNhan congNhan, CongDoanSanPham congDoanSanPham,
-                            LocalDate ngayPhanCong, boolean trangThai) throws Exception {
+	public PhanCongCongNhan(String maPhanCong,
+							LocalDate ngayPhanCong, boolean trangThai) throws Exception {
 		setMaPhanCong(maPhanCong);
 		setCongNhan(congNhan);
 		setCongDoanSanPham(congDoanSanPham);

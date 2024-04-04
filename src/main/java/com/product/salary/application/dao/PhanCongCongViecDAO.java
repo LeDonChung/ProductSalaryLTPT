@@ -7,12 +7,7 @@ import java.util.List;
 
 
 public interface PhanCongCongViecDAO {
-	/**
-	 * Tìm tất cả phân công công việc
-	 * 
-	 * @return danhSachPhanCong
-	 */
-	List<PhanCongCongNhan> timTatCaPhanCong();
+
 	
 	/**
 	 * Cập nhật phân công công nhân
@@ -49,26 +44,11 @@ public interface PhanCongCongViecDAO {
 	 * @return
 	 */
 	String timMaPhanCongCuoiCung();
-	
-	/**
-	 * Tìm tất cả phân công bằng mã công nhân
-	 * @param maCongNhan
-	 * @return danh sách phân công của một công nhân
-	 */
-	List<PhanCongCongNhan> timTatCaPhanCongTheoMaCongNhan(String maCongNhan);
-	
-	/**
-	 * Tìm tất cả phân công bằng mã công nhân đã hoàn thành công việc
-	 * @param maCongNhan
-	 * @return danh sách phân công của một công nhân
-	 */
-	List<PhanCongCongNhan> timTatCaPhanCongTheoMaCongNhanDaHoanThanh(String maCongNhan);
+
 	
 	List<PhanCongCongNhan> timTatCaPhanCongTheoMaCongNhanChuaHoanThanh(String maCongNhan);
 	
 	List<CongNhan> timTatCaCongNhanChuaPhanCongVaoCongDoan(String maSanPham, String maCongDoan);
-	
-	void capNhatSoLuongCanLam(String maCongDoan);
 
 	List<PhanCongCongNhan> timTatCaPhanCongTheoMaCongDoan(String maCongDoan);
 }
