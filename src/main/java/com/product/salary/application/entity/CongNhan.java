@@ -33,7 +33,7 @@ public class CongNhan implements Serializable {
 	private String diaChi;
 
 	@Column(name = "GioiTinh", columnDefinition = "INT NOT NULL DEFAULT 0")
-	private int gioiTinh;
+	private Integer gioiTinh;
 
 	@Column(name = "CCCD", length = 12, unique = true)
 	private String cccd;
@@ -64,7 +64,7 @@ public class CongNhan implements Serializable {
 	@JoinColumn(name = "MaTayNghe")
 	private TayNghe tayNghe;
 
-	public CongNhan(String maCongNhan, String hoTen, String email, String diaChi, int gioiTinh, String cccd,
+	public CongNhan(String maCongNhan, String hoTen, String email, String diaChi, Integer gioiTinh, String cccd,
                     String soDienThoai, LocalDate ngaySinh, ToNhom toNhom, LocalDate ngayVaoLam, double troCap, byte[] hinhAnh,
                     boolean trangThai, TayNghe tayNghe) throws Exception {
 		setMaCongNhan(maCongNhan);
@@ -83,7 +83,7 @@ public class CongNhan implements Serializable {
 		setTayNghe(tayNghe);
 	}
 
-	public CongNhan(String maCongNhan, String hoTen, String email, String diaChi, int gioiTinh, String cccd,
+	public CongNhan(String maCongNhan, String hoTen, String email, String diaChi, Integer gioiTinh, String cccd,
                     String soDienThoai, LocalDate ngaySinh, ToNhom toNhom, LocalDate ngayVaoLam, double troCap, byte[] hinhAnh,
                     TayNghe tayNghe) throws Exception {
 		setMaCongNhan(maCongNhan);
@@ -102,7 +102,7 @@ public class CongNhan implements Serializable {
 	}
 
 	public CongNhan(String maCongNhan, String hoTen, String email, String diaChi, String cccd, String soDienThoai,
-			Boolean trangThai, int gioiTinh, LocalDate ngaySinh, LocalDate ngayVaoLam, Double troCap, ToNhom toNhom,
+			Boolean trangThai, Integer gioiTinh, LocalDate ngaySinh, LocalDate ngayVaoLam, Double troCap, ToNhom toNhom,
 			TayNghe tayNghe) {
 		this.maCongNhan = maCongNhan;
 		this.hoTen = hoTen;
@@ -124,7 +124,7 @@ public class CongNhan implements Serializable {
 		this.hoTen = hoTen;
 	}
 
-	public CongNhan(String maCongNhan, String hoTen, int gioiTinh, String soDienThoai) {
+	public CongNhan(String maCongNhan, String hoTen, Integer gioiTinh, String soDienThoai) {
 		this.maCongNhan = maCongNhan;
 		this.hoTen = hoTen;
 		this.gioiTinh = gioiTinh;
