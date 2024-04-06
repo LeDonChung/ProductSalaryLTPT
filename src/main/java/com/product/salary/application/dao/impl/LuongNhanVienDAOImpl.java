@@ -88,9 +88,12 @@ public class LuongNhanVienDAOImpl extends AbstractDAO implements LuongNhanVienDA
     @Override
     public int laySoLuongCaLamNgayChuNhatBangMaNhanVien(String maNhanVien, int thang, int nam) {
         try (var em = getEntityManager()) {
+            // Query: SELECT COUNT(*) FROM ChamCongNhanVien ccnv WHERE ccnv.nhanVien.maNhanVien = :maNhanVien AND MONTH(ccnv.ngayChamCong) = :thang AND YEAR(ccnv.ngayChamCong) = :nam AND  (ccnv.ngayChamCong) = 1 AND ccnv.trangThai IN (1, 2)
+            // So sánh ngày chủ nhật trong tuần sửa dụng jpa: DAYOFWEEK(ccnv.ngayChamCong) = 1
+
             Query query = em.createQuery("SELECT COUNT(*) FROM ChamCongNhanVien ccnv " +
                     "WHERE ccnv.nhanVien.maNhanVien = :maNhanVien AND MONTH(ccnv.ngayChamCong) = :thang " +
-                    "AND YEAR(ccnv.ngayChamCong) = :nam AND DAYOFWEEK(ccnv.ngayChamCong) = 1 AND ccnv.trangThai IN (1, 2)");
+                    "AND YEAR(ccnv.ngayChamCong) = :nam AND FUNCTION('DAYOFWEEK', ccnv.ngayChamCong) = 7 AND ccnv.trangThai IN (1, 2)");
             query.setParameter("maNhanVien", maNhanVien);
             query.setParameter("thang", thang);
             query.setParameter("nam", nam);
@@ -169,8 +172,8 @@ public class LuongNhanVienDAOImpl extends AbstractDAO implements LuongNhanVienDA
     @Override
     public Map<String, Double> thongKeLuongNhanVienTheoThang(int nam) {
         try (var em = getEntityManager()){
-            Query query = em.createQuery("SELECT MONTH(l.thang) AS thang, SUM(l.luong) AS tongLuong " +
-                    "FROM LuongNhanVien l WHERE YEAR(l.luong) = :nam GROUP BY MONTH(l.thang)", Object[].class);
+            Query query = em.createQuery("SELECT l.thang AS thang, SUM(l.luong) AS tongLuong " +
+                    "FROM LuongNhanVien l WHERE l.nam = :nam GROUP BY l.thang", Object[].class);
             query.setParameter("nam", nam);
             List<Object[]> results = query.getResultList();
             Map<String, Double> map = new HashMap<>();
@@ -186,6 +189,9 @@ public class LuongNhanVienDAOImpl extends AbstractDAO implements LuongNhanVienDA
         try (var em = getEntityManager()) {
             em.getTransaction().begin();
             LuongNhanVien luongNV = em.find(LuongNhanVien.class, maLuong);
+            if(luongNV == null) {
+                return;
+            }
             luongNV.setLuongThuong(luongThuong);
             em.getTransaction().commit();
         } catch (Exception e) {
