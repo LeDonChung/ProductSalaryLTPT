@@ -14,51 +14,27 @@ public class LuongNhanVienServiceTest {
 
     @Test
     void timKiemTatCaLuongNhanVienTheoThangVaNamTest(){
-
+        luongNhanVienService.timKiemTatCaLuongNhanVienTheoThangVaNam(1, 2023).forEach(System.out::println);
     }
 
     @Test
     void tinhLuongNhanVienTest(){
-
+        luongNhanVienService.tinhLuongNhanVien( 4, 2024);
     }
 
     @Test
     void timTatCaChiTietLuongTheoThangVaNamTest(){
-
+        luongNhanVienService.timTatCaChiTietLuongTheoThangVaNam("1020170002", 1, 2023).forEach(System.out::println);
     }
 
     @Test
     void thongKeLuongNhanVienBangThangVaNamTest(){
-
-    }
-
-    @Test
-    void getNhanVienXuatSacNhatTest(){
-
-    }
-
-    @Test
-    void getTongSoTienLuongTest(){
-
-    }
-
-    @Test
-    void getTienLuongCaoNhatTest(){
-
-    }
-
-    @Test
-    void getTienLuongThapNhatTest(){
-
-    }
-
-    @Test
-    void getLuongNhanVienTheoThangVaNamTest(){
-
+        luongNhanVienService.thongKeLuongNhanVienBangThangVaNam(1, 2023)
+                .forEach((key, value) -> System.out.println(key + " : " + value));
     }
 
     @Test
     void capNhatLuongThuongTest(){
-
+        luongNhanVienService.capNhatLuongThuong("0420241020220002", 1000000);
     }
 }

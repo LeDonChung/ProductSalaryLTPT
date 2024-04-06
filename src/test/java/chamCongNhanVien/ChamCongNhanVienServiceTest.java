@@ -40,7 +40,7 @@ public class ChamCongNhanVienServiceTest {
         NhanVien nhanVien = new NhanVien();
         nhanVien.setMaNhanVien("1020220002");
         CaLam caLam = new CaLam();
-        caLam.setMaCa("CH");
+        caLam.setMaCa("SA");
         chamCongNhanVien.setNhanVien(nhanVien);
         chamCongNhanVien.setCaLam(caLam);
         chamCongNhanVien.setNgayChamCong(LocalDate.now());
