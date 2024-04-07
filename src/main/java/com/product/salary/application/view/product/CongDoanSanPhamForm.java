@@ -433,7 +433,7 @@ public class CongDoanSanPhamForm extends JPanel {
 			tableModelCongDoanSanPham
 					.addRow(new Object[] { stt++, congDoanSanPham.getMaCongDoan(), congDoanSanPham.getTenCongDoan(),
 							PriceFormatterUtils.format(congDoanSanPham.getGiaCongDoan()), congDoanSanPham.getThoiHan(),
-							congDoanSanPham.getCongDoanLamTruoc().getTenCongDoan(), congDoanSanPham.getSoLuongCanLam(),
+							congDoanSanPham.getCongDoanLamTruoc() != null ? congDoanSanPham.getCongDoanLamTruoc().getTenCongDoan() : "", congDoanSanPham.getSoLuongCanLam(),
 							congDoanSanPham.isTrangThai() ? "Đang hoạt động" : "Đã ngưng hoạt động" });
 		}
 
@@ -624,8 +624,8 @@ public class CongDoanSanPhamForm extends JPanel {
 			this.txtTenCongDoan.setText(congDoanSanPham.getTenCongDoan());
 			this.txtSoLuongCanLam.setText(congDoanSanPham.getSoLuongCanLam() + "");
 			this.cbxCongDoanLamTruoc
-					.setSelected(congDoanSanPham.getCongDoanLamTruoc().getMaCongDoan() == null ? false : true);
-			this.dfcbbCongDoanSanPhamLamTruoc.setSelectedItem(congDoanSanPham.getCongDoanLamTruoc());
+					.setSelected(congDoanSanPham.getCongDoanLamTruoc() != null ? true : false);
+			this.dfcbbCongDoanSanPhamLamTruoc.setSelectedItem((congDoanSanPham.getCongDoanLamTruoc() != null) ? congDoanSanPham.getCongDoanLamTruoc() : null);
 			this.txtGiaCongDoan.setText(PriceFormatterUtils.format(congDoanSanPham.getGiaCongDoan()));
 			this.cbbTrangThai.setSelectedIndex(congDoanSanPham.isTrangThai() ? 0 : 1);
 			this.jcThoiHan.setDate(DateConvertUtils.asUtilDate(congDoanSanPham.getThoiHan(), ZoneId.systemDefault()));

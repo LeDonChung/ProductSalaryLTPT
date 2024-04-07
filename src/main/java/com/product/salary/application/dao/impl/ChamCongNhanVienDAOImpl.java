@@ -53,11 +53,12 @@ public class ChamCongNhanVienDAOImpl extends AbstractDAO implements ChamCongNhan
 	@Override
 	public String timKiemMaChamCongNhanVienCuoiCungTheoNgayVaCaLam(LocalDate ngayChamCong, String caLam) {
 		try (var em = getEntityManager()){
-			Query query = em.createQuery("SELECT ccnv FROM ChamCongNhanVien ccnv WHERE ccnv.ngayChamCong = :ngayChamCong AND ccnv.caLam.maCa = :maCa ORDER BY ccnv.maChamCong DESC", ChamCongNhanVien.class);
-			query.setParameter("ngayChamCong", ngayChamCong);
-			query.setParameter("maCa", caLam);
-			List<ChamCongNhanVien> dsChamCong = (List<ChamCongNhanVien>) query.setMaxResults(1).getResultList();
-			return dsChamCong.isEmpty() ? null : dsChamCong.get(0).getMaChamCong();
+			List<ChamCongNhanVien> chamCongNhanViens = em.createQuery("SELECT ccnv FROM ChamCongNhanVien ccnv WHERE ccnv.ngayChamCong = :ngayChamCong AND ccnv.caLam.maCa = :maCa ORDER BY ccnv.maChamCong DESC", ChamCongNhanVien.class)
+					.setParameter("ngayChamCong", ngayChamCong)
+					.setParameter("maCa", caLam)
+					.setMaxResults(1)
+					.getResultList();
+			return chamCongNhanViens.isEmpty() ? null : chamCongNhanViens.get(0).getMaChamCong();
 		}
 	}
 

@@ -14,7 +14,6 @@ import java.util.Set;
 @Getter
 @Setter
 @NoArgsConstructor
-@ToString
 public class PhongBan implements Serializable {
 
 	@Id
@@ -71,6 +70,11 @@ public class PhongBan implements Serializable {
 	@Override
 	public int hashCode() {
 		return Objects.hash(maPhongBan);
+	}
+
+	@Override
+	public String toString() {
+		return tenPhongBan;
 	}
 
 	@Override

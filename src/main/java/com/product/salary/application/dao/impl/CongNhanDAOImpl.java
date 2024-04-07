@@ -79,7 +79,7 @@ public class CongNhanDAOImpl extends AbstractDAO implements CongNhanDAO, Seriali
 				predicates.add(cb.like(congNhanRoot.get("soDienThoai"), "%" + congNhan.getSoDienThoai() + "%"));
 			}
 			// int -> 0
-			if (congNhan.getGioiTinh() != null) {
+			if (congNhan.getGioiTinh() != null && congNhan.getGioiTinh() != 2){
 				predicates.add(cb.equal(congNhanRoot.get("gioiTinh"), congNhan.getGioiTinh()));
 			}
 
@@ -138,7 +138,8 @@ public class CongNhanDAOImpl extends AbstractDAO implements CongNhanDAO, Seriali
 	public CongNhan timKiemBangCCCD(String cccdS) {
 		try(var em = getEntityManager()) {
 			String query = "SELECT c FROM CongNhan c WHERE c.cccd = :cccd";
-			return em.createQuery(query, CongNhan.class).setParameter("cccd", cccdS).getSingleResult();
+			return em.createQuery(query, CongNhan.class).setParameter("cccd", cccdS)
+					.getResultList().stream().findFirst().orElse(null);
 		}
 	}
 

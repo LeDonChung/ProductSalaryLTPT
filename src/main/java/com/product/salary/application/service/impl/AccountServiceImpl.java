@@ -51,7 +51,7 @@ public class AccountServiceImpl implements AccountService {
 		try {
 			// Kiểm tra tồn tại bằng cách mã hóa thông tin mật khẩu nhập vào
 			String matKhauMaHoa = PasswordUtils.toSHA1(matKhau);
-			return accountDAO.capNhatMatKhau(taiKhoan, matKhau);
+			return accountDAO.capNhatMatKhau(taiKhoan, matKhauMaHoa);
 		} catch (Exception e) {
 			JOptionPane.showMessageDialog(null, SystemConstants.BUNDLE.getString("congNhan.loiHeThong"));
 			e.printStackTrace();

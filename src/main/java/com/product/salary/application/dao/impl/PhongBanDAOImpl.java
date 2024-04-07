@@ -41,9 +41,6 @@ public class PhongBanDAOImpl extends AbstractDAO implements PhongBanDAO {
             if (phongBan.isTrangThai() != null) {
                 predicates.add(criteriaBuilder.equal(root.get("trangThai"), phongBan.isTrangThai()));
             }
-            if (phongBan.getSoLuongNhanVien() != null && phongBan.getSoLuongNhanVien() >= 0) {
-                predicates.add(criteriaBuilder.equal(root.get("soLuongNhanVien"), phongBan.getSoLuongNhanVien()));
-            }
 
             criteriaQuery.where(criteriaBuilder.and(predicates.toArray(new Predicate[0])));
             TypedQuery<PhongBan> query = em.createQuery(criteriaQuery);

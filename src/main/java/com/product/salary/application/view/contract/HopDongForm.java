@@ -526,6 +526,16 @@ public class HopDongForm extends JPanel {
 			String yeuCau = this.txaYeuCau.getText().trim();
 			HopDong hopDong = new HopDong(maHopDong, tenHopDong, tenKhachHang, PriceFormatterUtils.parse(tongTien),
 					PriceFormatterUtils.parse(soTienCoc), ngayBatDau, ngayKetThuc, yeuCau, false);
+
+			HopDong finalHopDong = hopDong;
+			chiTietHopDongs.forEach(chiTietHopDong -> {
+                try {
+                    chiTietHopDong.setHopDong(finalHopDong);
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            });
+
 			hopDong = this.hopDongService.themHopDong(hopDong, chiTietHopDongs);
 
 			if (hopDong != null) {

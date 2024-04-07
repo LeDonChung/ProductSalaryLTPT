@@ -91,8 +91,8 @@ public class ChamCongNhanVienServiceImpl implements ChamCongNhanVienService {
 	private String genertateMaChamCongNhanVien(LocalDate ngayChamCong, CaLam caLam) {
 		String maChamCong = "";
 		String maChamCongCuoiCungTheoCa = chamCongNhanVienDAO
-				.timKiemMaChamCongNhanVienCuoiCungTheoNgayVaCaLam(ngayChamCong, caLam.getTenCa());
-		int soTuTang = 0;
+				.timKiemMaChamCongNhanVienCuoiCungTheoNgayVaCaLam(ngayChamCong, caLam.getMaCa());
+ 		int soTuTang = 0;
 		String nam = String.format("%s", ngayChamCong.getYear());
 		if (maChamCongCuoiCungTheoCa == null) {
 			maChamCong = String.format("%s%02d%02d%s%04d", caLam.getMaCa(), ngayChamCong.getDayOfMonth(),
