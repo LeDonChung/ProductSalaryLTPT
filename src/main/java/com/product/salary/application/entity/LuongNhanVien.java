@@ -7,6 +7,7 @@ import lombok.Setter;
 import lombok.ToString;
 import org.checkerframework.checker.units.qual.C;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.Set;
 
@@ -16,7 +17,7 @@ import java.util.Set;
 @Setter
 @NoArgsConstructor
 @ToString
-public class LuongNhanVien {
+public class LuongNhanVien implements Serializable {
 
 	@Id
 	@Column(name = "MaLuong", length = 16)

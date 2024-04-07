@@ -6,6 +6,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.*;
 
+import java.io.Serializable;
 import java.util.Objects;
 
 @NoArgsConstructor
@@ -14,7 +15,7 @@ import java.util.Objects;
 @Getter
 @Setter
 @Table(name = "TayNghe")
-public class TayNghe {
+public class TayNghe implements Serializable {
 	@Id
 	@Column(name = "MaTayNghe", length = 15)
 	private String maTayNghe;
