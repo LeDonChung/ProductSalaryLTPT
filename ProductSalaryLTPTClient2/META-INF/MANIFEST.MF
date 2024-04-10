@@ -1,0 +1,16 @@
+Manifest-Version: 1.0
+Main-Class: 
+Class-Path: slf4j-api-2.0.7.jar commons-codec-1.12.jar commons-collectio
+ ns4-4.3.jar commons-math3-3.6.1.jar hibernate-commons-annotations-6.0.6
+ .Final.jar jaxb-core-4.0.2.jar hibernate-core-6.4.4.Final.jar caffeine-
+ 2.9.3.jar error_prone_annotations-2.10.0.jar infobip-api-java-client-4.
+ 0.0.jar angus-activation-2.0.0.jar antlr4-runtime-4.13.0.jar commons-la
+ ng3-3.14.0.jar checker-qual-3.32.0.jar mssql-jdbc-12.3.0.jre17-preview.
+ jar istack-commons-runtime-4.1.1.jar jna-5.13.0.jar txw2-4.0.2.jar jaxb
+ -runtime-4.0.2.jar jcl-over-slf4j-2.0.7.jar jakarta.transaction-api-2.0
+ .1.jar classmate-1.5.1.jar byte-buddy-1.14.11.jar jakarta.xml.bind-api-
+ 4.0.0.jar poi-4.1.0.jar waffle-jna-3.3.0.jar mariadb-java-client-3.3.3.
+ jar jna-platform-5.13.0.jar jakarta.activation-api-2.1.0.jar itextpdf-5
+ .5.12.jar jandex-3.1.2.jar gson-2.10.1.jar jakarta.persistence-api-3.1.
+ 0.jar jboss-logging-3.5.0.Final.jar jakarta.inject-api-2.0.1.jar
+

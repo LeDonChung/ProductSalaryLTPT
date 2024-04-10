@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="3ebbb81c-5401-414a-b1ca-43dd360133e4" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/ProductSalaryLTPTServer/.idea/artifacts/server_jar.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ProductSalaryLTPTServer/.idea/codeStyles/Project.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ProductSalaryLTPTServer/.idea/codeStyles/codeStyleConfig.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ProductSalaryLTPTServer/.idea/encodings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/ProductSalaryLTPTServer/.idea/encodings.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ProductSalaryLTPTServer/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/ProductSalaryLTPTServer/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ProductSalaryLTPTServer/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/ProductSalaryLTPTServer/.idea/vcs.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ProductSalaryLTPTServer/libs/jcalendar-1.4.jar" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ProductSalaryLTPTServer/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/ProductSalaryLTPTServer/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ProductSalaryLTPTServer/src/main/java/com/product/salary/application/ProductSalaryApplication.java" beforeDir="false" afterPath="$PROJECT_DIR$/ProductSalaryLTPTServer/src/main/java/com/product/salary/application/ProductSalaryApplication.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ProductSalaryLTPTServer/src/main/java/com/product/salary/application/entity/HopDong.java" beforeDir="false" afterPath="$PROJECT_DIR$/ProductSalaryLTPTServer/src/main/java/com/product/salary/application/entity/HopDong.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ProductSalaryLTPTServer/src/main/java/com/product/salary/application/entity/LuongCongNhan.java" beforeDir="false" afterPath="$PROJECT_DIR$/ProductSalaryLTPTServer/src/main/java/com/product/salary/application/entity/LuongCongNhan.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ProductSalaryLTPTServer/src/main/java/com/product/salary/application/entity/LuongNhanVien.java" beforeDir="false" afterPath="$PROJECT_DIR$/ProductSalaryLTPTServer/src/main/java/com/product/salary/application/entity/LuongNhanVien.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ProductSalaryLTPTServer/src/main/java/com/product/salary/application/entity/NhanVien.java" beforeDir="false" afterPath="$PROJECT_DIR$/ProductSalaryLTPTServer/src/main/java/com/product/salary/application/entity/NhanVien.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ProductSalaryLTPTServer/src/main/java/com/product/salary/application/entity/PhongBan.java" beforeDir="false" afterPath="$PROJECT_DIR$/ProductSalaryLTPTServer/src/main/java/com/product/salary/application/entity/PhongBan.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ProductSalaryLTPTServer/src/main/java/com/product/salary/application/interfaces/ISendChiTietHopDong.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ProductSalaryLTPTServer/src/main/java/com/product/salary/application/interfaces/ISendResponse.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ProductSalaryLTPTServer/src/main/java/com/product/salary/application/view/app/Application.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ProductSalaryLTPTServer/src/main/java/com/product/salary/application/view/contract/CreateChiTietHopDongForm.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ProductSalaryLTPTServer/src/main/java/com/product/salary/application/view/contract/HopDongForm.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ProductSalaryLTPTServer/src/main/java/com/product/salary/application/view/department/PhongBanForm.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ProductSalaryLTPTServer/src/main/java/com/product/salary/application/view/department/TimKiemPhongBanForm.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ProductSalaryLTPTServer/src/main/java/com/product/salary/application/view/employee/ChamCongNhanVienForm.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ProductSalaryLTPTServer/src/main/java/com/product/salary/application/view/employee/ChiTietLuongNhanVienForm.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ProductSalaryLTPTServer/src/main/java/com/product/salary/application/view/employee/ChucVuForm.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ProductSalaryLTPTServer/src/main/java/com/product/salary/application/view/employee/NhanVienForm.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ProductSalaryLTPTServer/src/main/java/com/product/salary/application/view/employee/TimKiemNhanVienForm.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ProductSalaryLTPTServer/src/main/java/com/product/salary/application/view/employee/TinhLuongNhanVienForm.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ProductSalaryLTPTServer/src/main/java/com/product/salary/application/view/groups/TimKiemToNhomForm.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ProductSalaryLTPTServer/src/main/java/com/product/salary/application/view/groups/ToNhomForm.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ProductSalaryLTPTServer/src/main/java/com/product/salary/application/view/menu/MenuItem.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ProductSalaryLTPTServer/src/main/java/com/product/salary/application/view/other/DangNhapForm.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ProductSalaryLTPTServer/src/main/java/com/product/salary/application/view/other/DoiMatKhauForm.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ProductSalaryLTPTServer/src/main/java/com/product/salary/application/view/other/QuenMatKhauForm.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ProductSalaryLTPTServer/src/main/java/com/product/salary/application/view/other/TrangChuForm.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ProductSalaryLTPTServer/src/main/java/com/product/salary/application/view/product/CongDoanSanPhamForm.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ProductSalaryLTPTServer/src/main/java/com/product/salary/application/view/product/SanPhamForm.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ProductSalaryLTPTServer/src/main/java/com/product/salary/application/view/product/TimKiemSanPhamForm.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ProductSalaryLTPTServer/src/main/java/com/product/salary/application/view/statistic/LuongCongNhanForm.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ProductSalaryLTPTServer/src/main/java/com/product/salary/application/view/statistic/LuongNhanVienForm.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ProductSalaryLTPTServer/src/main/java/com/product/salary/application/view/statistic/TongQuatForm.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ProductSalaryLTPTServer/src/main/java/com/product/salary/application/view/worker/ChamCongCongNhanForm.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ProductSalaryLTPTServer/src/main/java/com/product/salary/application/view/worker/ChiTietLuongCongNhanForm.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ProductSalaryLTPTServer/src/main/java/com/product/salary/application/view/worker/CongNhanForm.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ProductSalaryLTPTServer/src/main/java/com/product/salary/application/view/worker/PhanCongCongNhanForm.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ProductSalaryLTPTServer/src/main/java/com/product/salary/application/view/worker/TayNgheForm.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ProductSalaryLTPTServer/src/main/java/com/product/salary/application/view/worker/TimKiemCongNhanForm.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ProductSalaryLTPTServer/src/main/java/com/product/salary/application/view/worker/TinhLuongCongNhanForm.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ProductSalaryLTPTServer/src/main/resources/app.properties" beforeDir="false" afterPath="$PROJECT_DIR$/ProductSalaryLTPTServer/src/main/resources/app.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ProductSalaryLTPTServer/src/test/java/TestConnection.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ProductSalaryLTPTServer/src/test/java/account/AccounTest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ProductSalaryLTPTServer/src/test/java/chamCongCongNhan/ChamCongCongNhanServiceTest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ProductSalaryLTPTServer/src/test/java/chamCongNhanVien/ChamCongNhanVienServiceTest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ProductSalaryLTPTServer/src/test/java/chucVu/ChucVuServiceTest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ProductSalaryLTPTServer/src/test/java/congNhan/CongNhanTest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ProductSalaryLTPTServer/src/test/java/hopDong/HopDongServiceTest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ProductSalaryLTPTServer/src/test/java/luongCongNhan/LuongCongNhanServiceTest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ProductSalaryLTPTServer/src/test/java/luongNhanVien/LuongNhanVienServiceTest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ProductSalaryLTPTServer/src/test/java/nhanVien/NhanVienServiceTest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ProductSalaryLTPTServer/src/test/java/phanCongCongViec/PhanCongCongViecTest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ProductSalaryLTPTServer/src/test/java/phongBan/PhongBanServiceTest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ProductSalaryLTPTServer/src/test/java/sanPham/CongDoanSanPhamTest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ProductSalaryLTPTServer/src/test/java/sanPham/SanPhamServiceTest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ProductSalaryLTPTServer/src/test/java/tayNghe/TayNgheTest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ProductSalaryLTPTServer/src/test/java/toNhom/ToNhomTest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ProductSalaryLTPTServer/src/test/java/trinhDo/TrinhDoServiceTest.java" beforeDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/ProductSalaryLTPTServer" />
+  </component>
+  <component name="ProjectCodeStyleSettingsMigration">
+    <option name="version" value="2" />
+  </component>
+  <component name="ProjectColorInfo"><![CDATA[{
+  "associatedIndex": 4
+}]]></component>
+  <component name="ProjectId" id="2es8bmHXizD2b5pCCzJj0MolExh" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "git-widget-placeholder": "donchung",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "D:/ProductSalaryLTPT",
+    "nodejs_package_manager_path": "npm",
+    "vue.rearranger.settings.migration": "true"
+  }
+}]]></component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="3ebbb81c-5401-414a-b1ca-43dd360133e4" name="Changes" comment="" />
+      <created>1712682003309</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1712682003309</updated>
+      <workItem from="1712682004343" duration="15000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+</project>
