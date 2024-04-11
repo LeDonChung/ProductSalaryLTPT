@@ -111,7 +111,8 @@ public class ProductSalaryApplicationChung {
 								System.out.println("Response: " + response);
 								// Send Response
 								json = AppUtils.GSON.toJson(response);
-								dos.writeBytes(json);
+								byte[] bytes = json.getBytes(StandardCharsets.UTF_8);
+								dos.write(bytes);
 								dos.flush();
 								break;
 							}
