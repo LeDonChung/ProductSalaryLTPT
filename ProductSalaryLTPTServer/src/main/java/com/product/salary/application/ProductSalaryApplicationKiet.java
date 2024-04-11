@@ -223,6 +223,24 @@ public class ProductSalaryApplicationKiet {
 						}
 						break;
 					}
+					case "TimKiemCongNhanForm": {
+						switch (requestObject.getRequest()) {
+							case "timKiemCongNhan": {
+								CongNhan congNhan = AppUtils.convert((Map<String, Object>) requestObject.getData(), CongNhan.class);
+								List<CongNhan> result = congNhanService.timKiemCongNhan(congNhan);
+								ResponseDTO response = ResponseDTO.builder()
+										.data(result)
+										.build();
+								//System.out.println("Response: " + response);
+								json = AppUtils.GSON.toJson(response);
+								byte[] bytes = json.getBytes(StandardCharsets.UTF_8);
+								dos.write(bytes);
+								dos.flush();
+								break;
+							}
+						}
+						break;
+					}
 					default:
 						break;
 				}
