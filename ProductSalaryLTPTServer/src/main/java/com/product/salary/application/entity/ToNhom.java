@@ -28,8 +28,8 @@ public class ToNhom implements Serializable {
 	@Column(name = "SoLuongCongNhan", columnDefinition = "INT NOT NULL DEFAULT 0")
 	private int soLuongCongNhan;
 
-	@OneToMany(mappedBy = "toNhom", fetch = FetchType.LAZY)
-	private Set<CongNhan> congNhans;
+	@OneToMany(mappedBy = "toNhom", fetch = FetchType.EAGER)
+	private transient Set<CongNhan> congNhans;
 
 	@Column(name = "TrangThai", columnDefinition = "BIT NOT NULL DEFAULT 1")
 	private Boolean trangThai;
