@@ -1,11 +1,15 @@
 package com.product.salary.application;
 
 import com.product.salary.application.entity.Account;
+import com.product.salary.application.entity.ChiTietHopDong;
 import com.product.salary.application.entity.HopDong;
+import com.product.salary.application.entity.SanPham;
 import com.product.salary.application.service.AccountService;
 import com.product.salary.application.service.HopDongService;
+import com.product.salary.application.service.SanPhamService;
 import com.product.salary.application.service.impl.AccountServiceImpl;
 import com.product.salary.application.service.impl.HopDongServiceImpl;
+import com.product.salary.application.service.impl.SanPhamServiceImpl;
 import com.product.salary.application.utils.AppUtils;
 import com.product.salary.application.utils.RequestDTO;
 import com.product.salary.application.utils.ResponseDTO;
@@ -17,6 +21,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.stream.Collectors;
 
 /**
  * @author Lê Đôn Chủng: Code giao diện
@@ -48,10 +53,12 @@ public class ProductSalaryApplicationChung {
 		private Socket socket;
 		private final AccountService accountService;
 		private final HopDongService hopDongService;
+		private final SanPhamService sanPhamService;
 		public handlerClient(Socket socket) {
 			this.socket = socket;
 			this.accountService = new AccountServiceImpl();
 			this.hopDongService = new HopDongServiceImpl();
+			this.sanPhamService = new SanPhamServiceImpl();
 		}
 
 
@@ -92,12 +99,80 @@ public class ProductSalaryApplicationChung {
 						break;
 					}
 
+					case "SanPhamForm": {
+						switch (requestObject.getRequest()) {
+							case "timTatCaSanPhamDangSanXuat": {
+								List<SanPham> sanPhams = sanPhamService.timTatCaSanPhamDangSanXuat();
+								ResponseDTO response = ResponseDTO.builder()
+										.data(sanPhams)
+										.build();
+
+								json = AppUtils.GSON.toJson(response);
+								System.out.println("Response: " + json);
+								byte[] bytes = json.getBytes(StandardCharsets.UTF_8);
+								dos.write(bytes);
+								dos.flush();
+								break;
+							}
+						}
+					}
 					case "HopDongForm": {
 						switch (requestObject.getRequest()) {
 							case "timTatCaHopDong": {
 								List<HopDong> hopDongs = hopDongService.timTatCaHopDong();
 								ResponseDTO response = ResponseDTO.builder()
 										.data(hopDongs)
+										.build();
+
+								json = AppUtils.GSON.toJson(response);
+								System.out.println("Response: " + json);
+								byte[] bytes = json.getBytes(StandardCharsets.UTF_8);
+								dos.write(bytes);
+								dos.flush();
+								break;
+							}
+							case "timTatCaChiTietHopDongBangMaHopDong": {
+								String maHopDong = (String) requestObject.getData();
+								System.out.println("maHopDong: " + maHopDong);
+								List<ChiTietHopDong> chiTietHopDongs = hopDongService.timTatCaChiTietHopDongBangMaHopDong(maHopDong);
+
+								ResponseDTO response = ResponseDTO.builder()
+										.data(chiTietHopDongs)
+										.build();
+
+								json = AppUtils.GSON.toJson(response);
+								System.out.println("Response: " + json);
+								byte[] bytes = json.getBytes(StandardCharsets.UTF_8);
+								dos.write(bytes);
+								dos.flush();
+								break;
+							}
+							case "themHopDong": {
+								Map<String, Object> data = (Map<String, Object>) requestObject.getData();
+
+								HopDong hopDong = AppUtils.convert((Map<String, Object>) data.get("hopDong"), HopDong.class);
+
+								List<ChiTietHopDong> chiTietHopDongs = ((List<Map<String, Object>>) data.get("chiTietHopDongs")).stream()
+										.map(map -> AppUtils.convert(map, ChiTietHopDong.class)).collect(Collectors.toList());
+								hopDong = hopDongService.themHopDong(hopDong, chiTietHopDongs);
+
+								ResponseDTO response = ResponseDTO.builder()
+										.data(hopDong)
+										.build();
+
+								json = AppUtils.GSON.toJson(response);
+								System.out.println("Response: " + json);
+								byte[] bytes = json.getBytes(StandardCharsets.UTF_8);
+								dos.write(bytes);
+								dos.flush();
+								break;
+							}
+							case "thanhLyHopDong": {
+								String maHopDong = (String) requestObject.getData();
+								boolean result = hopDongService.thanhLyHopDong(maHopDong);
+
+								ResponseDTO response = ResponseDTO.builder()
+										.data(result)
 										.build();
 
 								json = AppUtils.GSON.toJson(response);

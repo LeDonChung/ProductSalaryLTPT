@@ -30,7 +30,8 @@ public class HopDongServiceImpl implements HopDongService {
 	public List<HopDong> timTatCaHopDong() {
 		List<HopDong> hopDongs = new ArrayList<HopDong>();
 		try {
-			return this.hopDongDAO.timTatCaHopDong();
+			hopDongs = this.hopDongDAO.timTatCaHopDong();
+			return hopDongs;
 		} catch (Exception e) {
 			JOptionPane.showMessageDialog(null, "Hệ thống đang có lỗi.");
 			e.printStackTrace();
@@ -41,17 +42,31 @@ public class HopDongServiceImpl implements HopDongService {
 	@Override
 	public HopDong themHopDong(HopDong hopDongNew, List<ChiTietHopDong> chiTietHopDongs) {
 		try {
+			String maHopDong = generateMaHopDong();
+			hopDongNew.setMaHopDong(maHopDong);
 			// Kiểm tra hợp đồng tồn tại
 			HopDong isExitst = this.hopDongDAO.timHopDongBangMaHopDong(hopDongNew.getMaHopDong());
 			if (isExitst != null) {
 				JOptionPane.showMessageDialog(null, "Hợp đồng đã tồn tại!");
 				return null;
 			}
+			chiTietHopDongs = chiTietHopDongs.stream().map(chiTietHopDong -> {
+				try {
+					chiTietHopDong.setHopDong(new HopDong(maHopDong));
+					return chiTietHopDong;
+				} catch (Exception e) {
+					throw new RuntimeException(e);
+				}
+			}).collect(Collectors.toList());
 
 			// Thêm hợp đồng
 			hopDongNew.setTrangThai(false);
-			hopDongNew.setChiTietHopDongs(chiTietHopDongs);
-            return this.hopDongDAO.themHopDong(hopDongNew);
+			hopDongNew = this.hopDongDAO.themHopDong(hopDongNew);
+			// Them chi tiet hop dong
+			chiTietHopDongs.forEach(chiTietHopDong -> {
+				this.hopDongDAO.themChiTietHopDong(chiTietHopDong);
+			});
+            return hopDongNew;
 		} catch (Exception e) {
 			JOptionPane.showMessageDialog(null, "Hệ thống đang có lỗi.");
 			e.printStackTrace();
@@ -75,7 +90,7 @@ public class HopDongServiceImpl implements HopDongService {
 				return false;
 			}
 			//  Kiểm tra số lượng tồn của sản phẩm
-			List<ChiTietHopDong> chiTietHopDongs = hopDong.getChiTietHopDongs();
+			List<ChiTietHopDong> chiTietHopDongs = timTatCaChiTietHopDongBangMaHopDong(maHopDong);
 
 			for (ChiTietHopDong chiTietHopDong : chiTietHopDongs) {
 				if (!this.sanPhamDAO.kiemTraTonKho(chiTietHopDong.getSanPham().getMaSanPham(),
@@ -149,8 +164,7 @@ public class HopDongServiceImpl implements HopDongService {
 	public List<ChiTietHopDong> timTatCaChiTietHopDongBangMaHopDong(String maHopDong) {
 		List<ChiTietHopDong> chiTietHopDongs = new ArrayList<>();
 		try {
-			HopDong hopDong = hopDongDAO.timHopDongBangMaHopDong(maHopDong);
-			chiTietHopDongs =  hopDong.getChiTietHopDongs();
+			chiTietHopDongs = hopDongDAO.timTatCaChiTietHopDongBangMaHopDong(maHopDong);
 		}catch (Exception e) {
 			e.printStackTrace();
 		}

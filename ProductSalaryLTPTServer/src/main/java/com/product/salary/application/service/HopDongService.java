@@ -39,4 +39,5 @@ public interface HopDongService {
 	int tongSoLuongHopDong();
 
 	List<ChiTietHopDong> timTatCaChiTietHopDongBangMaHopDong(String maHopDong);
+
 }

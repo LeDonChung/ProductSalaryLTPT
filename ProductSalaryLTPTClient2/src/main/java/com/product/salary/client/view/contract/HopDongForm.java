@@ -5,6 +5,7 @@ package com.product.salary.client.view.contract;
  * @author Lê Đôn Chủng: Xử lý code
  */
 
+import com.product.salary.application.entity.SanPham;
 import com.product.salary.application.utils.*;
 import com.product.salary.client.common.SystemConstants;
 import com.product.salary.application.entity.ChiTietHopDong;
@@ -59,7 +60,6 @@ public class HopDongForm extends JPanel {
     private final JLabel lblLoiNgayKetThuc;
     private final JLabel lblLoiNgayBatDau;
     private final JLabel lblLoiTrangThai;
-    private HopDongService hopDongService;
     private List<HopDong> hopDongs;
     private List<ChiTietHopDong> chiTietHopDongs;
     private final JTable tblHopDong;
@@ -510,50 +510,78 @@ public class HopDongForm extends JPanel {
     }
 
     private void thucHienChucNangThemHopDong() {
-        if (chiTietHopDongs.isEmpty()) {
-            JOptionPane.showMessageDialog(this,
-                    SystemConstants.BUNDLE.getString("hopDong.thongBao.themSanPhamVaoHopDong"));
-            return;
-        }
-
         if (!kiemTraHopLe()) {
             return;
         }
 
-        try {
-            String maHopDong = this.hopDongService.generateMaHopDong();
-            String tenKhachHang = this.txtTenKhachHang.getText().trim();
-            String tenHopDong = this.txtTenHopDong.getText().trim();
-            String soTienCoc = this.txtSoTienCoc.getText().trim();
-            String tongTien = this.txtTongTien.getText().trim();
-            LocalDate ngayBatDau = DateConvertUtils.asLocalDate(this.jcNgayBatDau.getDate(), ZoneId.systemDefault());
-            LocalDate ngayKetThuc = DateConvertUtils.asLocalDate(this.jcNgayKetThuc.getDate(), ZoneId.systemDefault());
-            String yeuCau = this.txaYeuCau.getText().trim();
-            HopDong hopDong = new HopDong(maHopDong, tenHopDong, tenKhachHang, PriceFormatterUtils.parse(tongTien),
-                    PriceFormatterUtils.parse(soTienCoc), ngayBatDau, ngayKetThuc, yeuCau, false);
+        new Thread(() -> {
+            try (var socket = new Socket(
+                    BUNDLE.getString("host"),
+                    Integer.parseInt(BUNDLE.getString("server.port")));
+                 var dos = new DataOutputStream(socket.getOutputStream());
+                 var dis = new DataInputStream(socket.getInputStream())
+            ) {
 
-            HopDong finalHopDong = hopDong;
-            chiTietHopDongs.forEach(chiTietHopDong -> {
-                try {
-                    chiTietHopDong.setHopDong(finalHopDong);
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
+                String maHopDong = "HDXX";
+                String tenKhachHang = this.txtTenKhachHang.getText().trim();
+                String tenHopDong = this.txtTenHopDong.getText().trim();
+                String soTienCoc = this.txtSoTienCoc.getText().trim();
+                String tongTien = this.txtTongTien.getText().trim();
+                LocalDate ngayBatDau = DateConvertUtils.asLocalDate(this.jcNgayBatDau.getDate(), ZoneId.systemDefault());
+                LocalDate ngayKetThuc = DateConvertUtils.asLocalDate(this.jcNgayKetThuc.getDate(), ZoneId.systemDefault());
+                String yeuCau = this.txaYeuCau.getText().trim();
+                HopDong hopDong = new HopDong(maHopDong, tenHopDong, tenKhachHang, PriceFormatterUtils.parse(tongTien),
+                        PriceFormatterUtils.parse(soTienCoc), ngayBatDau, ngayKetThuc, yeuCau, false);
+
+                chiTietHopDongs = chiTietHopDongs.stream().map(chiTietHopDong -> {
+                    try {
+                        chiTietHopDong.setSanPham(new SanPham(chiTietHopDong.getSanPham().getMaSanPham()));
+                        return chiTietHopDong;
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                }).collect(Collectors.toList());
+
+                hopDong.setChiTietHopDongs(chiTietHopDongs);
+                Map<String, Object> send = new HashMap<>();
+                send.put("hopDong", hopDong);
+                send.put("chiTietHopDongs", chiTietHopDongs);
+                // Send data to server
+                RequestDTO request = RequestDTO.builder()
+                        .request("themHopDong")
+                        .requestType("HopDongForm")
+                        .data(send)
+                        .build();
+                System.out.println("Sending request: " + request);
+                String json = AppUtils.GSON.toJson(request);
+
+                dos.writeUTF(json);
+                dos.flush();
+
+                // Receive data from server
+                json = new String(dis.readAllBytes());
+                ResponseDTO response = AppUtils.GSON.fromJson(json, ResponseDTO.class);
+
+                System.out.println("Receive response: " + response);
+                Map<String, Object> data = (Map<String, Object>) response.getData();
+
+                hopDong = AppUtils.convert(data, HopDong.class);
+
+                if (hopDong != null) {
+                    JOptionPane.showMessageDialog(this,
+                            SystemConstants.BUNDLE.getString("hopDong.thongBao.themHopDongThanhCong"));
+                    this.thucHienChucNangLamMoi();
+                } else {
+                    JOptionPane.showMessageDialog(this,
+                            SystemConstants.BUNDLE.getString("hopDong.thongBao.themHopDongKhongThanhCong"));
                 }
-            });
 
-            hopDong = this.hopDongService.themHopDong(hopDong, chiTietHopDongs);
-
-            if (hopDong != null) {
-                JOptionPane.showMessageDialog(this,
-                        SystemConstants.BUNDLE.getString("hopDong.thongBao.themHopDongThanhCong"));
-                this.thucHienChucNangLamMoi();
-            } else {
-                JOptionPane.showMessageDialog(this,
-                        SystemConstants.BUNDLE.getString("hopDong.thongBao.themHopDongKhongThanhCong"));
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-        } catch (Exception e) {
-            e.printStackTrace();
         }
+        ).start();
+
     }
 
     private boolean kiemTraHopLe() {
@@ -666,20 +694,16 @@ public class HopDongForm extends JPanel {
             return;
         }
         // Thực hiện chọn sản phẩm
-        new CreateChiTietHopDongForm(new ISendChiTietHopDong() {
-
-            @Override
-            public void send(ChiTietHopDong chiTietHopDong) {
-                for (ChiTietHopDong chiTietHopDongS : chiTietHopDongs) {
-                    if (chiTietHopDongS.getSanPham().equals(chiTietHopDong.getSanPham())) {
-                        JOptionPane.showMessageDialog(null,
-                                SystemConstants.BUNDLE.getString("hopDong.thongBao.messageIsSelectSanPham"));
-                        return;
-                    }
+        new CreateChiTietHopDongForm(chiTietHopDong -> {
+            for (ChiTietHopDong chiTietHopDongS : chiTietHopDongs) {
+                if (chiTietHopDongS.getSanPham().equals(chiTietHopDong.getSanPham())) {
+                    JOptionPane.showMessageDialog(null,
+                            SystemConstants.BUNDLE.getString("hopDong.thongBao.messageIsSelectSanPham"));
+                    return;
                 }
-                chiTietHopDongs.add(chiTietHopDong);
-                loadTableSanPham();
             }
+            chiTietHopDongs.add(chiTietHopDong);
+            loadTableSanPham();
         }).setVisible(true);
 
     }
@@ -699,77 +723,107 @@ public class HopDongForm extends JPanel {
     }
 
     private void thucHienChucNangThanhLy() {
-        int select = tblHopDong.getSelectedRow();
-        int language = SystemConstants.LANGUAGE;
-        String message = "";
-        if (select >= 0) {
+        new Thread(() -> {
+            try (
+                    var socket = new Socket(
+                            BUNDLE.getString("host"),
+                            Integer.parseInt(BUNDLE.getString("server.port")));
+                    var dos = new DataOutputStream(socket.getOutputStream());
+                    var dis = new DataInputStream(socket.getInputStream())
+            ) {
+                int select = tblHopDong.getSelectedRow();
+                int language = SystemConstants.LANGUAGE;
+                String message = "";
+                if (select >= 0) {
 
-            HopDong hopDong = this.hopDongs.get(select);
+                    HopDong hopDong = this.hopDongs.get(select);
 
-            String title = "";
-            if (language == 0) {
-                message = String.format("Bạn có muốn thanh lý hợp đồng %s không?", hopDong.getTenHopDong());
-                title = "Thanh lý hợp đồng";
-            } else {
-                message = String.format("Do you want to liquidate contract %s?", hopDong.getTenHopDong());
-                title = "Contract liquidation";
-            }
-
-            int choose = JOptionPane.showConfirmDialog(this, message, title, JOptionPane.OK_CANCEL_OPTION);
-
-            if (choose == JOptionPane.OK_OPTION) {
-                boolean trangThai = this.hopDongService.thanhLyHopDong(hopDong.getMaHopDong());
-                if (trangThai) {
-
-                    String result = "";
+                    String title = "";
                     if (language == 0) {
-                        result = String.format("Thanh lý hợp đồng %s thành công.", hopDong.getTenHopDong());
+                        message = String.format("Bạn có muốn thanh lý hợp đồng %s không?", hopDong.getTenHopDong());
+                        title = "Thanh lý hợp đồng";
                     } else {
-                        result = String.format("Contract liquidation %s successfully.", hopDong.getTenHopDong());
+                        message = String.format("Do you want to liquidate contract %s?", hopDong.getTenHopDong());
+                        title = "Contract liquidation";
                     }
-                    JOptionPane.showMessageDialog(this, result);
 
-                    if (language == 0) {
-                        result = String.format("Bạn có muốn xuất thông tin hợp đồng vừa thanh lý?");
-                        title = "Thanh lý";
-                    } else {
-                        result = String
-                                .format("Do you want to export contract information that has just been liquidated?");
-                        title = "Liquidation";
-                    }
-                    int option = JOptionPane.showConfirmDialog(this, result, title, JOptionPane.OK_CANCEL_OPTION);
+                    int choose = JOptionPane.showConfirmDialog(this, message, title, JOptionPane.OK_CANCEL_OPTION);
 
-                    if (option == JOptionPane.OK_OPTION) {
+                    if (choose == JOptionPane.OK_OPTION) {
 
-                        try {
-                            hopDongs.get(select).setNgayKetThuc(LocalDate.now());
-                            hopDongs.get(select).setTrangThai(trangThai);
-                        } catch (Exception e) {
-                            e.printStackTrace();
+                        // Send data to server
+                        RequestDTO request = RequestDTO.builder()
+                                .request("thanhLyHopDong")
+                                .requestType("HopDongForm")
+                                .data(hopDong.getMaHopDong())
+                                .build();
+                        System.out.println("Sending request: " + request);
+                        String json = AppUtils.GSON.toJson(request);
+                        dos.writeUTF(json);
+                        dos.flush();
+
+                        // Receive data from server
+                        json = new String(dis.readAllBytes());
+                        ResponseDTO response = AppUtils.GSON.fromJson(json, ResponseDTO.class);
+                        System.out.println("Receive response: " + response);
+                        boolean trangThai = (boolean) response.getData();
+
+                        if (trangThai) {
+
+                            String result = "";
+                            if (language == 0) {
+                                result = String.format("Thanh lý hợp đồng %s thành công.", hopDong.getTenHopDong());
+                            } else {
+                                result = String.format("Contract liquidation %s successfully.", hopDong.getTenHopDong());
+                            }
+                            JOptionPane.showMessageDialog(this, result);
+
+                            if (language == 0) {
+                                result = String.format("Bạn có muốn xuất thông tin hợp đồng vừa thanh lý?");
+                                title = "Thanh lý";
+                            } else {
+                                result = String
+                                        .format("Do you want to export contract information that has just been liquidated?");
+                                title = "Liquidation";
+                            }
+                            int option = JOptionPane.showConfirmDialog(this, result, title, JOptionPane.OK_CANCEL_OPTION);
+
+                            if (option == JOptionPane.OK_OPTION) {
+
+                                try {
+                                    hopDongs.get(select).setNgayKetThuc(LocalDate.now());
+                                    hopDongs.get(select).setTrangThai(trangThai);
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+
+                                thucHienChucNangXuatHopDong();
+                            }
+                            thucHienChucNangLamMoi();
+
+                        } else {
+                            if (language == 0) {
+                                message = String.format("Thanh lý hợp đồng %s không thành công.", hopDong.getTenHopDong());
+                            } else {
+                                message = String.format("Liquidation of %s contract failed.", hopDong.getTenHopDong());
+                            }
+                            JOptionPane.showMessageDialog(this, message);
+
                         }
-
-                        thucHienChucNangXuatHopDong();
                     }
-                    thucHienChucNangLamMoi();
-
                 } else {
-                    if (language == 0) {
-                        message = String.format("Thanh lý hợp đồng %s không thành công.", hopDong.getTenHopDong());
-                    } else {
-                        message = String.format("Liquidation of %s contract failed.", hopDong.getTenHopDong());
-                    }
-                    JOptionPane.showMessageDialog(this, message);
-
+                    JOptionPane.showMessageDialog(this,
+                            SystemConstants.BUNDLE.getString("hopDong.thongBao.chonHopDongDeThanhLy"));
                 }
+            } catch (UnknownHostException e) {
+                throw new RuntimeException(e);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
             }
-        } else {
-            JOptionPane.showMessageDialog(this,
-                    SystemConstants.BUNDLE.getString("hopDong.thongBao.chonHopDongDeThanhLy"));
-        }
+        }).start();
     }
 
     private void init() {
-        this.hopDongService = new HopDongServiceImpl();
         this.hopDongs = new ArrayList<HopDong>();
         this.chiTietHopDongs = new ArrayList<ChiTietHopDong>();
         loadTableHopDong();
@@ -815,8 +869,7 @@ public class HopDongForm extends JPanel {
                             hopDong.getNgayKetThuc(), hopDong.getYeuCau(),
                             hopDong.isTrangThai() ? "Đã thanh lý" : "Chưa thanh lý"});
                 }
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
@@ -843,16 +896,49 @@ public class HopDongForm extends JPanel {
     }
 
     private void loadTableSanPham(String maHopDong) {
-        tableModelChiTietHopDong.setRowCount(0);
-        chiTietHopDongs = hopDongService.timTatCaChiTietHopDongBangMaHopDong(maHopDong);
+        new Thread(() -> {
+            try (
+                    var socket = new Socket(
+                            BUNDLE.getString("host"),
+                            Integer.parseInt(BUNDLE.getString("server.port")));
+                    var dos = new DataOutputStream(socket.getOutputStream());
+                    var dis = new DataInputStream(socket.getInputStream())
+            ) {
 
-        int stt = 1;
-        for (ChiTietHopDong chiTietHopDong : chiTietHopDongs) {
+                tableModelChiTietHopDong.setRowCount(0);
 
-            tableModelChiTietHopDong.addRow(new Object[]{stt++, chiTietHopDong.getSanPham().getMaSanPham(),
-                    chiTietHopDong.getSanPham().getTenSanPham(), chiTietHopDong.getSoLuong(),
-                    PriceFormatterUtils.format(chiTietHopDong.getGiaDatLam())});
-        }
+                // Send Data
+                RequestDTO request = RequestDTO.builder()
+                        .requestType("HopDongForm")
+                        .request("timTatCaChiTietHopDongBangMaHopDong")
+                        .data(maHopDong)
+                        .build();
+
+                String json = AppUtils.GSON.toJson(request);
+                dos.writeUTF(json);
+                dos.flush();
+
+                // Receive Data
+                json = new String(dis.readAllBytes());
+                ResponseDTO response = AppUtils.GSON.fromJson(json, ResponseDTO.class);
+                List<Map<String, Object>> data = (List<Map<String, Object>>) response.getData();
+
+                chiTietHopDongs = data.stream().map((value) -> AppUtils.convert(value, ChiTietHopDong.class)).collect(Collectors.toList());
+
+
+                int stt = 1;
+                for (ChiTietHopDong chiTietHopDong : chiTietHopDongs) {
+
+                    tableModelChiTietHopDong.addRow(new Object[]{stt++, chiTietHopDong.getSanPham().getMaSanPham(),
+                            chiTietHopDong.getSanPham().getTenSanPham(), chiTietHopDong.getSoLuong(),
+                            PriceFormatterUtils.format(chiTietHopDong.getGiaDatLam())});
+                }
+
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }).start();
+
     }
 
     private void thucHienChucNangLamMoi() {
