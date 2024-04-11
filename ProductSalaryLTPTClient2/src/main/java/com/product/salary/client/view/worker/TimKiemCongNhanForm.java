@@ -10,9 +10,7 @@ import com.product.salary.application.service.ToNhomService;
 import com.product.salary.application.service.impl.CongNhanServiceImpl;
 import com.product.salary.application.service.impl.TayNgheServiceImpl;
 import com.product.salary.application.service.impl.ToNhomServiceImpl;
-import com.product.salary.application.utils.DateConvertUtils;
-import com.product.salary.application.utils.ImageUtils;
-import com.product.salary.application.utils.PriceFormatterUtils;
+import com.product.salary.application.utils.*;
 import com.product.salary.application.utils.excels.CongNhanExcelUtils;
 import com.toedter.calendar.JDateChooser;
 import org.apache.commons.lang3.ObjectUtils;
@@ -24,49 +22,57 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.net.Socket;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.ResourceBundle;
+import java.util.stream.Collectors;
 
 public class TimKiemCongNhanForm extends JPanel {
-	private JTextField txtMaCN;
-	private JTextField txtHoTen;
-	private JTextField txtCCCD;
-	private JTextField txtTroCap;
-	private JTextField txtDienThoai;
-	private JTextField txtEmail;
-	private JTextField txtDiaChi;
-	private JLabel lblHinhAnh;
-	private JButton btnTimKiem;
-	private DefaultTableModel tableModelCongNhan;
-	private JTable tblCongNhan;
-	private JDateChooser jcNgaySinh;
-	private JDateChooser jcNgayVaoLam;
+	private final static ResourceBundle BUNDLE = ResourceBundle.getBundle("app");
+
+	private final JTextField txtMaCN;
+	private final JTextField txtHoTen;
+	private final JTextField txtCCCD;
+	private final JTextField txtTroCap;
+	private final JTextField txtDienThoai;
+	private final JTextField txtEmail;
+	private final JTextField txtDiaChi;
+	private final JLabel lblHinhAnh;
+	private final JButton btnTimKiem;
+	private final DefaultTableModel tableModelCongNhan;
+	private final JTable tblCongNhan;
+	private final JDateChooser jcNgaySinh;
+	private final JDateChooser jcNgayVaoLam;
 	private CongNhanService congNhanService;
 	private TayNgheService tayNgheService;
 	private ToNhomService toNhomService;
 	private List<CongNhan> dsCongNhan;
 	private List<TayNghe> dsTayNghe;
 	private List<ToNhom> dsToNhom;
-	private DefaultComboBoxModel<ToNhom> cbbModelToNhom;
-	private DefaultComboBoxModel<TayNghe> cbbModelTayNghe;
-	private JRadioButton radNam;
-	private JRadioButton radNu;
-	private JComboBox cmbToNhom;
-	private JComboBox cmbTrangThai;
-	private JComboBox cmbTayNghe;
-	private JLabel lblLoiTroCap;
-	private JLabel lblLoiNgayVaoLam;
-	private JLabel lblLoiNgaySinh;
-	private JLabel lblLoiDiaChi;
-	private JLabel lblLoiEmail;
-	private JLabel lblLoiSoDienThoai;
-	private JLabel lblLoiCCCD;
-	private JLabel lblLoiHoTen;
-	private JButton btnLamMoi;
-	private JRadioButton radTatCa;
-	private JButton btnExcel;
+	private final DefaultComboBoxModel<ToNhom> cbbModelToNhom;
+	private final DefaultComboBoxModel<TayNghe> cbbModelTayNghe;
+	private final JRadioButton radNam;
+	private final JRadioButton radNu;
+	private final JComboBox cmbToNhom;
+	private final JComboBox cmbTrangThai;
+	private final JComboBox cmbTayNghe;
+	private final JLabel lblLoiTroCap;
+	private final JLabel lblLoiNgayVaoLam;
+	private final JLabel lblLoiNgaySinh;
+	private final JLabel lblLoiDiaChi;
+	private final JLabel lblLoiEmail;
+	private final JLabel lblLoiSoDienThoai;
+	private final JLabel lblLoiCCCD;
+	private final JLabel lblLoiHoTen;
+	private final JButton btnLamMoi;
+	private final JRadioButton radTatCa;
+	private final JButton btnExcel;
 
 	/**
 	 * Create the panel.
@@ -537,18 +543,22 @@ public class TimKiemCongNhanForm extends JPanel {
 			String cccd = txtCCCD.getText().trim();
 			String email = txtEmail.getText().trim();
 			String diaChi = txtDiaChi.getText().trim();
-			Boolean tt = null;
+			Boolean tt;
 			if (cmbTrangThai.getSelectedIndex() != 0) {
 				tt = this.cmbTrangThai.getSelectedIndex() == 1 ? true : false;
-			}
-			LocalDate ngaySinh = DateConvertUtils.asLocalDate(jcNgaySinh.getDate(), ZoneId.systemDefault());
+			} else {
+                tt = null;
+            }
+            LocalDate ngaySinh = DateConvertUtils.asLocalDate(jcNgaySinh.getDate(), ZoneId.systemDefault());
 			LocalDate ngayVaoLam = DateConvertUtils.asLocalDate(jcNgayVaoLam.getDate(), ZoneId.systemDefault());
-			Double troCap = null;
+			Double troCap;
 
 			if (!ObjectUtils.isEmpty(this.txtTroCap.getText().trim())) {
 				troCap = PriceFormatterUtils.parse(this.txtTroCap.getText().trim());
-			}
-			if (!thucHienChucNangKiemTra()) {
+			} else {
+                troCap = null;
+            }
+            if (!thucHienChucNangKiemTra()) {
 				return;
 			}
 
@@ -562,23 +572,50 @@ public class TimKiemCongNhanForm extends JPanel {
 			}
 			ToNhom toNhom = (ToNhom) cbbModelToNhom.getSelectedItem();
 			TayNghe tayNghe = (TayNghe) cbbModelTayNghe.getSelectedItem();
+			new Thread(() -> {
+				try (var socket = new Socket(
+						BUNDLE.getString("host"),
+						Integer.parseInt(BUNDLE.getString("server.port")));
+					 var dos = new DataOutputStream(socket.getOutputStream());
+					 var dis = new DataInputStream(socket.getInputStream())
+				){
+					CongNhan cn = new CongNhan(maCN, hoTen, email, diaChi, cccd, soDienThoai, tt, gt, ngaySinh, ngayVaoLam,
+							troCap, toNhom, tayNghe);
+					// Send Data
+					RequestDTO request = RequestDTO.builder()
+							.requestType("TimKiemCongNhanForm")
+							.request("timKiemCongNhan")
+							.data(cn)
+							.build();
+					System.out.println("Sending request: " + request);
+					String json = AppUtils.GSON.toJson(request);
+					dos.writeUTF(json);
+					dos.flush();
 
-			CongNhan cn = new CongNhan(maCN, hoTen, email, diaChi, cccd, soDienThoai, tt, gt, ngaySinh, ngayVaoLam,
-					troCap, toNhom, tayNghe);
-			tableModelCongNhan.setRowCount(0);
-			dsCongNhan = congNhanService.timKiemCongNhan(cn);
 
-			int stt = 1;
-			for (CongNhan congNhan : this.dsCongNhan) {
-				String gioiTinh = congNhan.getGioiTinh() == 1 ? "Nam" : (congNhan.getGioiTinh() == 0 ? "Nữ" : "Khác");
-				String trangThai = congNhan.isTrangThai() ? "Đang làm" : "Đã nghỉ";
+					// Receive Data
+					json = new String(dis.readAllBytes());
+					ResponseDTO response = AppUtils.GSON.fromJson(json, ResponseDTO.class);
+					System.out.println("Receive response: " + response);
+					List<Map<String, Object>> data = (List<Map<String, Object>>) response.getData();
 
-				tableModelCongNhan.addRow(new Object[] { stt++, congNhan.getMaCongNhan(), congNhan.getHoTen(),
-						congNhan.getCccd(), congNhan.getNgaySinh(), congNhan.getDiaChi(), congNhan.getSoDienThoai(),
-						congNhan.getEmail(), gioiTinh, congNhan.getToNhom(), congNhan.getNgayVaoLam(),
-						PriceFormatterUtils.format(congNhan.getTroCap()), congNhan.getTayNghe(), trangThai });
-			}
+					dsCongNhan = data.stream().map((value) -> AppUtils.convert(value, CongNhan.class)).collect(Collectors.toList());
+					tableModelCongNhan.setRowCount(0);
 
+					int stt = 1;
+					for (CongNhan congNhan : this.dsCongNhan) {
+						String gioiTinh = congNhan.getGioiTinh() == 1 ? "Nam" : (congNhan.getGioiTinh() == 0 ? "Nữ" : "Khác");
+						String trangThai = congNhan.isTrangThai() ? "Đang làm" : "Đã nghỉ";
+
+						tableModelCongNhan.addRow(new Object[] { stt++, congNhan.getMaCongNhan(), congNhan.getHoTen(),
+								congNhan.getCccd(), congNhan.getNgaySinh(), congNhan.getDiaChi(), congNhan.getSoDienThoai(),
+								congNhan.getEmail(), gioiTinh, congNhan.getToNhom(), congNhan.getNgayVaoLam(),
+								PriceFormatterUtils.format(congNhan.getTroCap()), congNhan.getTayNghe(), trangThai });
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}).start();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -599,43 +636,119 @@ public class TimKiemCongNhanForm extends JPanel {
 	}
 
 	private void loadTable() {
-		tableModelCongNhan.setRowCount(0);
-		this.dsCongNhan = this.congNhanService.timKiemTatCaCongNhan();
-		int stt = 1;
+		new Thread(() -> {
+			try (var socket = new Socket(
+					BUNDLE.getString("host"),
+					Integer.parseInt(BUNDLE.getString("server.port")));
+				 var dos = new DataOutputStream(socket.getOutputStream());
+				 var dis = new DataInputStream(socket.getInputStream())
+			){
+				// Send Data
+				RequestDTO request = RequestDTO.builder()
+						.requestType("CongNhanForm")
+						.request("timKiemTatCaCongNhan")
+						.data("")
+						.build();
+				System.out.println("Sending request: " + request);
+				String json = AppUtils.GSON.toJson(request);
+				dos.writeUTF(json);
+				dos.flush();
 
-		for (CongNhan congNhan : this.dsCongNhan) {
-			String gioiTinh = congNhan.getGioiTinh() == 1 ? "Nam" : (congNhan.getGioiTinh() == 0 ? "Nữ" : "Khác");
-			String trangThai = congNhan.isTrangThai() ? "Đang làm" : "Đã nghỉ";
+				// Receive Data
+				json = new String(dis.readAllBytes());
+				ResponseDTO response = AppUtils.GSON.fromJson(json, ResponseDTO.class);
+				System.out.println("Receive response: " + response);
+				List<Map<String, Object>> data = (List<Map<String, Object>>) response.getData();
 
-			tableModelCongNhan.addRow(new Object[] { stt++, congNhan.getMaCongNhan(), congNhan.getHoTen(),
-					congNhan.getCccd(), congNhan.getNgaySinh(), congNhan.getDiaChi(), congNhan.getSoDienThoai(),
-					congNhan.getEmail(), gioiTinh, congNhan.getToNhom(), congNhan.getNgayVaoLam(),
-					PriceFormatterUtils.format(congNhan.getTroCap()), congNhan.getTayNghe(), trangThai });
-		}
+				dsCongNhan = data.stream().map((value) -> AppUtils.convert(value, CongNhan.class)).collect(Collectors.toList());
+				tableModelCongNhan.setRowCount(0);
+				int stt = 1;
+				for (CongNhan congNhan : this.dsCongNhan) {
+					String gioiTinh = congNhan.getGioiTinh() == 1 ? "Nam" : (congNhan.getGioiTinh() == 0 ? "Nữ" : "Khác");
+					String trangThai = congNhan.isTrangThai() ? "Đang làm" : "Đã nghỉ";
+
+					tableModelCongNhan.addRow(new Object[] { stt++, congNhan.getMaCongNhan(), congNhan.getHoTen(),
+							congNhan.getCccd(), congNhan.getNgaySinh(), congNhan.getDiaChi(), congNhan.getSoDienThoai(),
+							congNhan.getEmail(), gioiTinh, congNhan.getToNhom(), congNhan.getNgayVaoLam(),
+							PriceFormatterUtils.format(congNhan.getTroCap()), congNhan.getTayNghe(), trangThai });
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}).start();
 	}
 
 	private void loadComboBox() {
-		dsTayNghe = this.tayNgheService.timKiemTatCaTayNghe();
-		dsToNhom = this.toNhomService.timKiemTatCaToNhom();
+		new Thread(() -> {
+			try (var socket = new Socket(
+					BUNDLE.getString("host"),
+					Integer.parseInt(BUNDLE.getString("server.port")));
+				 var dos = new DataOutputStream(socket.getOutputStream());
+				 var dis = new DataInputStream(socket.getInputStream())
+			){
+				// Send Data
+				RequestDTO request = RequestDTO.builder()
+						.requestType("TayNgheForm")
+						.request("timKiemTatCaTayNghe")
+						.data("")
+						.build();
+				System.out.println("Sending request: " + request);
+				String json = AppUtils.GSON.toJson(request);
+				dos.writeUTF(json);
+				dos.flush();
 
-		cbbModelTayNghe.removeAllElements();
-		cbbModelToNhom.removeAllElements();
+				// Receive Data
+				json = new String(dis.readAllBytes());
+				ResponseDTO response = AppUtils.GSON.fromJson(json, ResponseDTO.class);
+				//System.out.println("Receive response: " + response);
+				List<Map<String, Object>> data = (List<Map<String, Object>>) response.getData();
 
-		TayNghe tn = new TayNghe("XXXX", SystemConstants.BUNDLE.getString("quanLyCongNhan.timTatCa"));
-		ToNhom toNhom = new ToNhom("XXXX", SystemConstants.BUNDLE.getString("quanLyCongNhan.timTatCa"));
+				dsTayNghe = data.stream().map((value) -> AppUtils.convert(value, TayNghe.class)).collect(Collectors.toList());
+				dsTayNghe.add(0, new TayNghe("XXXX", "Tất cả"));
+				cbbModelTayNghe.addAll(dsTayNghe);
+				cbbModelTayNghe.setSelectedItem("Tất cả");
+				if (!dsTayNghe.isEmpty()) {
+					cmbTayNghe.setSelectedIndex(0);
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}).start();
 
-		dsTayNghe.add(0, tn);
-		dsToNhom.add(0, toNhom);
+		new Thread(() -> {
+			try (var socket = new Socket(
+					BUNDLE.getString("host"),
+					Integer.parseInt(BUNDLE.getString("server.port")));
+				 var dos = new DataOutputStream(socket.getOutputStream());
+				 var dis = new DataInputStream(socket.getInputStream())
+			){
+				// Send Data
+				RequestDTO request = RequestDTO.builder()
+						.requestType("ToNhomForm")
+						.request("timKiemTatCaToNhom")
+						.data("")
+						.build();
+				System.out.println("Sending request: " + request);
+				String json = AppUtils.GSON.toJson(request);
+				dos.writeUTF(json);
+				dos.flush();
 
-		cbbModelTayNghe.addAll(dsTayNghe);
-		cbbModelToNhom.addAll(dsToNhom);
+				// Receive Data
+				json = new String(dis.readAllBytes());
+				ResponseDTO response = AppUtils.GSON.fromJson(json, ResponseDTO.class);
+				//System.out.println("Receive response: " + response);
+				List<Map<String, Object>> data = (List<Map<String, Object>>) response.getData();
 
-		if (!dsTayNghe.isEmpty()) {
-			cmbTayNghe.setSelectedIndex(0);
-		}
-		if (!dsToNhom.isEmpty()) {
-			cmbToNhom.setSelectedIndex(0);
-		}
+				dsToNhom = data.stream().map((value) -> AppUtils.convert(value, ToNhom.class)).collect(Collectors.toList());
+				dsToNhom.add(0, new ToNhom("XXXX", "Tất cả"));
+				cbbModelToNhom.addAll(dsToNhom);
+				if (!dsToNhom.isEmpty()) {
+					cmbToNhom.setSelectedIndex(0);
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}).start();
 	}
 
 	private void thucHienChucNangLamMoi() {

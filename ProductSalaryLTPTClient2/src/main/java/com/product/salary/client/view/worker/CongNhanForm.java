@@ -2,6 +2,7 @@ package com.product.salary.client.view.worker;
 
 import com.product.salary.application.common.SystemConstants;
 import com.product.salary.application.entity.CongNhan;
+import com.product.salary.application.entity.HopDong;
 import com.product.salary.application.entity.TayNghe;
 import com.product.salary.application.entity.ToNhom;
 import com.product.salary.application.service.CongNhanService;
@@ -10,9 +11,7 @@ import com.product.salary.application.service.ToNhomService;
 import com.product.salary.application.service.impl.CongNhanServiceImpl;
 import com.product.salary.application.service.impl.TayNgheServiceImpl;
 import com.product.salary.application.service.impl.ToNhomServiceImpl;
-import com.product.salary.application.utils.DateConvertUtils;
-import com.product.salary.application.utils.ImageUtils;
-import com.product.salary.application.utils.PriceFormatterUtils;
+import com.product.salary.application.utils.*;
 import com.product.salary.application.utils.excels.CongNhanExcelUtils;
 import com.toedter.calendar.JDateChooser;
 import org.apache.commons.lang3.ObjectUtils;
@@ -26,53 +25,61 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.net.Socket;
 import java.sql.Date;
 import java.time.LocalDate;
 import java.time.Period;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.ResourceBundle;
+import java.util.stream.Collectors;
 
 public class CongNhanForm extends JPanel {
-	private JTextField txtMaCN;
-	private JTextField txtHoTen;
-	private JTextField txtCCCD;
-	private JTextField txtTroCap;
-	private JTextField txtDienThoai;
-	private JTextField txtEmail;
-	private JTextField txtDiaChi;
-	private JLabel lblHinhAnh;
-	private JButton btnXoa;
-	private JButton btnCapNhat;
-	private JButton btnThem;
-	private JButton btnLamMoi;
-	private DefaultTableModel tableModelCongNhan;
-	private JTable tblCongNhan;
-	private JDateChooser jcNgaySinh;
-	private JDateChooser jcNgayVaoLam;
-	private JButton btnChonAnh;
+	private final static ResourceBundle BUNDLE = ResourceBundle.getBundle("app");
+
+	private final JTextField txtMaCN;
+	private final JTextField txtHoTen;
+	private final JTextField txtCCCD;
+	private final JTextField txtTroCap;
+	private final JTextField txtDienThoai;
+	private final JTextField txtEmail;
+	private final JTextField txtDiaChi;
+	private final JLabel lblHinhAnh;
+	private final JButton btnXoa;
+	private final JButton btnCapNhat;
+	private final JButton btnThem;
+	private final JButton btnLamMoi;
+	private final DefaultTableModel tableModelCongNhan;
+	private final JTable tblCongNhan;
+	private final JDateChooser jcNgaySinh;
+	private final JDateChooser jcNgayVaoLam;
+	private final JButton btnChonAnh;
 	private CongNhanService congNhanService;
 	private TayNgheService tayNgheService;
 	private ToNhomService toNhomService;
 	private List<CongNhan> dsCongNhan;
 	private List<TayNghe> dsTayNghe;
 	private List<ToNhom> dsToNhom;
-	private DefaultComboBoxModel<ToNhom> cbbModelToNhom;
-	private DefaultComboBoxModel<TayNghe> cbbModelTayNghe;
-	private JRadioButton radNam;
-	private JRadioButton radNu;
-	private JComboBox cmbToNhom;
-	private JComboBox cmbTrangThai;
-	private JComboBox cmbTayNghe;
-	private JLabel lblLoiTroCap;
-	private JLabel lblLoiNgayVaoLam;
-	private JLabel lblLoiNgaySinh;
-	private JLabel lblLoiDiaChi;
-	private JLabel lblLoiEmail;
-	private JLabel lblLoiSoDienThoai;
-	private JLabel lblLoiCCCD;
-	private JLabel lblLoiHoTen;
-	private JButton btnThemNhiu;
+	private final DefaultComboBoxModel<ToNhom> cbbModelToNhom;
+	private final DefaultComboBoxModel<TayNghe> cbbModelTayNghe;
+	private final JRadioButton radNam;
+	private final JRadioButton radNu;
+	private final JComboBox cmbToNhom;
+	private final JComboBox cmbTrangThai;
+	private final JComboBox cmbTayNghe;
+	private final JLabel lblLoiTroCap;
+	private final JLabel lblLoiNgayVaoLam;
+	private final JLabel lblLoiNgaySinh;
+	private final JLabel lblLoiDiaChi;
+	private final JLabel lblLoiEmail;
+	private final JLabel lblLoiSoDienThoai;
+	private final JLabel lblLoiCCCD;
+	private final JLabel lblLoiHoTen;
+//	private final JButton btnThemNhiu;
 
 	/**
 	 * Create the panel.
@@ -479,12 +486,12 @@ public class CongNhanForm extends JPanel {
 		this.jcNgaySinh.setDate(Date.valueOf(LocalDate.now()));
 		this.jcNgayVaoLam.setDate(Date.valueOf(LocalDate.now()));
 
-		btnThemNhiu = new JButton(
-				String.format("<html><p>%s</p></html>", SystemConstants.BUNDLE.getString("congNhan.btnThemNhiu")));
-		btnThemNhiu.setIcon(new ImageIcon("src/main/resources/icon/png/ic_add.png"));
-		btnThemNhiu.setFont(new Font("Times New Roman", Font.PLAIN, 16));
-		btnThemNhiu.setBounds(114, 468, 190, 44);
-		pnlChinh.add(btnThemNhiu);
+//		btnThemNhiu = new JButton(
+//				String.format("<html><p>%s</p></html>", SystemConstants.BUNDLE.getString("congNhan.btnThemNhiu")));
+//		btnThemNhiu.setIcon(new ImageIcon("src/main/resources/icon/png/ic_add.png"));
+//		btnThemNhiu.setFont(new Font("Times New Roman", Font.PLAIN, 16));
+//		btnThemNhiu.setBounds(114, 468, 190, 44);
+//		pnlChinh.add(btnThemNhiu);
 
 		init();
 
@@ -492,9 +499,9 @@ public class CongNhanForm extends JPanel {
 	}
 
 	private void event() {
-		this.btnThemNhiu.addActionListener((e) -> {
-			thucHienChucNangThemNhieu();
-		});
+//		this.btnThemNhiu.addActionListener((e) -> {
+//			thucHienChucNangThemNhieu();
+//		});
 		this.btnChonAnh.addActionListener(new ActionListener() {
 
 			@Override
@@ -552,25 +559,55 @@ public class CongNhanForm extends JPanel {
 
 	private void thucHienChucNangThemNhieu() {
 		List<CongNhan> dsCN = CongNhanExcelUtils.importExcelCongNhan();
-		if (!dsCN.isEmpty()) {
-			dsCN = congNhanService.themNhieuCongNhan(dsCN);
-			if (dsCN != null) {
-				JOptionPane.showMessageDialog(this, String.format("<html><p>%s</p></html>",
-						SystemConstants.BUNDLE.getString("congNhan.themDanhSachCongNhan")));
+		new Thread(() -> {
+			try (var socket = new Socket(
+					BUNDLE.getString("host"),
+					Integer.parseInt(BUNDLE.getString("server.port")));
+				 var dos = new DataOutputStream(socket.getOutputStream());
+				 var dis = new DataInputStream(socket.getInputStream())
+			){
 
-				// JOptionPane.showMessageDialog(this, "Thêm danh sách công nhân thành công");
-				loadTable();
-				thucHienChucNangLamMoi();
-			} else {
-				JOptionPane.showMessageDialog(this, String.format("<html><p>%s</p></html>",
-						SystemConstants.BUNDLE.getString("congNhan.themDanhSachCongNhanKhongThanh")));
+				if (!dsCN.isEmpty()) {
 
-				// JOptionPane.showMessageDialog(this, "Thêm danh sách công nhân không thành
-				// công");
-				loadTable();
-				thucHienChucNangLamMoi();
+//					// Send Data
+//					RequestDTO request = RequestDTO.builder()
+//							.requestType("CongNhanForm")
+//							.request("themNhieuCongNhan")
+//							.data(dsCN)
+//							.build();
+//					//System.out.println("Sending request: " + request);
+//					String json = AppUtils.GSON.toJson(request);
+//					dos.writeUTF(json);
+//					dos.flush();
+//
+//					// Receive Data
+//					json = new String(dis.readAllBytes());
+//					ResponseDTO response = AppUtils.GSON.fromJson(json, ResponseDTO.class);
+//					//System.out.println("Receive response: " + response);
+//					dsCN = (List<CongNhan>) response.getData();
+//
+//					dsCN = congNhanService.themNhieuCongNhan(dsCN);
+//					if (dsCN != null) {
+//						JOptionPane.showMessageDialog(this, String.format("<html><p>%s</p></html>",
+//								SystemConstants.BUNDLE.getString("congNhan.themDanhSachCongNhan")));
+//
+//						// JOptionPane.showMessageDialog(this, "Thêm danh sách công nhân thành công");
+//						loadTable();
+//						thucHienChucNangLamMoi();
+//					} else {
+//						JOptionPane.showMessageDialog(this, String.format("<html><p>%s</p></html>",
+//								SystemConstants.BUNDLE.getString("congNhan.themDanhSachCongNhanKhongThanh")));
+//
+//						// JOptionPane.showMessageDialog(this, "Thêm danh sách công nhân không thành
+//						// công");
+//						loadTable();
+//						thucHienChucNangLamMoi();
+//					}
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
-		}
+		}).start();
 	}
 
 	private void thucHienChucNangCapNhat() {
@@ -602,36 +639,58 @@ public class CongNhanForm extends JPanel {
 			TayNghe tayNghe = (TayNghe) cbbModelTayNghe.getSelectedItem();
 
 			try {
-				CongNhan congNhan = new CongNhan(maCongNhan, tenCongNhan, email, diaChi, gioiTinh, cccd, soDienThoai,
-						ngaySinh, toNhom, ngayVaoLam, troCap, hinhAnh, trangThai, tayNghe);
 				int choose = JOptionPane.showConfirmDialog(this,
 						String.format("<html><p>%s</p></html>",
 								SystemConstants.BUNDLE.getString("congNhan.capNhatCongNhan")),
-						SystemConstants.BUNDLE.getString("congNhan.xacNhan"), JOptionPane.YES_NO_OPTION);
+								SystemConstants.BUNDLE.getString("congNhan.xacNhan"), JOptionPane.YES_NO_OPTION);
 				if (choose == JOptionPane.OK_OPTION) {
-					congNhan = this.congNhanService.capNhatCongNhan(congNhan);
-					if (congNhan != null) {
-						JOptionPane.showMessageDialog(this, String.format("<html><p>%s</p></html>",
-								SystemConstants.BUNDLE.getString("congNhan.capNhatCongNhanThanh")));
-						// JOptionPane.showMessageDialog(this, "Cập nhật công nhân thành công.");
-						this.thucHienChucNangLamMoi();
-						loadTable();
-					} else {
-						JOptionPane.showMessageDialog(this, String.format("<html><p>%s</p></html>",
-								SystemConstants.BUNDLE.getString("congNhan.capNhatCongNhanKhongThanh")));
+					new Thread(() -> {
+						try (var socket = new Socket(
+								BUNDLE.getString("host"),
+								Integer.parseInt(BUNDLE.getString("server.port")));
+							 var dos = new DataOutputStream(socket.getOutputStream());
+							 var dis = new DataInputStream(socket.getInputStream())
+						){
+							CongNhan congNhan = new CongNhan(maCongNhan, tenCongNhan, email, diaChi, gioiTinh, cccd, soDienThoai,
+									ngaySinh, toNhom, ngayVaoLam, troCap, hinhAnh, trangThai, tayNghe);
+							// Send Data
+							RequestDTO request = RequestDTO.builder()
+									.requestType("CongNhanForm")
+									.request("capNhatCongNhan")
+									.data(congNhan)
+									.build();
+							//System.out.println("Sending request: " + request);
+							String json = AppUtils.GSON.toJson(request);
+							dos.writeUTF(json);
+							dos.flush();
 
-						// JOptionPane.showMessageDialog(this, "Cập công nhân không thành công.");
-					}
+							// Receive Data
+							json = new String(dis.readAllBytes());
+							ResponseDTO response = AppUtils.GSON.fromJson(json, ResponseDTO.class);
+							//System.out.println("Receive response: " + response);
+							Map<String, Object> data = (Map<String, Object>) response.getData();
+
+							if (data != null) {
+								JOptionPane.showMessageDialog(this, String.format("<html><p>%s</p></html>",
+										SystemConstants.BUNDLE.getString("congNhan.capNhatCongNhanThanh")));
+								this.thucHienChucNangLamMoi();
+								loadTable();
+							} else {
+								JOptionPane.showMessageDialog(this, String.format("<html><p>%s</p></html>",
+										SystemConstants.BUNDLE.getString("congNhan.capNhatCongNhanKhongThanh")));
+							}
+
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+					}).start();
 				}
-
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		} else {
 			JOptionPane.showMessageDialog(this,
 					String.format("<html><p>%s</p></html>", SystemConstants.BUNDLE.getString("congNhan.chonCongNhan")));
-
-			// JOptionPane.showMessageDialog(this, "Vui lòng chọn công nhân để cập nhật.");
 		}
 	}
 
@@ -650,52 +709,116 @@ public class CongNhanForm extends JPanel {
 	}
 
 	private void loadTable() {
-		tableModelCongNhan.setRowCount(0);
-		this.dsCongNhan = this.congNhanService.timKiemTatCaCongNhan();
-		int stt = 1;
+		new Thread(() -> {
+			try (var socket = new Socket(
+					BUNDLE.getString("host"),
+					Integer.parseInt(BUNDLE.getString("server.port")));
+				 var dos = new DataOutputStream(socket.getOutputStream());
+				 var dis = new DataInputStream(socket.getInputStream())
+			){
+				// Send Data
+				RequestDTO request = RequestDTO.builder()
+						.requestType("CongNhanForm")
+						.request("timKiemTatCaCongNhan")
+						.data("")
+						.build();
+				System.out.println("Sending request: " + request);
+				String json = AppUtils.GSON.toJson(request);
+				dos.writeUTF(json);
+				dos.flush();
 
-		for (CongNhan congNhan : this.dsCongNhan) {
-			String gioiTinh = congNhan.getGioiTinh() == 1 ? "Nam" : (congNhan.getGioiTinh() == 0 ? "Nữ" : "Khác");
-			String trangThai = congNhan.isTrangThai() ? "Đang làm" : "Đã nghỉ";
+				// Receive Data
+				json = new String(dis.readAllBytes());
+				ResponseDTO response = AppUtils.GSON.fromJson(json, ResponseDTO.class);
+				System.out.println("Receive response: " + response);
+				List<Map<String, Object>> data = (List<Map<String, Object>>) response.getData();
 
-			tableModelCongNhan.addRow(new Object[] { stt++, congNhan.getMaCongNhan(), congNhan.getHoTen(),
-					congNhan.getCccd(), congNhan.getNgaySinh(), congNhan.getDiaChi(), congNhan.getSoDienThoai(),
-					congNhan.getEmail(), gioiTinh, congNhan.getToNhom(), congNhan.getNgayVaoLam(),
-					PriceFormatterUtils.format(congNhan.getTroCap()), congNhan.getTayNghe(), trangThai });
-		}
+				dsCongNhan = data.stream().map((value) -> AppUtils.convert(value, CongNhan.class)).collect(Collectors.toList());
+				tableModelCongNhan.setRowCount(0);
+				int stt = 1;
+				for (CongNhan congNhan : this.dsCongNhan) {
+					String gioiTinh = congNhan.getGioiTinh() == 1 ? "Nam" : (congNhan.getGioiTinh() == 0 ? "Nữ" : "Khác");
+					String trangThai = congNhan.isTrangThai() ? "Đang làm" : "Đã nghỉ";
+
+					tableModelCongNhan.addRow(new Object[] { stt++, congNhan.getMaCongNhan(), congNhan.getHoTen(),
+							congNhan.getCccd(), congNhan.getNgaySinh(), congNhan.getDiaChi(), congNhan.getSoDienThoai(),
+							congNhan.getEmail(), gioiTinh, congNhan.getToNhom(), congNhan.getNgayVaoLam(),
+							PriceFormatterUtils.format(congNhan.getTroCap()), congNhan.getTayNghe(), trangThai });
+					}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}).start();
 	}
 
 	private void loadComboBox() {
-		dsTayNghe = this.tayNgheService.timKiemTatCaTayNghe();
-		dsToNhom = this.toNhomService.timKiemTatCaToNhom();
+		new Thread(() -> {
+			try (var socket = new Socket(
+					BUNDLE.getString("host"),
+					Integer.parseInt(BUNDLE.getString("server.port")));
+				 var dos = new DataOutputStream(socket.getOutputStream());
+				 var dis = new DataInputStream(socket.getInputStream())
+			){
+				// Send Data
+				RequestDTO request = RequestDTO.builder()
+						.requestType("TayNgheForm")
+						.request("timKiemTatCaTayNghe")
+						.data("")
+						.build();
+				System.out.println("Sending request: " + request);
+				String json = AppUtils.GSON.toJson(request);
+				dos.writeUTF(json);
+				dos.flush();
 
-		cbbModelTayNghe.addAll(dsTayNghe);
-		cbbModelToNhom.addAll(dsToNhom);
+				// Receive Data
+				json = new String(dis.readAllBytes());
+				ResponseDTO response = AppUtils.GSON.fromJson(json, ResponseDTO.class);
+				//System.out.println("Receive response: " + response);
+				List<Map<String, Object>> data = (List<Map<String, Object>>) response.getData();
 
-		if (!dsTayNghe.isEmpty()) {
-			cmbTayNghe.setSelectedIndex(0);
-		}
-		if (!dsToNhom.isEmpty()) {
-			cmbToNhom.setSelectedIndex(0);
-		}
+				dsTayNghe = data.stream().map((value) -> AppUtils.convert(value, TayNghe.class)).collect(Collectors.toList());
+				cbbModelTayNghe.addAll(dsTayNghe);
+				if (!dsTayNghe.isEmpty()) {
+					cmbTayNghe.setSelectedIndex(0);
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}).start();
 
-	}
+		new Thread(() -> {
+			try (var socket = new Socket(
+					BUNDLE.getString("host"),
+					Integer.parseInt(BUNDLE.getString("server.port")));
+				 var dos = new DataOutputStream(socket.getOutputStream());
+				 var dis = new DataInputStream(socket.getInputStream())
+			){
+				// Send Data
+				RequestDTO request = RequestDTO.builder()
+						.requestType("ToNhomForm")
+						.request("timKiemTatCaToNhom")
+						.data("")
+						.build();
+				System.out.println("Sending request: " + request);
+				String json = AppUtils.GSON.toJson(request);
+				dos.writeUTF(json);
+				dos.flush();
 
-	private String layMaCongNhan() {
-		// 20 là số nhận dạng là công nhân, XX năm vào làm của công nhân, XX giới tính,
-		// XXXX 4 số cuối CCCD
-		LocalDate namVaoLam = DateConvertUtils.asLocalDate(jcNgayVaoLam.getDate(), ZoneId.systemDefault());
-		String nam = String.format("%s", namVaoLam.getYear());
-		String gioiTinh = "";
-		if (this.radNam.isSelected())
-			gioiTinh = "01";
-		else
-			gioiTinh = "00";
-		String bonSoCuoiCCCD = this.txtCCCD.getText().substring(8);
+				// Receive Data
+				json = new String(dis.readAllBytes());
+				ResponseDTO response = AppUtils.GSON.fromJson(json, ResponseDTO.class);
+				//System.out.println("Receive response: " + response);
+				List<Map<String, Object>> data = (List<Map<String, Object>>) response.getData();
 
-		String maCongNhan = "20" + nam + gioiTinh + bonSoCuoiCCCD;
-
-		return maCongNhan;
+				dsToNhom = data.stream().map((value) -> AppUtils.convert(value, ToNhom.class)).collect(Collectors.toList());
+				cbbModelToNhom.addAll(dsToNhom);
+				if (!dsToNhom.isEmpty()) {
+					cmbToNhom.setSelectedIndex(0);
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}).start();
 	}
 
 	private void thucHienChucNangThemCongNhan() {
@@ -724,19 +847,45 @@ public class CongNhanForm extends JPanel {
 		TayNghe tayNghe = (TayNghe) cbbModelTayNghe.getSelectedItem();
 
 		try {
-			CongNhan congNhan = new CongNhan(maCongNhan, tenCongNhan, email, diaChi, gioiTinh, cccd, soDienThoai,
-					ngaySinh, toNhom, ngayVaoLam, troCap, hinhAnh, tayNghe);
-			congNhan = this.congNhanService.themCongNhan(congNhan);
-			if (congNhan != null) {
-				JOptionPane.showMessageDialog(this, String.format("<html><p>%s</p></html>",
-						SystemConstants.BUNDLE.getString("congNhan.themCongNhan")));
+			new Thread(() -> {
+				try (var socket = new Socket(
+						BUNDLE.getString("host"),
+						Integer.parseInt(BUNDLE.getString("server.port")));
+					 var dos = new DataOutputStream(socket.getOutputStream());
+					 var dis = new DataInputStream(socket.getInputStream())
+				){
+					CongNhan congNhan = new CongNhan(maCongNhan, tenCongNhan, email, diaChi, gioiTinh, cccd, soDienThoai,
+							ngaySinh, toNhom, ngayVaoLam, troCap, hinhAnh, tayNghe);
+					// Send Data
+					RequestDTO request = RequestDTO.builder()
+							.requestType("CongNhanForm")
+							.request("themCongNhan")
+							.data(congNhan)
+							.build();
+					//System.out.println("Sending request: " + request);
+					String json = AppUtils.GSON.toJson(request);
+					dos.writeUTF(json);
+					dos.flush();
 
-				this.thucHienChucNangLamMoi();
-				loadTable();
-			} else {
-				JOptionPane.showMessageDialog(this, String.format("<html><p>%s</p></html>",
-						SystemConstants.BUNDLE.getString("congNhan.themCongNhanKhongThanh")));
-			}
+					// Receive Data
+					json = new String(dis.readAllBytes());
+					ResponseDTO response = AppUtils.GSON.fromJson(json, ResponseDTO.class);
+					//System.out.println("Receive response: " + response);
+					Map<String, Object> themCongNhan = (Map<String, Object>) response.getData();
+					if (themCongNhan != null) {
+						JOptionPane.showMessageDialog(this, String.format("<html><p>%s</p></html>",
+								SystemConstants.BUNDLE.getString("congNhan.themCongNhan")));
+
+						this.thucHienChucNangLamMoi();
+						loadTable();
+					} else {
+						JOptionPane.showMessageDialog(this, String.format("<html><p>%s</p></html>",
+								SystemConstants.BUNDLE.getString("congNhan.themCongNhanKhongThanh")));
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}).start();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -750,26 +899,47 @@ public class CongNhanForm extends JPanel {
 					String.format("<html><p>%s</p></html>", SystemConstants.BUNDLE.getString("congNhan.xoaCongNhan")),
 					SystemConstants.BUNDLE.getString("congNhan.xacNhan"), JOptionPane.YES_NO_OPTION);
 			if (choose == JOptionPane.OK_OPTION) {
-				boolean trangThai = this.congNhanService.capNhatTrangThaiCongNhan(cn.getMaCongNhan(), false);
-				if (trangThai) {
-					JOptionPane.showMessageDialog(this, String.format("<html><p>%s</p></html>",
-							SystemConstants.BUNDLE.getString("congNhan.xoaCongNhanThanh")));
+				new Thread(() -> {
+					try (var socket = new Socket(
+							BUNDLE.getString("host"),
+							Integer.parseInt(BUNDLE.getString("server.port")));
+						 var dos = new DataOutputStream(socket.getOutputStream());
+						 var dis = new DataInputStream(socket.getInputStream())
+					){
 
-					// JOptionPane.showMessageDialog(this, "Xóa công nhân thành công.");
-					loadTable();
-					this.thucHienChucNangLamMoi();
-				} else {
-					JOptionPane.showMessageDialog(this, String.format("<html><p>%s</p></html>",
-							SystemConstants.BUNDLE.getString("congNhan.xoaCongNhanKhongThanh")));
+						// Send Data
+						RequestDTO request = RequestDTO.builder()
+								.requestType("CongNhanForm")
+								.request("capNhatTrangThaiCongNhan")
+								.data(cn.getMaCongNhan())
+								.build();
+						System.out.println("Sending request: " + request);
+						String json = AppUtils.GSON.toJson(request);
+						dos.writeUTF(json);
+						dos.flush();
 
-					// JOptionPane.showMessageDialog(this, "Xóa công nhân không thành công.");
-				}
+						// Receive Data
+						json = new String(dis.readAllBytes());
+						ResponseDTO response = AppUtils.GSON.fromJson(json, ResponseDTO.class);
+						System.out.println("Receive response: " + response);
+						boolean trangThai = (boolean) response.getData();
+						if (trangThai) {
+							JOptionPane.showMessageDialog(this, String.format("<html><p>%s</p></html>",
+									SystemConstants.BUNDLE.getString("congNhan.xoaCongNhanThanh")));
+							loadTable();
+							this.thucHienChucNangLamMoi();
+						} else {
+							JOptionPane.showMessageDialog(this, String.format("<html><p>%s</p></html>",
+									SystemConstants.BUNDLE.getString("congNhan.xoaCongNhanKhongThanh")));
+						}
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}).start();
 			}
 		} else {
 			JOptionPane.showMessageDialog(this, String.format("<html><p>%s</p></html>",
 					SystemConstants.BUNDLE.getString("congNhan.chonXoaCongNhan")));
-
-			// JOptionPane.showMessageDialog(this, "Vui lòng chọn công nhân để xóa");
 		}
 	}
 

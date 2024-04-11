@@ -10,8 +10,6 @@ import com.product.salary.application.utils.AppUtils;
 import com.product.salary.application.utils.RequestDTO;
 import com.product.salary.application.utils.ResponseDTO;
 import com.product.salary.client.interfaces.ISendResponse;
-import com.product.salary.application.service.AccountService;
-import com.product.salary.application.service.impl.AccountServiceImpl;
 import com.product.salary.application.utils.AuthUtils;
 import org.apache.commons.lang3.ObjectUtils;
 
@@ -219,6 +217,7 @@ public class DoiMatKhauForm extends JFrame {
         if (!thucHienChucNangKiemTra()) {
 			return;
 		}
+
 
 		if (account_1 != null) {
 			new Thread(() -> {
