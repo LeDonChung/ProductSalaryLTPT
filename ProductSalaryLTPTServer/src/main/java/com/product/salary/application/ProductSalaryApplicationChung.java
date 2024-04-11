@@ -1,14 +1,8 @@
 package com.product.salary.application;
 
 import com.product.salary.application.entity.*;
-import com.product.salary.application.service.AccountService;
-import com.product.salary.application.service.CongDoanSanPhamService;
-import com.product.salary.application.service.HopDongService;
-import com.product.salary.application.service.SanPhamService;
-import com.product.salary.application.service.impl.AccountServiceImpl;
-import com.product.salary.application.service.impl.CongDoanSanPhamServiceImpl;
-import com.product.salary.application.service.impl.HopDongServiceImpl;
-import com.product.salary.application.service.impl.SanPhamServiceImpl;
+import com.product.salary.application.service.*;
+import com.product.salary.application.service.impl.*;
 import com.product.salary.application.utils.AppUtils;
 import com.product.salary.application.utils.RequestDTO;
 import com.product.salary.application.utils.ResponseDTO;
@@ -17,6 +11,7 @@ import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
@@ -53,12 +48,20 @@ public class ProductSalaryApplicationChung {
 		private final AccountService accountService;
 		private final HopDongService hopDongService;
 		private final SanPhamService sanPhamService;
+		private final CongNhanService congNhanService;
+		private final NhanVienService nhanVienService;
 		private final CongDoanSanPhamService congDoanSanPhamService;
+		private final LuongCongNhanService luongCongNhanService;
+		private final LuongNhanVienService luongNhanVienService;
 		public handlerClient(Socket socket) {
 			this.socket = socket;
 			this.accountService = new AccountServiceImpl();
 			this.hopDongService = new HopDongServiceImpl();
 			this.sanPhamService = new SanPhamServiceImpl();
+			this.congNhanService = new CongNhanServiceImpl();
+			this.nhanVienService = new NhanVienServiceImpl();
+			this.luongCongNhanService = new LuongCongNhanServiceImpl();
+			this.luongNhanVienService = new LuongNhanVienServiceImpl();
 			this.congDoanSanPhamService = new CongDoanSanPhamServiceImpl();
 		}
 
@@ -73,6 +76,46 @@ public class ProductSalaryApplicationChung {
 				System.out.println("Request: " + requestObject);
 				String request = requestObject.getRequestType();
 				switch (request) {
+					case "TongQuatForm": {
+						switch (requestObject.getRequest()) {
+							case "thucHienChucNangLoadThongKeSoLuong": {
+
+								Map<String, Integer> data = new HashMap<>();
+								data.put("soLuongSanPham", sanPhamService.tongSoLuongSanPham());
+								data.put("soLuongCongNhan", congNhanService.tongSoLuongCongNhan());
+								data.put("soLuongNhanVien", nhanVienService.tongSoLuongNhanVien());
+								data.put("soLuongHopDong", hopDongService.tongSoLuongHopDong());
+
+								ResponseDTO response = ResponseDTO.builder()
+										.data(data)
+										.build();
+
+								System.out.println("Response: " + response);
+								// Send Response
+								json = AppUtils.GSON.toJson(response);
+								dos.writeBytes(json);
+								dos.flush();
+								break;
+							}
+							case "thongKeLuongTheoNam": {
+								Map<String, Map<String, Double>> data = new HashMap<>();
+								data.put("luongCongNhans", luongCongNhanService.thongKeLuongCongNhanTheoNam());
+								data.put("luongNhanViens", luongNhanVienService.thongKeLuongNhanVienTheoNam());
+
+								ResponseDTO response = ResponseDTO.builder()
+										.data(data)
+										.build();
+
+								System.out.println("Response: " + response);
+								// Send Response
+								json = AppUtils.GSON.toJson(response);
+								dos.writeBytes(json);
+								dos.flush();
+								break;
+							}
+
+						}
+					}
 					case "DoiMatKhauForm": {
 						switch (requestObject.getRequest()) {
 							case "capNhatMatKhau": {
@@ -111,7 +154,8 @@ public class ProductSalaryApplicationChung {
 								System.out.println("Response: " + response);
 								// Send Response
 								json = AppUtils.GSON.toJson(response);
-								dos.writeBytes(json);
+								byte[] bytes = json.getBytes(StandardCharsets.UTF_8);
+								dos.write(bytes);
 								dos.flush();
 								break;
 							}

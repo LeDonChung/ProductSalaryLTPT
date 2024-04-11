@@ -1,6 +1,9 @@
 package com.product.salary.client.view.statistic;
 
-import com.product.salary.application.common.SystemConstants;
+import com.product.salary.application.utils.AppUtils;
+import com.product.salary.application.utils.RequestDTO;
+import com.product.salary.application.utils.ResponseDTO;
+import com.product.salary.client.common.SystemConstants;
 import com.product.salary.application.service.*;
 import com.product.salary.application.service.impl.*;
 import org.jfree.chart.ChartFactory;
@@ -15,258 +18,307 @@ import javax.swing.*;
 import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.File;
+import java.net.Socket;
 import java.util.List;
 import java.util.*;
 import java.util.Map.Entry;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.concurrent.FutureTask;
 import java.util.function.Consumer;
 
 /**
- * 
  * @author Lê Đôn Chủng: Code giao diện
- *
  */
 public class TongQuatForm extends JPanel {
+    private final ResourceBundle BUNDLE = ResourceBundle.getBundle("app");
+    private final JLabel lblSoLuongCongNhan;
+    private final JLabel lblSoLuongHopDong;
+    private final JLabel lblSoLuongSanPham;
+    private final JLabel lblSoLuongNhanVien;
+    private NhanVienService nhanVienService;
+    private CongNhanService congNhanService;
+    private HopDongService hopDongService;
+    private SanPhamService sanPhamService;
+    private LuongCongNhanService luongCongNhanService;
+    private LuongNhanVienService luongNhanVienService;
+    private final JButton btnExport;
+    private final JPanel pnlMain;
+    private final JPanel pnl1;
+    private final JPanel pnl3;
 
-	private JLabel lblSoLuongCongNhan;
-	private JLabel lblSoLuongHopDong;
-	private JLabel lblSoLuongSanPham;
-	private JLabel lblSoLuongNhanVien;
-	private ChartPanel pnlThongKeLuong;
-	private NhanVienService nhanVienService;
-	private CongNhanService congNhanService;
-	private HopDongService hopDongService;
-	private SanPhamService sanPhamService;
-	private LuongCongNhanService luongCongNhanService;
-	private LuongNhanVienService luongNhanVienService;
-	private JButton btnExport;
-	private JPanel pnlMain;
-	private JPanel pnl1;
-	private JPanel pnl3;
+    /**
+     * Create the panel.
+     */
+    public TongQuatForm() {
 
-	/**
-	 * Create the panel.
-	 */
-	public TongQuatForm() {
+        setLayout(null);
 
-		setLayout(null);
+        pnlMain = new JPanel();
+        pnlMain.setForeground(Color.BLACK);
+        pnlMain.setBounds(10, 10, 1250, 825);
+        pnlMain.setLayout(null);
+        add(pnlMain);
 
-		pnlMain = new JPanel();
-		pnlMain.setForeground(Color.BLACK);
-		pnlMain.setBounds(10, 10, 1250, 825);
-		pnlMain.setLayout(null);
-		add(pnlMain);
+        JLabel lblTitle = new JLabel(SystemConstants.BUNDLE.getString("thongKeTongQuat.title"));
+        lblTitle.setBorder(null);
+        lblTitle.setHorizontalAlignment(SwingConstants.CENTER);
+        lblTitle.setFont(new Font("Times New Roman", Font.BOLD, 20));
+        lblTitle.setBounds(0, 0, 1250, 80);
+        pnlMain.add(lblTitle);
 
-		JLabel lblTitle = new JLabel(SystemConstants.BUNDLE.getString("thongKeTongQuat.title"));
-		lblTitle.setBorder(null);
-		lblTitle.setHorizontalAlignment(SwingConstants.CENTER);
-		lblTitle.setFont(new Font("Times New Roman", Font.BOLD, 20));
-		lblTitle.setBounds(0, 0, 1250, 80);
-		pnlMain.add(lblTitle);
+        pnl1 = new JPanel();
+        pnl1.setBounds(10, 144, 1230, 209);
+        pnlMain.add(pnl1);
+        pnl1.setLayout(null);
 
-		pnl1 = new JPanel();
-		pnl1.setBounds(10, 144, 1230, 209);
-		pnlMain.add(pnl1);
-		pnl1.setLayout(null);
+        JPanel pnlNhanVien = new JPanel();
+        pnlNhanVien.setBorder(new LineBorder(new Color(0, 0, 0)));
+        pnlNhanVien.setBounds(30, 10, 180, 180);
+        pnl1.add(pnlNhanVien);
+        pnlNhanVien.setLayout(null);
 
-		JPanel pnlNhanVien = new JPanel();
-		pnlNhanVien.setBorder(new LineBorder(new Color(0, 0, 0)));
-		pnlNhanVien.setBounds(30, 10, 180, 180);
-		pnl1.add(pnlNhanVien);
-		pnlNhanVien.setLayout(null);
+        lblSoLuongNhanVien = new JLabel("32");
+        lblSoLuongNhanVien.setHorizontalAlignment(SwingConstants.CENTER);
+        lblSoLuongNhanVien.setFont(new Font("Times New Roman", Font.BOLD, 20));
+        lblSoLuongNhanVien.setBounds(10, 141, 160, 29);
+        pnlNhanVien.add(lblSoLuongNhanVien);
 
-		lblSoLuongNhanVien = new JLabel("32");
-		lblSoLuongNhanVien.setHorizontalAlignment(SwingConstants.CENTER);
-		lblSoLuongNhanVien.setFont(new Font("Times New Roman", Font.BOLD, 20));
-		lblSoLuongNhanVien.setBounds(10, 141, 160, 29);
-		pnlNhanVien.add(lblSoLuongNhanVien);
+        JLabel lblHinhAnhNhanVien = new JLabel("");
+        lblHinhAnhNhanVien
+                .setIcon(new ImageIcon("src/main/resources/icon/png/ic_employee_120.png"));
+        lblHinhAnhNhanVien.setBounds(27, 10, 120, 120);
+        pnlNhanVien.add(lblHinhAnhNhanVien);
 
-		JLabel lblHinhAnhNhanVien = new JLabel("");
-		lblHinhAnhNhanVien
-				.setIcon(new ImageIcon("src/main/resources/icon/png/ic_employee_120.png"));
-		lblHinhAnhNhanVien.setBounds(27, 10, 120, 120);
-		pnlNhanVien.add(lblHinhAnhNhanVien);
+        JPanel pnlCongNhan = new JPanel();
+        pnlCongNhan.setLayout(null);
+        pnlCongNhan.setBorder(new LineBorder(new Color(0, 0, 0)));
+        pnlCongNhan.setBounds(366, 10, 180, 180);
+        pnl1.add(pnlCongNhan);
 
-		JPanel pnlCongNhan = new JPanel();
-		pnlCongNhan.setLayout(null);
-		pnlCongNhan.setBorder(new LineBorder(new Color(0, 0, 0)));
-		pnlCongNhan.setBounds(366, 10, 180, 180);
-		pnl1.add(pnlCongNhan);
+        lblSoLuongCongNhan = new JLabel("32");
+        lblSoLuongCongNhan.setHorizontalAlignment(SwingConstants.CENTER);
+        lblSoLuongCongNhan.setFont(new Font("Times New Roman", Font.BOLD, 20));
+        lblSoLuongCongNhan.setBounds(10, 141, 160, 29);
+        pnlCongNhan.add(lblSoLuongCongNhan);
 
-		lblSoLuongCongNhan = new JLabel("32");
-		lblSoLuongCongNhan.setHorizontalAlignment(SwingConstants.CENTER);
-		lblSoLuongCongNhan.setFont(new Font("Times New Roman", Font.BOLD, 20));
-		lblSoLuongCongNhan.setBounds(10, 141, 160, 29);
-		pnlCongNhan.add(lblSoLuongCongNhan);
+        JLabel lblHinhAnhCongNhan = new JLabel("");
+        lblHinhAnhCongNhan
+                .setIcon(new ImageIcon("src/main/resources/icon/png/ic_workers_120.png"));
+        lblHinhAnhCongNhan.setBounds(27, 10, 120, 120);
+        pnlCongNhan.add(lblHinhAnhCongNhan);
 
-		JLabel lblHinhAnhCongNhan = new JLabel("");
-		lblHinhAnhCongNhan
-				.setIcon(new ImageIcon("src/main/resources/icon/png/ic_workers_120.png"));
-		lblHinhAnhCongNhan.setBounds(27, 10, 120, 120);
-		pnlCongNhan.add(lblHinhAnhCongNhan);
+        JPanel pnlHopDong = new JPanel();
+        pnlHopDong.setLayout(null);
+        pnlHopDong.setBorder(new LineBorder(new Color(0, 0, 0)));
+        pnlHopDong.setBounds(694, 10, 180, 180);
+        pnl1.add(pnlHopDong);
 
-		JPanel pnlHopDong = new JPanel();
-		pnlHopDong.setLayout(null);
-		pnlHopDong.setBorder(new LineBorder(new Color(0, 0, 0)));
-		pnlHopDong.setBounds(694, 10, 180, 180);
-		pnl1.add(pnlHopDong);
+        lblSoLuongHopDong = new JLabel("32");
+        lblSoLuongHopDong.setHorizontalAlignment(SwingConstants.CENTER);
+        lblSoLuongHopDong.setFont(new Font("Times New Roman", Font.BOLD, 20));
+        lblSoLuongHopDong.setBounds(10, 141, 160, 29);
+        pnlHopDong.add(lblSoLuongHopDong);
 
-		lblSoLuongHopDong = new JLabel("32");
-		lblSoLuongHopDong.setHorizontalAlignment(SwingConstants.CENTER);
-		lblSoLuongHopDong.setFont(new Font("Times New Roman", Font.BOLD, 20));
-		lblSoLuongHopDong.setBounds(10, 141, 160, 29);
-		pnlHopDong.add(lblSoLuongHopDong);
+        JLabel lblHinhAnhHopDong = new JLabel("");
+        lblHinhAnhHopDong
+                .setIcon(new ImageIcon("src/main/resources/icon/png/ic_contract_120.png"));
+        lblHinhAnhHopDong.setBounds(27, 10, 120, 120);
+        pnlHopDong.add(lblHinhAnhHopDong);
 
-		JLabel lblHinhAnhHopDong = new JLabel("");
-		lblHinhAnhHopDong
-				.setIcon(new ImageIcon("src/main/resources/icon/png/ic_contract_120.png"));
-		lblHinhAnhHopDong.setBounds(27, 10, 120, 120);
-		pnlHopDong.add(lblHinhAnhHopDong);
+        JPanel pnlSanPham = new JPanel();
+        pnlSanPham.setLayout(null);
+        pnlSanPham.setBorder(new LineBorder(new Color(0, 0, 0)));
+        pnlSanPham.setBounds(1031, 10, 180, 180);
+        pnl1.add(pnlSanPham);
 
-		JPanel pnlSanPham = new JPanel();
-		pnlSanPham.setLayout(null);
-		pnlSanPham.setBorder(new LineBorder(new Color(0, 0, 0)));
-		pnlSanPham.setBounds(1031, 10, 180, 180);
-		pnl1.add(pnlSanPham);
+        lblSoLuongSanPham = new JLabel("32");
+        lblSoLuongSanPham.setHorizontalAlignment(SwingConstants.CENTER);
+        lblSoLuongSanPham.setFont(new Font("Times New Roman", Font.BOLD, 20));
+        lblSoLuongSanPham.setBounds(10, 141, 160, 29);
+        pnlSanPham.add(lblSoLuongSanPham);
 
-		lblSoLuongSanPham = new JLabel("32");
-		lblSoLuongSanPham.setHorizontalAlignment(SwingConstants.CENTER);
-		lblSoLuongSanPham.setFont(new Font("Times New Roman", Font.BOLD, 20));
-		lblSoLuongSanPham.setBounds(10, 141, 160, 29);
-		pnlSanPham.add(lblSoLuongSanPham);
+        JLabel lblHinhAnhSanPham = new JLabel("");
+        lblHinhAnhSanPham
+                .setIcon(new ImageIcon("src/main/resources/icon/png/ic_product_120.png"));
+        lblHinhAnhSanPham.setBounds(27, 10, 120, 120);
+        pnlSanPham.add(lblHinhAnhSanPham);
 
-		JLabel lblHinhAnhSanPham = new JLabel("");
-		lblHinhAnhSanPham
-				.setIcon(new ImageIcon("src/main/resources/icon/png/ic_product_120.png"));
-		lblHinhAnhSanPham.setBounds(27, 10, 120, 120);
-		pnlSanPham.add(lblHinhAnhSanPham);
+        init();
 
-		init();
+        ChartPanel pnlThongKeLuong = new ChartPanel(createCharLuong(createDatasetLuong()));
+        pnlThongKeLuong.setZoomInFactor(2.0);
+        pnlThongKeLuong.setBounds(0, 10, 1230, 388);
 
-		pnlThongKeLuong = new ChartPanel(createCharLuong(createDatasetLuong()));
-		pnlThongKeLuong.setZoomInFactor(2.0);
-		pnlThongKeLuong.setBounds(0, 10, 1230, 388);
+        pnl3 = new JPanel();
+        pnl3.setBounds(10, 363, 1230, 408);
+        pnl3.setLayout(null);
+        pnl3.add(pnlThongKeLuong);
+        pnlMain.add(pnl3);
 
-		pnl3 = new JPanel();
-		pnl3.setBounds(10, 363, 1230, 408);
-		pnl3.setLayout(null);
-		pnl3.add(pnlThongKeLuong);
-		pnlMain.add(pnl3);
+        btnExport = new JButton(String.format("<html><p>%s</p></html>",
+                SystemConstants.BUNDLE.getString("luongCongNhan.btnXuatBaoCao")));
+        btnExport.setIcon(new ImageIcon("src/main/resources/icon/png/ic_print.png"));
+        btnExport.setBounds(1043, 90, 197, 44);
+        pnlMain.add(btnExport);
 
-		btnExport = new JButton(String.format("<html><p>%s</p></html>",
-				SystemConstants.BUNDLE.getString("luongCongNhan.btnXuatBaoCao")));
-		btnExport.setIcon(new ImageIcon("src/main/resources/icon/png/ic_print.png"));
-		btnExport.setBounds(1043, 90, 197, 44);
-		pnlMain.add(btnExport);
+        event();
 
-		event();
+    }
 
-	}
+    private JFreeChart createCharLuong(CategoryDataset dataset) {
+        return ChartFactory.createBarChart(SystemConstants.BUNDLE.getString("thongKeTongQuat.bieuDoLuongTheoNam"),
+                SystemConstants.BUNDLE.getString("thongKeTongQuat.nam"),
+                SystemConstants.BUNDLE.getString("thongKeTongQuat.tongLuong"), dataset, PlotOrientation.VERTICAL, false,
+                false, false);
+    }
 
-	private JFreeChart createCharLuong(CategoryDataset dataset) {
-		return ChartFactory.createBarChart(SystemConstants.BUNDLE.getString("thongKeTongQuat.bieuDoLuongTheoNam"),
-				SystemConstants.BUNDLE.getString("thongKeTongQuat.nam"),
-				SystemConstants.BUNDLE.getString("thongKeTongQuat.tongLuong"), dataset, PlotOrientation.VERTICAL, false,
-				false, false);
-	}
+    private CategoryDataset createDatasetLuong() {
+        Callable<Map<String, Map<String, Object>>> callable = () -> {
+            try (var socket = new Socket(
+                    BUNDLE.getString("host"),
+                    Integer.parseInt(BUNDLE.getString("server.port")));
+                 var dos = new DataOutputStream(socket.getOutputStream());
+                 var dis = new DataInputStream(socket.getInputStream())) {
 
-	private CategoryDataset createDatasetLuong() {
-		// Danh sách tổng lương chi lương theo năm
-		DefaultCategoryDataset dataset = new DefaultCategoryDataset();
-		Map<String, Double> luongCongNhans = this.luongCongNhanService.thongKeLuongCongNhanTheoNam();
-		Map<String, Double> luongNhanViens = this.luongNhanVienService.thongKeLuongNhanVienTheoNam();
-		Set<String> nams = new HashSet<String>();
-		nams.addAll(luongCongNhans.keySet());
-		nams.addAll(luongNhanViens.keySet());
+                // send request
+                RequestDTO request = RequestDTO
+                        .builder()
+                        .request("thongKeLuongTheoNam")
+                        .requestType("TongQuatForm")
+                        .build();
 
-		Map<String, Double> result = new LinkedHashMap<String, Double>();
-		nams.forEach(new Consumer<String>() {
+                String json = AppUtils.GSON.toJson(request);
+                dos.writeUTF(json);
+                dos.flush();
 
-			@Override
-			public void accept(String t) {
-				Double luongNamCongNhan = luongCongNhans.get(t);
-				Double luongNamNhanVien = luongNhanViens.get(t);
+                // receive response
+                json = new String(dis.readAllBytes());
+                ResponseDTO response = AppUtils.GSON.fromJson(json, ResponseDTO.class);
+                return (Map<String, Map<String, Object>>) response.getData();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return new HashMap<>();
+        };
+        FutureTask<Map<String, Map<String, Object>>> futureTask = new FutureTask<>(callable);
+        Thread t = new Thread(futureTask);
+        t.start();
+        while (t.isAlive()) {}
+        Map<String, Map<String, Object>> data = null;
+        try {
+            data = futureTask.get();
+        } catch (InterruptedException | ExecutionException e) {
+            throw new RuntimeException(e);
+        }
+        // Danh sách tổng lương chi lương theo năm
+        DefaultCategoryDataset dataset = new DefaultCategoryDataset();
 
-				Double luong = (luongNamCongNhan == null ? 0 : luongNamCongNhan)
-						+ (luongNamNhanVien == null ? 0 : luongNamNhanVien);
-				result.put(t, luong);
-			}
-		});
+        Map<String, Object> luongCongNhans = data.get("luongCongNhans");
+        Map<String, Object> luongNhanViens = data.get("luongNhanViens");
+        Set<String> nams = new HashSet<>();
+        nams.addAll(luongCongNhans.keySet());
+        nams.addAll(luongNhanViens.keySet());
 
-		List<Entry<String, Double>> list = new ArrayList<>(result.entrySet());
-		Collections.sort(list, Entry.comparingByKey(new Comparator<String>() {
+        Map<String, Double> result = new LinkedHashMap<>();
+        nams.forEach(tx -> {
+            Double luongNamCongNhan = (Double) luongCongNhans.get(tx);
+            Double luongNamNhanVien = (Double) luongNhanViens.get(tx);
 
-			@Override
-			public int compare(String o1, String o2) {
-				return o1.compareTo(o2);
-			}
-		}));
+            Double luong = (luongNamCongNhan == null ? 0 : luongNamCongNhan)
+                    + (luongNamNhanVien == null ? 0 : luongNamNhanVien);
+            result.put(tx, luong);
+        });
 
-		list.forEach(new Consumer<Entry<String, Double>>() {
+        List<Entry<String, Double>> list = new ArrayList<>(result.entrySet());
+        list.sort(Entry.comparingByKey(String::compareTo));
 
-			@Override
-			public void accept(Entry<String, Double> t) {
-				dataset.addValue(t.getValue(), "Tổng lương", t.getKey());
+        list.forEach(tx -> dataset.addValue(tx.getValue(), "Tổng lương", tx.getKey()));
+        return dataset;
+    }
 
-			}
-		});
-		return dataset;
-	}
+    private void event() {
+        this.btnExport.addActionListener((e) -> thucHienChucNangXuatThongKe());
+    }
 
-	private void event() {
-		this.btnExport.addActionListener((e) -> {
-			thucHienChucNangXuatThongKe();
-		});
-	}
+    private void thucHienChucNangXuatThongKe() {
+        try {
+            thucHienChucNangChuanBiXuat();
 
-	private void thucHienChucNangXuatThongKe() {
-		try {
-			thucHienChucNangChuanBiXuat();
+            BufferedImage bi = new BufferedImage(pnlMain.getWidth(), pnlMain.getHeight(), BufferedImage.TYPE_INT_RGB);
+            pnlMain.paint(bi.getGraphics());
 
-			BufferedImage bi = new BufferedImage(pnlMain.getWidth(), pnlMain.getHeight(), BufferedImage.TYPE_INT_RGB);
-			pnlMain.paint(bi.getGraphics());
+            thucHienChucNangSauKhiXuat();
+            String path = "./temp/thongketongquat.jpg";
+            ImageIO.write(bi, "jpg", new File(path));
+            Desktop.getDesktop().print(new File(path));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
-			thucHienChucNangSauKhiXuat();
-			String path = "./temp/thongketongquat.jpg";
-			ImageIO.write(bi, "jpg", new File(path));
-			Desktop.getDesktop().print(new File(path));
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
+    private void thucHienChucNangChuanBiXuat() {
+        this.btnExport.setVisible(false);
+        this.pnlMain.setBackground(Color.WHITE);
+        this.pnlMain.setBackground(Color.WHITE);
+        this.pnl1.setBackground(Color.WHITE);
+        this.pnl3.setBackground(Color.WHITE);
+    }
 
-	private void thucHienChucNangChuanBiXuat() {
-		this.btnExport.setVisible(false);
-		this.pnlMain.setBackground(Color.WHITE);
-		this.pnlMain.setBackground(Color.WHITE);
-		this.pnl1.setBackground(Color.WHITE);
-		this.pnl3.setBackground(Color.WHITE);
-	}
+    private void thucHienChucNangSauKhiXuat() {
+        this.btnExport.setVisible(true);
+        this.pnlMain.setBackground(null);
+        this.pnlMain.setBackground(null);
+        this.pnl1.setBackground(null);
+        this.pnl3.setBackground(null);
+    }
 
-	private void thucHienChucNangSauKhiXuat() {
-		this.btnExport.setVisible(true);
-		this.pnlMain.setBackground(null);
-		this.pnlMain.setBackground(null);
-		this.pnl1.setBackground(null);
-		this.pnl3.setBackground(null);
-	}
+    private void init() {
+        this.congNhanService = new CongNhanServiceImpl();
+        this.nhanVienService = new NhanVienServiceImpl();
+        this.hopDongService = new HopDongServiceImpl();
+        this.sanPhamService = new SanPhamServiceImpl();
+        this.luongCongNhanService = new LuongCongNhanServiceImpl();
+        this.luongNhanVienService = new LuongNhanVienServiceImpl();
+        thucHienChucNangLoadThongKeSoLuong();
+    }
 
-	private void init() {
-		this.congNhanService = new CongNhanServiceImpl();
-		this.nhanVienService = new NhanVienServiceImpl();
-		this.hopDongService = new HopDongServiceImpl();
-		this.sanPhamService = new SanPhamServiceImpl();
-		this.luongCongNhanService = new LuongCongNhanServiceImpl();
-		this.luongNhanVienService = new LuongNhanVienServiceImpl();
-		thucHienChucNangLoadThongKeSoLuong();
-	}
+    private void thucHienChucNangLoadThongKeSoLuong() {
+        new Thread(() -> {
 
-	private void thucHienChucNangLoadThongKeSoLuong() {
-		this.lblSoLuongCongNhan.setText(congNhanService.tongSoLuongCongNhan() + "");
-		this.lblSoLuongNhanVien.setText(nhanVienService.tongSoLuongNhanVien() + "");
-		this.lblSoLuongHopDong.setText(hopDongService.tongSoLuongHopDong() + "");
-		this.lblSoLuongSanPham.setText(sanPhamService.tongSoLuongSanPham() + "");
+            try (var socket = new Socket(
+                    BUNDLE.getString("host"),
+                    Integer.parseInt(BUNDLE.getString("server.port")));
+                 var dos = new DataOutputStream(socket.getOutputStream());
+                 var dis = new DataInputStream(socket.getInputStream())) {
 
-	}
+                // send request
+                RequestDTO request = RequestDTO
+                        .builder()
+                        .request("thucHienChucNangLoadThongKeSoLuong")
+                        .requestType("TongQuatForm")
+                        .build();
+                String json = AppUtils.GSON.toJson(request);
+                dos.writeUTF(json);
+                dos.flush();
 
+                // receive response
+                json = new String(dis.readAllBytes());
+                ResponseDTO response = AppUtils.GSON.fromJson(json, ResponseDTO.class);
+                Map<String, Integer> map = (Map<String, Integer>) response.getData();
+
+                lblSoLuongNhanVien.setText(String.valueOf(map.get("soLuongNhanVien")));
+                lblSoLuongCongNhan.setText(String.valueOf(map.get("soLuongCongNhan")));
+                lblSoLuongHopDong.setText(String.valueOf(map.get("soLuongHopDong")));
+                lblSoLuongSanPham.setText(String.valueOf(map.get("soLuongSanPham")));
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }).start();
+    }
 }

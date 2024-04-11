@@ -17,8 +17,7 @@ import java.io.IOException;
 
 public class TrangChuForm extends JPanel {
 
-	private JPanel pnlChinh;
-	private NhanVienService nhanVienService;
+	private final JPanel pnlChinh;
 
 	public TrangChuForm() {
 		setBorder(new LineBorder(new Color(0, 0, 0)));
@@ -48,10 +47,9 @@ public class TrangChuForm extends JPanel {
 		lblXinChao.setForeground(Color.BLACK);
 		lblXinChao.setBounds(132, 439, 297, 54);
 		pnlChinh.add(lblXinChao);
-		nhanVienService = new NhanVienServiceImpl();
-		
+
 		Account account = (Account) AuthUtils.getUser();
-		NhanVien nhanVien = nhanVienService.timKiemBangMaNhanVien(account.getNhanVien().getMaNhanVien());
+		NhanVien nhanVien = account.getNhanVien();
 		String fullName = nhanVien.getHoTen();
 		String[] name = fullName.split(" ");
 
