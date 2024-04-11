@@ -110,6 +110,7 @@ public class CongDoanSanPhamServiceImpl implements CongDoanSanPhamService {
 	@Override
 	public CongDoanSanPham themCongDoanSanPham(CongDoanSanPham congDoanSanPham) {
 		try {
+			congDoanSanPham.setMaCongDoan(generateMaCongDoanSanPham(congDoanSanPham.getSanPham().getMaSanPham()));
 			CongDoanSanPham isExists = congDoanSanPhamDAO.timKiemBangMaCongDoan(congDoanSanPham.getMaCongDoan());
 			if (isExists != null) {
 				JOptionPane.showMessageDialog(null,

@@ -1,13 +1,12 @@
 package com.product.salary.application;
 
-import com.product.salary.application.entity.Account;
-import com.product.salary.application.entity.ChiTietHopDong;
-import com.product.salary.application.entity.HopDong;
-import com.product.salary.application.entity.SanPham;
+import com.product.salary.application.entity.*;
 import com.product.salary.application.service.AccountService;
+import com.product.salary.application.service.CongDoanSanPhamService;
 import com.product.salary.application.service.HopDongService;
 import com.product.salary.application.service.SanPhamService;
 import com.product.salary.application.service.impl.AccountServiceImpl;
+import com.product.salary.application.service.impl.CongDoanSanPhamServiceImpl;
 import com.product.salary.application.service.impl.HopDongServiceImpl;
 import com.product.salary.application.service.impl.SanPhamServiceImpl;
 import com.product.salary.application.utils.AppUtils;
@@ -54,11 +53,13 @@ public class ProductSalaryApplicationChung {
 		private final AccountService accountService;
 		private final HopDongService hopDongService;
 		private final SanPhamService sanPhamService;
+		private final CongDoanSanPhamService congDoanSanPhamService;
 		public handlerClient(Socket socket) {
 			this.socket = socket;
 			this.accountService = new AccountServiceImpl();
 			this.hopDongService = new HopDongServiceImpl();
 			this.sanPhamService = new SanPhamServiceImpl();
+			this.congDoanSanPhamService = new CongDoanSanPhamServiceImpl();
 		}
 
 
@@ -127,6 +128,70 @@ public class ProductSalaryApplicationChung {
 								List<SanPham> sanPhams = sanPhamService.timTatCaSanPhamDangSanXuat();
 								ResponseDTO response = ResponseDTO.builder()
 										.data(sanPhams)
+										.build();
+
+								json = AppUtils.GSON.toJson(response);
+								System.out.println("Response: " + json);
+								byte[] bytes = json.getBytes(StandardCharsets.UTF_8);
+								dos.write(bytes);
+								dos.flush();
+								break;
+							}
+						}
+					}
+					case "CongDoanSanPhamForm": {
+						switch (requestObject.getRequest()) {
+							case "timTatCaCongDoanSanPhamBangMaSanPham": {
+								String maSanPham = (String) requestObject.getData();
+								List<CongDoanSanPham> congDoanSanPhams = congDoanSanPhamService.timTatCaCongDoanSanPhamDangHoatDongBangMaSanPham(maSanPham);
+								ResponseDTO response = ResponseDTO.builder()
+										.data(congDoanSanPhams)
+										.build();
+
+								json = AppUtils.GSON.toJson(response);
+								System.out.println("Response: " + json);
+								byte[] bytes = json.getBytes(StandardCharsets.UTF_8);
+								dos.write(bytes);
+								dos.flush();
+								break;
+							}
+
+							case "themCongDoanSanPham": {
+								CongDoanSanPham congDoanSanPham = AppUtils.convert((Map<String, Object>) requestObject.getData(), CongDoanSanPham.class);
+								congDoanSanPham = congDoanSanPhamService.themCongDoanSanPham(congDoanSanPham);
+								ResponseDTO response = ResponseDTO.builder()
+										.data(congDoanSanPham)
+										.build();
+
+								json = AppUtils.GSON.toJson(response);
+								System.out.println("Response: " + json);
+								byte[] bytes = json.getBytes(StandardCharsets.UTF_8);
+								dos.write(bytes);
+								dos.flush();
+								break;
+							}
+							case "capNhatCongDoanSanPham": {
+								CongDoanSanPham congDoanSanPham = AppUtils.convert((Map<String, Object>) requestObject.getData(), CongDoanSanPham.class);
+								congDoanSanPham = congDoanSanPhamService.capNhatCongDoanSanPham(congDoanSanPham);
+								ResponseDTO response = ResponseDTO.builder()
+										.data(congDoanSanPham)
+										.build();
+
+								json = AppUtils.GSON.toJson(response);
+								System.out.println("Response: " + json);
+								byte[] bytes = json.getBytes(StandardCharsets.UTF_8);
+								dos.write(bytes);
+								dos.flush();
+								break;
+							}
+							case "capNhatTrangThaiCongDoanSanPham": {
+								Map<String, Object> data = (Map<String, Object>) requestObject.getData();
+								String maCongDoanSanPham = (String) data.get("maCongDoan");
+								boolean trangThai = (boolean) data.get("trangThai");
+								boolean result = congDoanSanPhamService.capNhatTrangThaiCongDoanSanPham(maCongDoanSanPham, trangThai);
+
+								ResponseDTO response = ResponseDTO.builder()
+										.data(result)
 										.build();
 
 								json = AppUtils.GSON.toJson(response);
