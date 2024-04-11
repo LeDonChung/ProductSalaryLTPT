@@ -1,10 +1,9 @@
 package com.product.salary.client.view.contract;
 
-/**
- * @author Lê Đôn Chủng: Code giao diện, Xử lý code
+/*
+  @author Lê Đôn Chủng: Code giao diện, Xử lý code
  */
 
-import com.google.gson.reflect.TypeToken;
 import com.product.salary.application.common.SystemConstants;
 import com.product.salary.application.entity.ChiTietHopDong;
 import com.product.salary.application.entity.HopDong;
@@ -13,8 +12,6 @@ import com.product.salary.application.utils.AppUtils;
 import com.product.salary.application.utils.RequestDTO;
 import com.product.salary.application.utils.ResponseDTO;
 import com.product.salary.client.interfaces.ISendChiTietHopDong;
-import com.product.salary.application.service.SanPhamService;
-import com.product.salary.application.service.impl.SanPhamServiceImpl;
 import com.product.salary.application.utils.PriceFormatterUtils;
 import org.apache.commons.lang3.ObjectUtils;
 
@@ -33,16 +30,14 @@ import java.util.ResourceBundle;
 
 public class CreateChiTietHopDongForm extends JFrame {
 
-	private static final long serialVersionUID = 1L;
-	private JPanel contentPane;
-	private JTable tblSanPham;
-	private JTextField txtSoLuong;
-	private JTextField txtGiaDat;
-	private DefaultTableModel tabelModelSanPham;
-	private JLabel lblLoiSoLuong;
-	private JButton btnThemChiTietHopDong;
-	private JLabel lblLoiGiaDat;
-	private ISendChiTietHopDong sendChiTietHoaDon;
+    private final JTable tblSanPham;
+	private final JTextField txtSoLuong;
+	private final JTextField txtGiaDat;
+	private final DefaultTableModel tabelModelSanPham;
+	private final JLabel lblLoiSoLuong;
+	private final JButton btnThemChiTietHopDong;
+	private final JLabel lblLoiGiaDat;
+	private final ISendChiTietHopDong sendChiTietHoaDon;
 	private List<SanPham> sanPhams;
 	private final static ResourceBundle BUNDLE = ResourceBundle.getBundle("app");
 
@@ -54,7 +49,7 @@ public class CreateChiTietHopDongForm extends JFrame {
 		SystemConstants.initLanguage();
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setBounds(100, 100, 707, 521);
-		contentPane = new JPanel();
+        JPanel contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 
 		setContentPane(contentPane);
@@ -152,13 +147,11 @@ public class CreateChiTietHopDongForm extends JFrame {
 	}
 
 	private void event() {
-		this.btnThemChiTietHopDong.addActionListener((e) -> {
-			thucHienChucNangThemChiTietHopDong();
-		});
+		this.btnThemChiTietHopDong.addActionListener((e) -> thucHienChucNangThemChiTietHopDong());
 	}
 
 	private void init() {
-		this.sanPhams = new ArrayList<SanPham>();
+		this.sanPhams = new ArrayList<>();
 		this.loadDataSanPham();
 	}
 
@@ -226,10 +219,6 @@ public class CreateChiTietHopDongForm extends JFrame {
 					PriceFormatterUtils.parse(giaDat));
 			sendChiTietHoaDon.send(chiTietHopDong);
 			dispose();
-		} catch (NumberFormatException e) {
-			JOptionPane.showMessageDialog(this,
-					SystemConstants.BUNDLE.getString("createChiTietHopDong.thongBao.taoChiTietHopDongKhongThanhCong"));
-			e.printStackTrace();
 		} catch (Exception e) {
 			JOptionPane.showMessageDialog(this,
 					SystemConstants.BUNDLE.getString("createChiTietHopDong.thongBao.taoChiTietHopDongKhongThanhCong"));
