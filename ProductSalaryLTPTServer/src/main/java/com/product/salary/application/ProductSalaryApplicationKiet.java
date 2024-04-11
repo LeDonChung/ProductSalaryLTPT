@@ -10,7 +10,9 @@ import com.product.salary.application.utils.AppUtils;
 import com.product.salary.application.utils.RequestDTO;
 import com.product.salary.application.utils.ResponseDTO;
 
-import java.io.*;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
@@ -23,7 +25,7 @@ import java.util.ResourceBundle;
  * @author Lê Đôn Chủng: Code ....
  */
 
-public class ProductSalaryApplication {
+public class ProductSalaryApplicationKiet {
 	private final static ResourceBundle BUNDLE = ResourceBundle.getBundle("app");
 
 
@@ -38,7 +40,7 @@ public class ProductSalaryApplication {
 				Socket socket = sever.accept();
 				System.out.println("Client connected: " + socket.getInetAddress().getHostAddress());
 
-				ProductSalaryApplication serverTemp = new ProductSalaryApplication();
+				ProductSalaryApplicationKiet serverTemp = new ProductSalaryApplicationKiet();
 				new Thread(serverTemp.new handlerClient(socket)).start();
 			}
 		}

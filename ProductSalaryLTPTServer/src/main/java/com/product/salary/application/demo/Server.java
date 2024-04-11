@@ -1,9 +1,6 @@
 package com.product.salary.application.demo;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.reflect.TypeToken;
-import com.product.salary.application.ProductSalaryApplication;
 import com.product.salary.application.entity.NhanVien;
 import com.product.salary.application.service.NhanVienService;
 import com.product.salary.application.service.impl.NhanVienServiceImpl;
@@ -14,10 +11,8 @@ import com.product.salary.application.utils.ResponseDTO;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.lang.reflect.Type;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.time.LocalDate;
 import java.util.List;
 
 public class Server {
