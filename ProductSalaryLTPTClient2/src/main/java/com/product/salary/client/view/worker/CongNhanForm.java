@@ -79,7 +79,7 @@ public class CongNhanForm extends JPanel {
 	private final JLabel lblLoiSoDienThoai;
 	private final JLabel lblLoiCCCD;
 	private final JLabel lblLoiHoTen;
-	private final JButton btnThemNhiu;
+//	private final JButton btnThemNhiu;
 
 	/**
 	 * Create the panel.
@@ -486,12 +486,12 @@ public class CongNhanForm extends JPanel {
 		this.jcNgaySinh.setDate(Date.valueOf(LocalDate.now()));
 		this.jcNgayVaoLam.setDate(Date.valueOf(LocalDate.now()));
 
-		btnThemNhiu = new JButton(
-				String.format("<html><p>%s</p></html>", SystemConstants.BUNDLE.getString("congNhan.btnThemNhiu")));
-		btnThemNhiu.setIcon(new ImageIcon("src/main/resources/icon/png/ic_add.png"));
-		btnThemNhiu.setFont(new Font("Times New Roman", Font.PLAIN, 16));
-		btnThemNhiu.setBounds(114, 468, 190, 44);
-		pnlChinh.add(btnThemNhiu);
+//		btnThemNhiu = new JButton(
+//				String.format("<html><p>%s</p></html>", SystemConstants.BUNDLE.getString("congNhan.btnThemNhiu")));
+//		btnThemNhiu.setIcon(new ImageIcon("src/main/resources/icon/png/ic_add.png"));
+//		btnThemNhiu.setFont(new Font("Times New Roman", Font.PLAIN, 16));
+//		btnThemNhiu.setBounds(114, 468, 190, 44);
+//		pnlChinh.add(btnThemNhiu);
 
 		init();
 
@@ -499,9 +499,9 @@ public class CongNhanForm extends JPanel {
 	}
 
 	private void event() {
-		this.btnThemNhiu.addActionListener((e) -> {
-			thucHienChucNangThemNhieu();
-		});
+//		this.btnThemNhiu.addActionListener((e) -> {
+//			thucHienChucNangThemNhieu();
+//		});
 		this.btnChonAnh.addActionListener(new ActionListener() {
 
 			@Override

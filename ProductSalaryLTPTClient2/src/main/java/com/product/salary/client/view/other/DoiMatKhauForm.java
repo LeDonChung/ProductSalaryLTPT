@@ -17,19 +17,21 @@ import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ResourceBundle;
 
 public class DoiMatKhauForm extends JFrame {
-	private ISendResponse iSendResponse;
-	private JPanel contentPane;
-	private JTextField txtMatKhauCu;
-	private JTextField txtMatKhauMoi;
-	private JTextField txtNhapLaiMatKhau;
-	private JButton btnDoiMatKhau;
-	private JButton btnHuy;
-	private JLabel lblLoiNhapLaiMatKhau;
-	private JLabel lblLoiMatKhauCu;
-	private JLabel lblMatKhauMoi;
-	private JLabel lblLoiMatKhauMoi;
+	private final static ResourceBundle BUNDLE = ResourceBundle.getBundle("app");
+	private final ISendResponse iSendResponse;
+	private final JPanel contentPane;
+	private final JTextField txtMatKhauCu;
+	private final JTextField txtMatKhauMoi;
+	private final JTextField txtNhapLaiMatKhau;
+	private final JButton btnDoiMatKhau;
+	private final JButton btnHuy;
+	private final JLabel lblLoiNhapLaiMatKhau;
+	private final JLabel lblLoiMatKhauCu;
+	private final JLabel lblMatKhauMoi;
+	private final JLabel lblLoiMatKhauMoi;
 	private AccountService accountService;
 
 	public DoiMatKhauForm(ISendResponse iSendResponse) {
@@ -204,15 +206,12 @@ public class DoiMatKhauForm extends JFrame {
 			if (capNhatMatKhau) {
 				JOptionPane.showMessageDialog(this,
 						SystemConstants.BUNDLE.getString("doiMatKhau.capNhatMK"));
-//				JOptionPane.showMessageDialog(this,
-//						"Cập nhật mật khẩu thành công. Vui lòng đăng nhập lại để sử dụng ứng dụng.");
 				dispose();
 				this.iSendResponse.confirm(true);
 
 			}
 		} else {
 			JOptionPane.showMessageDialog(this, SystemConstants.BUNDLE.getString("doiMatKhau.matKhauKhongDung"));
-			//JOptionPane.showMessageDialog(this, "Mật khẩu không chính xác.");
 		}
 	}
 }
