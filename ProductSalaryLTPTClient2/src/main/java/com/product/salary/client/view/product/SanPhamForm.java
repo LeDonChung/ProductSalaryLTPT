@@ -5,60 +5,56 @@ package com.product.salary.client.view.product;
  * @author Lê Đôn Chủng: Code xử lý
  */
 
-import com.product.salary.application.common.SystemConstants;
+import com.product.salary.application.utils.*;
+import com.product.salary.client.common.SystemConstants;
 import com.product.salary.application.entity.SanPham;
-import com.product.salary.application.service.SanPhamService;
-import com.product.salary.application.service.impl.SanPhamServiceImpl;
-import com.product.salary.application.utils.ImageUtils;
-import com.product.salary.application.utils.PriceFormatterUtils;
-import com.product.salary.application.utils.excels.SanPhamExcelUtils;
 import org.apache.commons.lang3.ObjectUtils;
 
 import javax.swing.*;
-import javax.swing.border.Border;
 import javax.swing.border.EtchedBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.util.ArrayList;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.net.Socket;
+import java.util.*;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class SanPhamForm extends JPanel {
-
-	private static final long serialVersionUID = 1L;
-	private JTextField txtMaSanPham;
-	private JTextField txtTenSanPham;
-	private JTextField txtSoLuongTon;
-	private JTextField txtChatLieu;
-	private JTextField txtSoCongDoan;
-	private JTextField txtDonViTinh;
-	private JComboBox cmbTrangThai;
-	private SanPhamService sanPhamService;
+	private static final ResourceBundle BUNDLE = ResourceBundle.getBundle("app");
+	private final JTextField txtMaSanPham;
+	private final JTextField txtTenSanPham;
+	private final JTextField txtSoLuongTon;
+	private final JTextField txtChatLieu;
+	private final JTextField txtSoCongDoan;
+	private final JTextField txtDonViTinh;
+	private final JComboBox cmbTrangThai;
 	private List<SanPham> sanPhams;
-	private DefaultTableModel tableModelSanPham;
-	private JTable tblSanPham;
-	private JButton btnThem;
-	private JButton btnXoa;
-	private JButton btnCapNhat;
-	private JButton btnXoaTrang;
-	private JButton btnAnh;
-	private JTextField txtDonGia;
+	private final DefaultTableModel tableModelSanPham;
+	private final JTable tblSanPham;
+	private final JButton btnThem;
+	private final JButton btnXoa;
+	private final JButton btnCapNhat;
+	private final JButton btnXoaTrang;
+	private final JButton btnAnh;
+	private final JTextField txtDonGia;
 	private DefaultComboBoxModel cbmdfTrangThai;
-	private JLabel lblHinhAnh;
-	private JLabel lblLoiMaSanPham;
-	private JLabel lblLoiTenSanPham;
-	private JLabel lblLoiSoLuongTon;
-	private JLabel lblLoiChatLieu;
-	private JLabel lblLoiDonViTinh;
-	private JLabel lblLoiSoCongDoan;
-	private JLabel lblLoiTrangThai;
-	private JLabel lblLoiDonGia;
-	private JButton btnThemNhieu;
+	private final JLabel lblHinhAnh;
+	private final JLabel lblLoiMaSanPham;
+	private final JLabel lblLoiTenSanPham;
+	private final JLabel lblLoiSoLuongTon;
+	private final JLabel lblLoiChatLieu;
+	private final JLabel lblLoiDonViTinh;
+	private final JLabel lblLoiSoCongDoan;
+	private final JLabel lblLoiTrangThai;
+	private final JLabel lblLoiDonGia;
+	private final JButton btnThemNhieu;
 
 	/**
 	 * Create the panel.
@@ -67,7 +63,7 @@ public class SanPhamForm extends JPanel {
 		setLayout(null);
 
 		JPanel pnlMain = new JPanel();
-		pnlMain.setBorder((Border) new EtchedBorder(EtchedBorder.LOWERED, null, null));
+		pnlMain.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
 		pnlMain.setBounds(0, 0, 1213, 821);
 		pnlMain.setLayout(null);
 		add(pnlMain);
@@ -79,7 +75,7 @@ public class SanPhamForm extends JPanel {
 		lblTitle.setBounds(0, 0, 1250, 80);
 		pnlMain.add(lblTitle);
 
-		tableModelSanPham = new DefaultTableModel(new String[] {
+		tableModelSanPham = new DefaultTableModel(new String[]{
 				String.format("<html><p>%s</p></html>", SystemConstants.BUNDLE.getString("sanPham.tableSanPham.STT")),
 				String.format("<html><p>%s</p></html>",
 						SystemConstants.BUNDLE.getString("sanPham.tableSanPham.maSanPham")),
@@ -96,7 +92,7 @@ public class SanPhamForm extends JPanel {
 				String.format("<html><p>%s</p></html>",
 						SystemConstants.BUNDLE.getString("sanPham.tableSanPham.soCongDoan")),
 				String.format("<html><p>%s</p></html>",
-						SystemConstants.BUNDLE.getString("sanPham.tableSanPham.donGia")) },
+						SystemConstants.BUNDLE.getString("sanPham.tableSanPham.donGia"))},
 				0);
 
 		tblSanPham = new JTable(tableModelSanPham);
@@ -265,7 +261,7 @@ public class SanPhamForm extends JPanel {
 		lblTrangThai.setBounds(10, 0, 118, 39);
 		pnlTrangThai.add(lblTrangThai);
 
-		cbmdfTrangThai = new DefaultComboBoxModel(new String[] { "Đang sản xuất", "Ngưng sản xuất" });
+		cbmdfTrangThai = new DefaultComboBoxModel(new String[]{"Đang sản xuất", "Ngưng sản xuất"});
 
 		cmbTrangThai = new JComboBox(cbmdfTrangThai);
 		cmbTrangThai.setFont(new Font("Times New Roman", Font.PLAIN, 16));
@@ -360,30 +356,18 @@ public class SanPhamForm extends JPanel {
 	}
 
 	private void event() {
-		this.btnAnh.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				ImageIcon ic = ImageUtils.chooseImage(lblHinhAnh.getWidth(), lblHinhAnh.getHeight());
-				lblHinhAnh.setIcon(ic);
-			}
+		this.btnAnh.addActionListener(e -> {
+			ImageIcon ic = ImageUtils.chooseImage(lblHinhAnh.getWidth(), lblHinhAnh.getHeight());
+			lblHinhAnh.setIcon(ic);
 		});
 
-		this.btnCapNhat.addActionListener((e) -> {
-			this.thucHienChucNangCapNhat();
-		});
+		this.btnCapNhat.addActionListener((e) -> this.thucHienChucNangCapNhat());
 
-		this.btnXoaTrang.addActionListener((e) -> {
-			this.thucHienChucNangLamMoi();
-		});
+		this.btnXoaTrang.addActionListener((e) -> this.thucHienChucNangLamMoi());
 
-		this.btnThem.addActionListener((e) -> {
-			this.thucHienChucNangThem();
-		});
+		this.btnThem.addActionListener((e) -> this.thucHienChucNangThem());
 
-		this.btnXoa.addActionListener((v) -> {
-			this.thucHienChucNangXoa();
-		});
+		this.btnXoa.addActionListener((v) -> this.thucHienChucNangXoa());
 
 		this.tblSanPham.addMouseListener(new MouseListener() {
 
@@ -422,39 +406,64 @@ public class SanPhamForm extends JPanel {
 	}
 
 	private void thucHienChucNangThemNhieu() {
-		List<SanPham> sanPhams = SanPhamExcelUtils.importExcelSanPham();
-		if (!sanPhams.isEmpty()) {
-			sanPhams = this.sanPhamService.themNhieuSanPham(sanPhams);
-			String message = "";
-			if (SystemConstants.LANGUAGE == 0) {
-				message = String.format("Đã thêm %d sản phẩm.", sanPhams.size());
-			} else {
-				message = String.format("Added %d products", sanPhams.size());
-			}
-			JOptionPane.showMessageDialog(this, message);
-			thucHienChucNangLamMoi();
-		}
+//		List<SanPham> sanPhams = SanPhamExcelUtils.importExcelSanPham();
+//		if (!sanPhams.isEmpty()) {
+//			sanPhams = this.sanPhamService.themNhieuSanPham(sanPhams);
+//			String message = "";
+//			if (SystemConstants.LANGUAGE == 0) {
+//				message = String.format("Đã thêm %d sản phẩm.", sanPhams.size());
+//			} else {
+//				message = String.format("Added %d products", sanPhams.size());
+//			}
+//			JOptionPane.showMessageDialog(this, message);
+//			thucHienChucNangLamMoi();
+//		}
 
 	}
 
 	private void init() {
-		this.sanPhamService = new SanPhamServiceImpl();
-		this.sanPhams = new ArrayList<SanPham>();
-
+		this.sanPhams = new ArrayList<>();
 		loadTable();
 	}
 
 	private void loadTable() {
-		tableModelSanPham.setRowCount(0);
-		this.sanPhams = this.sanPhamService.timKiemTatCaSanPham();
-		int stt = 1;
-		for (SanPham sanPham : this.sanPhams) {
-			tableModelSanPham.addRow(new Object[] { stt++, sanPham.getMaSanPham(), sanPham.getTenSanPham(),
-					sanPham.getSoLuongTon(), sanPham.getChatLieu(), sanPham.getDonViTinh(),
-					sanPham.isTrangThai() ? "Đang sản xuất" : "Ngưng sản xuất", sanPham.getSoCongDoan(),
-					PriceFormatterUtils.format(sanPham.getDonGia()) });
+		new Thread(() -> {
+			try (var socket = new Socket(
+					BUNDLE.getString("host"),
+					Integer.parseInt(BUNDLE.getString("server.port")));
+				 var dos = new DataOutputStream(socket.getOutputStream());
+				 var dis = new DataInputStream(socket.getInputStream())) {
 
-		}
+				// send request
+				RequestDTO request = RequestDTO.builder()
+						.requestType("SanPhamForm")
+						.request("timKiemTatCaSanPham")
+						.build();
+
+				String json = AppUtils.GSON.toJson(request);
+				dos.writeUTF(json);
+				dos.flush();
+
+				// receive response
+				json = new String(dis.readAllBytes());
+				ResponseDTO response = AppUtils.GSON.fromJson(json, ResponseDTO.class);
+
+				this.sanPhams = ((List<Map<String, Object>>) response.getData()).stream()
+						.map(v -> AppUtils.convert(v, SanPham.class)).collect(Collectors.toList());
+
+				tableModelSanPham.setRowCount(0);
+				int stt = 1;
+				for (SanPham sanPham : this.sanPhams) {
+					tableModelSanPham.addRow(new Object[]{stt++, sanPham.getMaSanPham(), sanPham.getTenSanPham(),
+							sanPham.getSoLuongTon(), sanPham.getChatLieu(), sanPham.getDonViTinh(),
+							sanPham.isTrangThai() ? "Đang sản xuất" : "Ngưng sản xuất", sanPham.getSoCongDoan(),
+							PriceFormatterUtils.format(sanPham.getDonGia())});
+
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}).start();
 	}
 
 	private void thucHienChucNangClickSanPham() {
@@ -501,118 +510,207 @@ public class SanPhamForm extends JPanel {
 	}
 
 	private void thucHienChucNangThem() {
-		if (!thucHienChucNangKiemTra()) {
-			return;
-		}
-		String maSanPham = this.sanPhamService.generateMaSanPham();
-		String tenSanPham = this.txtTenSanPham.getText().trim();
-		String donViTinh = this.txtDonViTinh.getText().trim();
-		int soLuongTon = Integer.parseInt(this.txtSoLuongTon.getText().trim());
-		String chatLieu = this.txtChatLieu.getText().trim();
+		new Thread(() -> {
+			try (var socket = new Socket(
+					BUNDLE.getString("host"),
+					Integer.parseInt(BUNDLE.getString("server.port")));
+				 var dos = new DataOutputStream(socket.getOutputStream());
+				 var dis = new DataInputStream(socket.getInputStream())) {
 
-		Double donGia = PriceFormatterUtils.parse(this.txtDonGia.getText().trim());
-
-		byte[] hinhAnh = ImageUtils.convertToByteArray(lblHinhAnh.getIcon());
-		try {
-			SanPham sanPham = new SanPham(maSanPham, tenSanPham, donViTinh, soLuongTon, chatLieu, donGia, hinhAnh);
-			sanPham = this.sanPhamService.themSanPham(sanPham);
-			if (sanPham != null) {
-				JOptionPane.showMessageDialog(this,
-						SystemConstants.BUNDLE.getString("sanPham.thongBao.themSanPhamThanhCong"));
-				this.thucHienChucNangLamMoi();
-			} else {
-				JOptionPane.showMessageDialog(this,
-						SystemConstants.BUNDLE.getString("sanPham.thongBao.themSanPhamKhongThanhCong"));
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
-	private void thucHienChucNangXoa() {
-		int isSelected = this.tblSanPham.getSelectedRow();
-		if (isSelected >= 0) {
-
-			SanPham sanPham = this.sanPhams.get(isSelected);
-			String message = "";
-			String title = "";
-			if (SystemConstants.LANGUAGE == 0) {
-				message = "Bạn có muốn xóa sản phẩm " + sanPham.getTenSanPham() + " ?.";
-				title = "Xác nhận";
-			} else {
-				message = "Do you want to delete product " + sanPham.getTenSanPham() + " ?.";
-				title = "Confirm";
-			}
-			int choose = JOptionPane.showConfirmDialog(this, message, title, JOptionPane.YES_NO_OPTION);
-			if (choose == JOptionPane.OK_OPTION) {
-				boolean trangThai = this.sanPhamService.capNhatTrangThaiSanPham(sanPham.getMaSanPham(), false);
-				if (trangThai) {
-					JOptionPane.showMessageDialog(this,
-							SystemConstants.BUNDLE.getString("sanPham.thongBao.xoaSanPhamThanhCong"));
-					this.thucHienChucNangLamMoi();
-				} else {
-					JOptionPane.showMessageDialog(this,
-							SystemConstants.BUNDLE.getString("sanPham.thongBao.xoaSanPhamKhongThanhCong"));
+				if (!thucHienChucNangKiemTra()) {
+					return;
 				}
-			}
-		} else {
-			JOptionPane.showMessageDialog(this, SystemConstants.BUNDLE.getString("sanPham.thongBao.chonSanPhamDeXoa"));
-		}
-	}
+				String maSanPham = "SP";
+				String tenSanPham = this.txtTenSanPham.getText().trim();
+				String donViTinh = this.txtDonViTinh.getText().trim();
+				int soLuongTon = Integer.parseInt(this.txtSoLuongTon.getText().trim());
+				String chatLieu = this.txtChatLieu.getText().trim();
 
-	private void thucHienChucNangCapNhat() {
+				Double donGia = PriceFormatterUtils.parse(this.txtDonGia.getText().trim());
 
-		int isSelected = this.tblSanPham.getSelectedRow();
-		if (isSelected >= 0) {
-			if (!thucHienChucNangKiemTra()) {
-				return;
-			}
+				byte[] hinhAnh = ImageUtils.convertToByteArray(lblHinhAnh.getIcon());
+				hinhAnh = null;
+				try {
+					SanPham sanPham = new SanPham(maSanPham, tenSanPham, donViTinh, soLuongTon, chatLieu, donGia, hinhAnh);
 
-			String maSanPham = this.txtMaSanPham.getText().trim();
-			String tenSanPham = this.txtTenSanPham.getText().trim();
-			String donViTinh = this.txtDonViTinh.getText().trim();
-			int soLuongTon = Integer.parseInt(this.txtSoLuongTon.getText().trim());
-			String chatLieu = this.txtChatLieu.getText().trim();
+					// send request
+					RequestDTO request = RequestDTO.builder()
+							.requestType("SanPhamForm")
+							.request("themSanPham")
+							.data(sanPham)
+							.build();
+					String json = AppUtils.GSON.toJson(request);
+					dos.writeUTF(json);
+					dos.flush();
 
-			Double donGia = PriceFormatterUtils.parse(this.txtDonGia.getText().trim());
+					// receive response
+					json = new String(dis.readAllBytes());
+					ResponseDTO response = AppUtils.GSON.fromJson(json, ResponseDTO.class);
+					sanPham = AppUtils.convert((Map<String, Object>) response.getData(), SanPham.class);
 
-			byte[] hinhAnh = ImageUtils.convertToByteArray(lblHinhAnh.getIcon());
-			boolean trangThai = this.cmbTrangThai.getSelectedIndex() == 0 ? true : false;
-
-			try {
-
-				SanPham sanPham = new SanPham(maSanPham, tenSanPham, soLuongTon, hinhAnh, chatLieu, donViTinh, 0,
-						donGia, trangThai);
-				String message = "";
-				String title = "";
-				if (SystemConstants.LANGUAGE == 0) {
-					message = "Bạn có muốn cập nhật sản phẩm " + sanPham.getTenSanPham() + " ?.";
-					title = "Xác nhận";
-				} else {
-					message = "Do you want to update product " + sanPham.getTenSanPham() + " ?.";
-					title = "Confirm";
-				}
-
-				int choose = JOptionPane.showConfirmDialog(this, message, title, JOptionPane.YES_NO_OPTION);
-				if (choose == JOptionPane.OK_OPTION) {
-					sanPham = this.sanPhamService.capNhatSanPham(sanPham);
 					if (sanPham != null) {
 						JOptionPane.showMessageDialog(this,
-								SystemConstants.BUNDLE.getString("sanPham.thongBao.capNhatSanPhamThanhCong"));
+								SystemConstants.BUNDLE.getString("sanPham.thongBao.themSanPhamThanhCong"));
 						this.thucHienChucNangLamMoi();
 					} else {
 						JOptionPane.showMessageDialog(this,
-								SystemConstants.BUNDLE.getString("sanPham.thongBao.capNhatSanPhamKhongThanhCong"));
+								SystemConstants.BUNDLE.getString("sanPham.thongBao.themSanPhamKhongThanhCong"));
 					}
+				} catch (Exception e) {
+					e.printStackTrace();
 				}
 
-			} catch (Exception e) {
-				e.printStackTrace();
+			} catch (IOException e) {
+				throw new RuntimeException(e);
 			}
-		} else {
-			JOptionPane.showMessageDialog(this,
-					SystemConstants.BUNDLE.getString("sanPham.thongBao.chonSanPhamDeCapNhat"));
 		}
+		).start();
+	}
+
+	private void thucHienChucNangXoa() {
+		new Thread(() -> {
+			try (var socket = new Socket(
+					BUNDLE.getString("host"),
+					Integer.parseInt(BUNDLE.getString("server.port")));
+				 var dos = new DataOutputStream(socket.getOutputStream());
+				 var dis = new DataInputStream(socket.getInputStream())) {
+				int isSelected = this.tblSanPham.getSelectedRow();
+				if (isSelected >= 0) {
+
+					SanPham sanPham = this.sanPhams.get(isSelected);
+					String message = "";
+					String title = "";
+					if (SystemConstants.LANGUAGE == 0) {
+						message = "Bạn có muốn xóa sản phẩm " + sanPham.getTenSanPham() + " ?.";
+						title = "Xác nhận";
+					} else {
+						message = "Do you want to delete product " + sanPham.getTenSanPham() + " ?.";
+						title = "Confirm";
+					}
+					int choose = JOptionPane.showConfirmDialog(this, message, title, JOptionPane.YES_NO_OPTION);
+					if (choose == JOptionPane.OK_OPTION) {
+
+						Map<String, Object> data = new HashMap<>();
+						data.put("maSanPham", sanPham.getMaSanPham());
+						data.put("trangThai", false);
+
+						// send request
+						RequestDTO request = RequestDTO.builder()
+								.requestType("SanPhamForm")
+								.request("capNhatTrangThaiSanPham")
+								.data(data)
+								.build();
+						String json = AppUtils.GSON.toJson(request);
+						dos.writeUTF(json);
+						dos.flush();
+
+						// receive response
+						json = new String(dis.readAllBytes());
+						ResponseDTO response = AppUtils.GSON.fromJson(json, ResponseDTO.class);
+
+						boolean trangThai = (boolean) response.getData();
+
+						if (trangThai) {
+							JOptionPane.showMessageDialog(this,
+									SystemConstants.BUNDLE.getString("sanPham.thongBao.xoaSanPhamThanhCong"));
+							this.thucHienChucNangLamMoi();
+						} else {
+							JOptionPane.showMessageDialog(this,
+									SystemConstants.BUNDLE.getString("sanPham.thongBao.xoaSanPhamKhongThanhCong"));
+						}
+					}
+				} else {
+					JOptionPane.showMessageDialog(this, SystemConstants.BUNDLE.getString("sanPham.thongBao.chonSanPhamDeXoa"));
+				}
+
+			} catch (IOException e) {
+				throw new RuntimeException(e);
+			}
+		}
+		).start();
+
+
+	}
+
+	private void thucHienChucNangCapNhat() {
+		new Thread(() -> {
+			try (var socket = new Socket(
+					BUNDLE.getString("host"),
+					Integer.parseInt(BUNDLE.getString("server.port")));
+				 var dos = new DataOutputStream(socket.getOutputStream());
+				 var dis = new DataInputStream(socket.getInputStream())) {
+
+				int isSelected = this.tblSanPham.getSelectedRow();
+				if (isSelected >= 0) {
+					if (!thucHienChucNangKiemTra()) {
+						return;
+					}
+
+					String maSanPham = this.txtMaSanPham.getText().trim();
+					String tenSanPham = this.txtTenSanPham.getText().trim();
+					String donViTinh = this.txtDonViTinh.getText().trim();
+					int soLuongTon = Integer.parseInt(this.txtSoLuongTon.getText().trim());
+					String chatLieu = this.txtChatLieu.getText().trim();
+
+					Double donGia = PriceFormatterUtils.parse(this.txtDonGia.getText().trim());
+
+					byte[] hinhAnh = ImageUtils.convertToByteArray(lblHinhAnh.getIcon());
+					boolean trangThai = this.cmbTrangThai.getSelectedIndex() == 0 ? true : false;
+					hinhAnh = null;
+					try {
+
+						SanPham sanPham = new SanPham(maSanPham, tenSanPham, soLuongTon, hinhAnh, chatLieu, donViTinh, 0,
+								donGia, trangThai);
+						String message = "";
+						String title = "";
+						if (SystemConstants.LANGUAGE == 0) {
+							message = "Bạn có muốn cập nhật sản phẩm " + sanPham.getTenSanPham() + " ?.";
+							title = "Xác nhận";
+						} else {
+							message = "Do you want to update product " + sanPham.getTenSanPham() + " ?.";
+							title = "Confirm";
+						}
+
+						int choose = JOptionPane.showConfirmDialog(this, message, title, JOptionPane.YES_NO_OPTION);
+						if (choose == JOptionPane.OK_OPTION) {
+							// send request
+							RequestDTO request = RequestDTO.builder()
+									.requestType("SanPhamForm")
+									.request("capNhatSanPham")
+									.data(sanPham)
+									.build();
+							String json = AppUtils.GSON.toJson(request);
+							dos.writeUTF(json);
+							dos.flush();
+
+							// receive response
+							json = new String(dis.readAllBytes());
+							ResponseDTO response = AppUtils.GSON.fromJson(json, ResponseDTO.class);
+							sanPham = AppUtils.convert((Map<String, Object>) response.getData(), SanPham.class);
+
+							if (sanPham != null) {
+								JOptionPane.showMessageDialog(this,
+										SystemConstants.BUNDLE.getString("sanPham.thongBao.capNhatSanPhamThanhCong"));
+								this.thucHienChucNangLamMoi();
+							} else {
+								JOptionPane.showMessageDialog(this,
+										SystemConstants.BUNDLE.getString("sanPham.thongBao.capNhatSanPhamKhongThanhCong"));
+							}
+						}
+
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				} else {
+					JOptionPane.showMessageDialog(this,
+							SystemConstants.BUNDLE.getString("sanPham.thongBao.chonSanPhamDeCapNhat"));
+				}
+			} catch (IOException e) {
+				throw new RuntimeException(e);
+			}
+		}
+		).start();
+
 	}
 
 	public void thucHienThucLamLamMoiLoi() {

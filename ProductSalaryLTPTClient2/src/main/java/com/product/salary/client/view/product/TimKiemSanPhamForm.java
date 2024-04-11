@@ -9,8 +9,7 @@ import com.product.salary.application.common.SystemConstants;
 import com.product.salary.application.entity.SanPham;
 import com.product.salary.application.service.SanPhamService;
 import com.product.salary.application.service.impl.SanPhamServiceImpl;
-import com.product.salary.application.utils.ImageUtils;
-import com.product.salary.application.utils.PriceFormatterUtils;
+import com.product.salary.application.utils.*;
 import com.product.salary.application.utils.excels.SanPhamExcelUtils;
 import org.apache.commons.lang3.ObjectUtils;
 
@@ -21,8 +20,14 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.ResourceBundle;
+import java.util.stream.Collectors;
 
 public class TimKiemSanPhamForm extends JPanel {
 	private static final long serialVersionUID = 1L;
@@ -51,6 +56,7 @@ public class TimKiemSanPhamForm extends JPanel {
 	private JLabel lblLoiDonGia;
 	private JButton btnLamMoi;
 	private JButton btnExport;
+	private final ResourceBundle BUNDLE = ResourceBundle.getBundle("app");
 
 	/**
 	 * Create the panel.
@@ -331,16 +337,10 @@ public class TimKiemSanPhamForm extends JPanel {
 	}
 
 	private void event() {
-		btnExport.addActionListener((e) -> {
-			thucHienChucNangXuatDanhSach();
-		});
-		btnTimKiem.addActionListener((e) -> {
-			thucHienChucNangTimKiem();
-		});
+		btnExport.addActionListener((e) -> thucHienChucNangXuatDanhSach());
+		btnTimKiem.addActionListener((e) -> thucHienChucNangTimKiem());
 
-		btnLamMoi.addActionListener((e) -> {
-			thucHienChucNangLamMoi();
-		});
+		btnLamMoi.addActionListener((e) -> thucHienChucNangLamMoi());
 
 		tblSanPham.addMouseListener(new MouseListener() {
 
@@ -380,44 +380,65 @@ public class TimKiemSanPhamForm extends JPanel {
 	}
 
 	private void thucHienChucNangTimKiem() {
-		try {
-			if (!thucHienChucNangKiemTra()) {
-				return;
+		new Thread(() -> {
+			try (var socket = new Socket(
+					BUNDLE.getString("host"),
+					Integer.parseInt(BUNDLE.getString("server.port")));
+				 var dos = new DataOutputStream(socket.getOutputStream());
+				 var dis = new DataInputStream(socket.getInputStream())) {
+				if (!thucHienChucNangKiemTra()) {
+					return;
+				}
+
+				String maSanPham = this.txtMaSanPham.getText().trim();
+				String tenSanPham = this.txtTenSanPham.getText().trim();
+				String donViTinh = this.txtDonViTinh.getText().trim();
+				String chatLieu = this.txtChatLieu.getText().trim();
+				Double donGia = null;
+				if (!ObjectUtils.isEmpty(this.txtDonGia.getText().trim())) {
+					donGia = PriceFormatterUtils.parse(this.txtDonGia.getText().trim());
+				}
+
+				Boolean trangThai = null;
+				if (cmbTrangThai.getSelectedIndex() != 0) {
+					trangThai = this.cmbTrangThai.getSelectedIndex() == 1 ? true : false;
+				}
+				if (!thucHienChucNangKiemTra()) {
+					return;
+				}
+
+				SanPham sp = new SanPham(maSanPham, tenSanPham, chatLieu, donViTinh, donGia, trangThai);
+
+				// send request
+				RequestDTO request = RequestDTO.builder()
+						.requestType("SanPhamForm")
+						.request("timKiemSanPham")
+						.data(sp)
+						.build();
+
+				String json = AppUtils.GSON.toJson(request);
+				dos.writeUTF(json);
+				dos.flush();
+
+				// receive response
+				json = new String(dis.readAllBytes());
+				ResponseDTO response = AppUtils.GSON.fromJson(json, ResponseDTO.class);
+
+				this.sanPhams = ((List<Map<String, Object>>) response.getData()).stream()
+						.map(v -> AppUtils.convert(v, SanPham.class)).collect(Collectors.toList());
+
+				this.tableModelSanPham.setRowCount(0);
+				int stt = 1;
+				for (SanPham sanPham : this.sanPhams) {
+					tableModelSanPham.addRow(new Object[] { stt++, sanPham.getMaSanPham(), sanPham.getTenSanPham(),
+							sanPham.getSoLuongTon(), sanPham.getChatLieu(), sanPham.getDonViTinh(),
+							sanPham.isTrangThai() ? "Đang sản xuất" : "Ngưng sản xuất", sanPham.getSoCongDoan(),
+							PriceFormatterUtils.format(sanPham.getDonGia()) });
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
-
-			String maSanPham = this.txtMaSanPham.getText().trim();
-			String tenSanPham = this.txtTenSanPham.getText().trim();
-			String donViTinh = this.txtDonViTinh.getText().trim();
-			String chatLieu = this.txtChatLieu.getText().trim();
-			Double donGia = null;
-			if (!ObjectUtils.isEmpty(this.txtDonGia.getText().trim())) {
-				donGia = PriceFormatterUtils.parse(this.txtDonGia.getText().trim());
-			}
-
-			Boolean trangThai = null;
-			if (cmbTrangThai.getSelectedIndex() != 0) {
-				trangThai = this.cmbTrangThai.getSelectedIndex() == 1 ? true : false;
-			}
-			if (!thucHienChucNangKiemTra()) {
-				return;
-			}
-
-			SanPham sp = new SanPham(maSanPham, tenSanPham, chatLieu, donViTinh, donGia, trangThai);
-
-			this.tableModelSanPham.setRowCount(0);
-			this.sanPhams = this.sanPhamService.timKiemSanPham(sp);
-
-			int stt = 1;
-			for (SanPham sanPham : this.sanPhams) {
-				tableModelSanPham.addRow(new Object[] { stt++, sanPham.getMaSanPham(), sanPham.getTenSanPham(),
-						sanPham.getSoLuongTon(), sanPham.getChatLieu(), sanPham.getDonViTinh(),
-						sanPham.isTrangThai() ? "Đang sản xuất" : "Ngưng sản xuất", sanPham.getSoCongDoan(),
-						PriceFormatterUtils.format(sanPham.getDonGia()) });
-			}
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		}).start();
 	}
 
 	private void init() {
@@ -428,15 +449,43 @@ public class TimKiemSanPhamForm extends JPanel {
 	}
 
 	private void loadTable() {
-		this.tableModelSanPham.setRowCount(0);
-		this.sanPhams = this.sanPhamService.timKiemTatCaSanPham();
-		int stt = 1;
-		for (SanPham sanPham : this.sanPhams) {
-			tableModelSanPham.addRow(new Object[] { stt++, sanPham.getMaSanPham(), sanPham.getTenSanPham(),
-					sanPham.getSoLuongTon(), sanPham.getChatLieu(), sanPham.getDonViTinh(),
-					sanPham.isTrangThai() ? "Đang sản xuất" : "Ngưng sản xuất", sanPham.getSoCongDoan(),
-					PriceFormatterUtils.format(sanPham.getDonGia()) });
-		}
+		new Thread(() -> {
+			try (var socket = new Socket(
+					BUNDLE.getString("host"),
+					Integer.parseInt(BUNDLE.getString("server.port")));
+				 var dos = new DataOutputStream(socket.getOutputStream());
+				 var dis = new DataInputStream(socket.getInputStream())) {
+
+				// send request
+				RequestDTO request = RequestDTO.builder()
+						.requestType("SanPhamForm")
+						.request("timKiemTatCaSanPham")
+						.build();
+
+				String json = AppUtils.GSON.toJson(request);
+				dos.writeUTF(json);
+				dos.flush();
+
+				// receive response
+				json = new String(dis.readAllBytes());
+				ResponseDTO response = AppUtils.GSON.fromJson(json, ResponseDTO.class);
+
+				this.sanPhams = ((List<Map<String, Object>>) response.getData()).stream()
+						.map(v -> AppUtils.convert(v, SanPham.class)).collect(Collectors.toList());
+
+				tableModelSanPham.setRowCount(0);
+				int stt = 1;
+				for (SanPham sanPham : this.sanPhams) {
+					tableModelSanPham.addRow(new Object[]{stt++, sanPham.getMaSanPham(), sanPham.getTenSanPham(),
+							sanPham.getSoLuongTon(), sanPham.getChatLieu(), sanPham.getDonViTinh(),
+							sanPham.isTrangThai() ? "Đang sản xuất" : "Ngưng sản xuất", sanPham.getSoCongDoan(),
+							PriceFormatterUtils.format(sanPham.getDonGia())});
+
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}).start();
 	}
 
 	private void thucHienChucNangClickSanPham() {

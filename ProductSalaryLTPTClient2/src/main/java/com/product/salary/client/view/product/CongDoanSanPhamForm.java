@@ -4,7 +4,6 @@ import com.product.salary.client.common.SystemConstants;
 import com.product.salary.application.entity.CongDoanSanPham;
 import com.product.salary.application.entity.SanPham;
 import com.product.salary.application.service.CongDoanSanPhamService;
-import com.product.salary.application.service.SanPhamService;
 import com.product.salary.application.service.impl.CongDoanSanPhamServiceImpl;
 import com.product.salary.application.service.impl.SanPhamServiceImpl;
 import com.product.salary.application.utils.*;
@@ -45,7 +44,6 @@ public class CongDoanSanPhamForm extends JPanel {
 
     private List<SanPham> sanPhams;
     private List<CongDoanSanPham> congDoanSanPhams;
-    private SanPhamService sanPhamService;
     private final JButton btnThem;
     private final JButton btnXoa;
     private final JButton btnCapNhat;
@@ -414,10 +412,8 @@ public class CongDoanSanPhamForm extends JPanel {
         this.sanPhams = new ArrayList<>();
         this.congDoanSanPhams = new ArrayList<>();
         this.congDoanSanPhamLamTruoc = new ArrayList<>();
-        this.sanPhamService = new SanPhamServiceImpl();
         this.congDoanSanPhamService = new CongDoanSanPhamServiceImpl();
         this.loadDataSanPham();
-
     }
 
     private void loadDataCongDoanSanPham(String maSanPham) {
