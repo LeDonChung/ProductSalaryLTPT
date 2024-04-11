@@ -2,10 +2,16 @@ package com.product.salary.application;
 
 import com.product.salary.application.entity.Account;
 import com.product.salary.application.entity.HopDong;
+import com.product.salary.application.entity.TayNghe;
+import com.product.salary.application.entity.ToNhom;
 import com.product.salary.application.service.AccountService;
 import com.product.salary.application.service.HopDongService;
+import com.product.salary.application.service.TayNgheService;
+import com.product.salary.application.service.ToNhomService;
 import com.product.salary.application.service.impl.AccountServiceImpl;
 import com.product.salary.application.service.impl.HopDongServiceImpl;
+import com.product.salary.application.service.impl.TayNgheServiceImpl;
+import com.product.salary.application.service.impl.ToNhomServiceImpl;
 import com.product.salary.application.utils.AppUtils;
 import com.product.salary.application.utils.RequestDTO;
 import com.product.salary.application.utils.ResponseDTO;
@@ -50,10 +56,14 @@ public class ProductSalaryApplicationKiet {
 		private Socket socket;
 		private final AccountService accountService;
 		private final HopDongService hopDongService;
+		private final ToNhomService toNhomService;
+		private final TayNgheService tayNgheService;
 		public handlerClient(Socket socket) {
 			this.socket = socket;
 			this.accountService = new AccountServiceImpl();
 			this.hopDongService = new HopDongServiceImpl();
+			this.tayNgheService = new TayNgheServiceImpl();
+			this.toNhomService = new ToNhomServiceImpl();
 		}
 
 
@@ -100,6 +110,42 @@ public class ProductSalaryApplicationKiet {
 								List<HopDong> hopDongs = hopDongService.timTatCaHopDong();
 								ResponseDTO response = ResponseDTO.builder()
 										.data(hopDongs)
+										.build();
+
+								json = AppUtils.GSON.toJson(response);
+								System.out.println("Response: " + json);
+								byte[] bytes = json.getBytes(StandardCharsets.UTF_8);
+								dos.write(bytes);
+								dos.flush();
+								break;
+							}
+						}
+						break;
+					}
+					case "TayNgheForm": {
+						switch (requestObject.getRequest()) {
+							case "timKiemTatCaTayNghe": {
+								List<TayNghe> tayNghes = tayNgheService.timKiemTatCaTayNghe();
+								ResponseDTO response = ResponseDTO.builder()
+										.data(tayNghes)
+										.build();
+
+								json = AppUtils.GSON.toJson(response);
+								System.out.println("Response: " + json);
+								byte[] bytes = json.getBytes(StandardCharsets.UTF_8);
+								dos.write(bytes);
+								dos.flush();
+								break;
+							}
+						}
+						break;
+					}
+					case "ToNhomForm": {
+						switch (requestObject.getRequest()) {
+							case "timKiemTatCaToNhom": {
+								List<ToNhom> toNhoms = toNhomService.timKiemTatCaToNhom();
+								ResponseDTO response = ResponseDTO.builder()
+										.data(toNhoms)
 										.build();
 
 								json = AppUtils.GSON.toJson(response);
