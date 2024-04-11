@@ -44,7 +44,7 @@ public class HopDongDAOImpl extends AbstractDAO implements HopDongDAO, Serializa
 			hopDong.setNgayKetThuc(LocalDate.now());
 			em.merge(hopDong);
 
-			List<ChiTietHopDong> chiTietHopDongs = hopDong.getChiTietHopDongs();
+			List<ChiTietHopDong> chiTietHopDongs = timTatCaChiTietHopDongBangMaHopDong(maHopDong);
 			chiTietHopDongs.forEach(chiTietHopDong -> {
 				SanPham sp = em.find(SanPham.class, chiTietHopDong.getSanPham().getMaSanPham());
                 try {
@@ -93,4 +93,21 @@ public class HopDongDAOImpl extends AbstractDAO implements HopDongDAO, Serializa
 		}
 	}
 
+	@Override
+	public List<ChiTietHopDong> timTatCaChiTietHopDongBangMaHopDong(String maHopDong) {
+		try(EntityManager em = getEntityManager()) {
+			String query = "SELECT cthd FROM ChiTietHopDong cthd WHERE cthd.hopDong.maHopDong = :maHopDong";
+			return em.createQuery(query, ChiTietHopDong.class).setParameter("maHopDong", maHopDong).getResultList();
+		}
+	}
+
+	@Override
+	public ChiTietHopDong themChiTietHopDong(ChiTietHopDong chiTietHopDong) {
+		try(EntityManager em = getEntityManager()) {
+			em.getTransaction().begin();
+			em.persist(chiTietHopDong);
+			em.getTransaction().commit();
+			return chiTietHopDong;
+		}
+	}
 }

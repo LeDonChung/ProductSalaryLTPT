@@ -4,10 +4,14 @@ package com.product.salary.client.view.contract;
  * @author Lê Đôn Chủng: Code giao diện, Xử lý code
  */
 
+import com.google.gson.reflect.TypeToken;
 import com.product.salary.application.common.SystemConstants;
 import com.product.salary.application.entity.ChiTietHopDong;
 import com.product.salary.application.entity.HopDong;
 import com.product.salary.application.entity.SanPham;
+import com.product.salary.application.utils.AppUtils;
+import com.product.salary.application.utils.RequestDTO;
+import com.product.salary.application.utils.ResponseDTO;
 import com.product.salary.client.interfaces.ISendChiTietHopDong;
 import com.product.salary.application.service.SanPhamService;
 import com.product.salary.application.service.impl.SanPhamServiceImpl;
@@ -19,8 +23,13 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.ResourceBundle;
 
 public class CreateChiTietHopDongForm extends JFrame {
 
@@ -35,7 +44,7 @@ public class CreateChiTietHopDongForm extends JFrame {
 	private JLabel lblLoiGiaDat;
 	private ISendChiTietHopDong sendChiTietHoaDon;
 	private List<SanPham> sanPhams;
-	private SanPhamService sanPhamService;
+	private final static ResourceBundle BUNDLE = ResourceBundle.getBundle("app");
 
 	/**
 	 * Create the frame.
@@ -150,20 +159,51 @@ public class CreateChiTietHopDongForm extends JFrame {
 
 	private void init() {
 		this.sanPhams = new ArrayList<SanPham>();
-		this.sanPhamService = new SanPhamServiceImpl();
 		this.loadDataSanPham();
 	}
 
 	private void loadDataSanPham() {
-		tabelModelSanPham.setRowCount(0);
-		sanPhams = sanPhamService.timTatCaSanPhamDangSanXuat();
+		new Thread(() -> {
+			try(var socket = new Socket(
+					BUNDLE.getString("host"),
+					Integer.parseInt(BUNDLE.getString("server.port")));
+				var dos = new DataOutputStream(socket.getOutputStream());
+				var dis = new DataInputStream(socket.getInputStream()))
+			{
+				tabelModelSanPham.setRowCount(0);
 
-		int stt = 1;
-		for (SanPham sanPham : sanPhams) {
+				// Send data to server
+				RequestDTO request = RequestDTO.builder()
+						.request("timTatCaSanPhamDangSanXuat")
+						.requestType("SanPhamForm")
+						.data(null)
+						.build();
+				String json = AppUtils.GSON.toJson(request);
+				dos.writeUTF(json);
 
-			tabelModelSanPham.addRow(new Object[] { stt++, sanPham.getMaSanPham(), sanPham.getTenSanPham(),
-					sanPham.getSoLuongTon(), PriceFormatterUtils.format(sanPham.getDonGia()) });
-		}
+				// Receive data from server
+				json = new String(dis.readAllBytes());
+				ResponseDTO response = AppUtils.GSON.fromJson(json, ResponseDTO.class);
+				System.out.println("Receive response: " + response);
+
+				List<Map<String, Object>> data = (List<Map<String, Object>>) response.getData();
+
+				sanPhams = data.stream()
+						.map(e -> AppUtils.convert(e, SanPham.class))
+						.toList();
+
+				int stt = 1;
+				for (SanPham sanPham : sanPhams) {
+
+					tabelModelSanPham.addRow(new Object[] { stt++, sanPham.getMaSanPham(), sanPham.getTenSanPham(),
+							sanPham.getSoLuongTon(), PriceFormatterUtils.format(sanPham.getDonGia()) });
+				}
+			} catch (Exception e) {
+				JOptionPane.showMessageDialog(this,
+						SystemConstants.BUNDLE.getString("createChiTietHopDong.thongBao.loadSanPhamLoi"));
+				e.printStackTrace();
+			}
+		}).start();
 	}
 
 	private void thucHienChucNangThemChiTietHopDong() {

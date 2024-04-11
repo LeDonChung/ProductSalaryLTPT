@@ -53,4 +53,8 @@ public interface HopDongDAO {
 	int tongSoLuongHopDong();
 
 	void capNhatHopDong(HopDong hopDong);
+
+	List<ChiTietHopDong> timTatCaChiTietHopDongBangMaHopDong(String maHopDong);
+
+	ChiTietHopDong themChiTietHopDong(ChiTietHopDong chiTietHopDong);
 }
