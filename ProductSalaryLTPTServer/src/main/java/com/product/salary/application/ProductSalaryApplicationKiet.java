@@ -1,17 +1,8 @@
 package com.product.salary.application;
 
-import com.product.salary.application.entity.Account;
-import com.product.salary.application.entity.HopDong;
-import com.product.salary.application.entity.TayNghe;
-import com.product.salary.application.entity.ToNhom;
-import com.product.salary.application.service.AccountService;
-import com.product.salary.application.service.HopDongService;
-import com.product.salary.application.service.TayNgheService;
-import com.product.salary.application.service.ToNhomService;
-import com.product.salary.application.service.impl.AccountServiceImpl;
-import com.product.salary.application.service.impl.HopDongServiceImpl;
-import com.product.salary.application.service.impl.TayNgheServiceImpl;
-import com.product.salary.application.service.impl.ToNhomServiceImpl;
+import com.product.salary.application.entity.*;
+import com.product.salary.application.service.*;
+import com.product.salary.application.service.impl.*;
 import com.product.salary.application.utils.AppUtils;
 import com.product.salary.application.utils.RequestDTO;
 import com.product.salary.application.utils.ResponseDTO;
@@ -58,12 +49,14 @@ public class ProductSalaryApplicationKiet {
 		private final HopDongService hopDongService;
 		private final ToNhomService toNhomService;
 		private final TayNgheService tayNgheService;
+		private final CongNhanService congNhanService;
 		public handlerClient(Socket socket) {
 			this.socket = socket;
 			this.accountService = new AccountServiceImpl();
 			this.hopDongService = new HopDongServiceImpl();
 			this.tayNgheService = new TayNgheServiceImpl();
 			this.toNhomService = new ToNhomServiceImpl();
+			this.congNhanService = new CongNhanServiceImpl();
 		}
 
 
@@ -131,7 +124,7 @@ public class ProductSalaryApplicationKiet {
 										.build();
 
 								json = AppUtils.GSON.toJson(response);
-								System.out.println("Response: " + json);
+								//System.out.println("Response: " + json);
 								byte[] bytes = json.getBytes(StandardCharsets.UTF_8);
 								dos.write(bytes);
 								dos.flush();
@@ -149,10 +142,82 @@ public class ProductSalaryApplicationKiet {
 										.build();
 
 								json = AppUtils.GSON.toJson(response);
-								System.out.println("Response: " + json);
+								//System.out.println("Response: " + json);
 								byte[] bytes = json.getBytes(StandardCharsets.UTF_8);
 								dos.write(bytes);
 								dos.flush();
+								break;
+							}
+						}
+						break;
+					}
+					case "CongNhanForm": {
+						switch (requestObject.getRequest()) {
+							case "timKiemTatCaCongNhan": {
+								List<CongNhan> congNhans = congNhanService.timKiemTatCaCongNhan();
+								ResponseDTO response = ResponseDTO.builder()
+										.data(congNhans)
+										.build();
+								//System.out.println("Response: " + response);
+								json = AppUtils.GSON.toJson(response);
+								//System.out.println("Response: " + json);
+								byte[] bytes = json.getBytes(StandardCharsets.UTF_8);
+								dos.write(bytes);
+								dos.flush();
+								break;
+							}
+							case "capNhatTrangThaiCongNhan": {
+								String ma = (String) requestObject.getData();
+								boolean result = congNhanService.capNhatTrangThaiCongNhan(ma, false);
+								ResponseDTO response = ResponseDTO.builder()
+										.data(result)
+										.build();
+								//System.out.println("Response: " + response);
+								json = AppUtils.GSON.toJson(response);
+								byte[] bytes = json.getBytes(StandardCharsets.UTF_8);
+								dos.write(bytes);
+								dos.flush();
+								break;
+							}
+							case "themCongNhan": {
+								CongNhan congNhan = AppUtils.convert((Map<String, Object>) requestObject.getData(), CongNhan.class);
+								CongNhan result = congNhanService.themCongNhan(congNhan);
+								ResponseDTO response = ResponseDTO.builder()
+										.data(result)
+										.build();
+								//System.out.println("Response: " + response);
+								json = AppUtils.GSON.toJson(response);
+								byte[] bytes = json.getBytes(StandardCharsets.UTF_8);
+								dos.write(bytes);
+								dos.flush();
+								break;
+							}
+							case "capNhatCongNhan": {
+								CongNhan congNhan = AppUtils.convert((Map<String, Object>) requestObject.getData(), CongNhan.class);
+								CongNhan result = congNhanService.capNhatCongNhan(congNhan);
+								ResponseDTO response = ResponseDTO.builder()
+										.data(result)
+										.build();
+								//System.out.println("Response: " + response);
+								json = AppUtils.GSON.toJson(response);
+								byte[] bytes = json.getBytes(StandardCharsets.UTF_8);
+								dos.write(bytes);
+								dos.flush();
+								break;
+							}
+							case "themNhieuCongNhan": {
+//								List<Map<String, Object>> data = (List<Map<String, Object>>) requestObject.getData();
+//								System.out.println("Data: " + data);
+//
+//								List<CongNhan> result = congNhanService.themNhieuCongNhan(dsCongNhan);
+//								ResponseDTO response = ResponseDTO.builder()
+//										.data(result)
+//										.build();
+//								//System.out.println("Response: " + response);
+//								json = AppUtils.GSON.toJson(response);
+//								byte[] bytes = json.getBytes(StandardCharsets.UTF_8);
+//								dos.write(bytes);
+//								dos.flush();
 								break;
 							}
 						}
