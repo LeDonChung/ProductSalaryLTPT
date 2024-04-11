@@ -72,6 +72,28 @@ public class ProductSalaryApplicationChung {
 				System.out.println("Request: " + requestObject);
 				String request = requestObject.getRequestType();
 				switch (request) {
+					case "DoiMatKhauForm": {
+						switch (requestObject.getRequest()) {
+							case "capNhatMatKhau": {
+								Account account = AppUtils.convert((Map<String, Object>) requestObject.getData(), Account.class);
+								boolean result = accountService.capNhatMatKhau(account.getTaiKhoan(), account.getMatKhau());
+
+								ResponseDTO response = ResponseDTO.builder()
+										.data(result)
+										.build();
+
+								System.out.println("Response: " + response);
+								// Send Response
+								json = AppUtils.GSON.toJson(response);
+								dos.writeBytes(json);
+								dos.flush();
+								break;
+							}
+							default:
+								break;
+						}
+						break;
+					}
 					case "DangNhapForm": {
 						switch (requestObject.getRequest()) {
 							case "timKiemTaiKhoanHoatDongBangTaiKhoanVaMatKhau": {

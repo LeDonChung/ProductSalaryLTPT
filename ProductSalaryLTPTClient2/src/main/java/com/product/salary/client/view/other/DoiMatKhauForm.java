@@ -6,6 +6,9 @@ package com.product.salary.client.view.other;
 
 import com.product.salary.application.common.SystemConstants;
 import com.product.salary.application.entity.Account;
+import com.product.salary.application.utils.AppUtils;
+import com.product.salary.application.utils.RequestDTO;
+import com.product.salary.application.utils.ResponseDTO;
 import com.product.salary.client.interfaces.ISendResponse;
 import com.product.salary.application.service.AccountService;
 import com.product.salary.application.service.impl.AccountServiceImpl;
@@ -17,20 +20,29 @@ import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.net.Socket;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.ResourceBundle;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.FutureTask;
 
 public class DoiMatKhauForm extends JFrame {
-	private ISendResponse iSendResponse;
-	private JPanel contentPane;
-	private JTextField txtMatKhauCu;
-	private JTextField txtMatKhauMoi;
-	private JTextField txtNhapLaiMatKhau;
-	private JButton btnDoiMatKhau;
-	private JButton btnHuy;
-	private JLabel lblLoiNhapLaiMatKhau;
-	private JLabel lblLoiMatKhauCu;
-	private JLabel lblMatKhauMoi;
-	private JLabel lblLoiMatKhauMoi;
-	private AccountService accountService;
+	private final static ResourceBundle BUNDLE = ResourceBundle.getBundle("app");
+	private final ISendResponse iSendResponse;
+	private final JPanel contentPane;
+	private final JTextField txtMatKhauCu;
+	private final JTextField txtMatKhauMoi;
+	private final JTextField txtNhapLaiMatKhau;
+	private final JButton btnDoiMatKhau;
+	private final JButton btnHuy;
+	private final JLabel lblLoiNhapLaiMatKhau;
+	private final JLabel lblLoiMatKhauCu;
+	private final JLabel lblMatKhauMoi;
+	private final JLabel lblLoiMatKhauMoi;
 
 	public DoiMatKhauForm(ISendResponse iSendResponse) {
 		this.iSendResponse = iSendResponse;
@@ -147,14 +159,11 @@ public class DoiMatKhauForm extends JFrame {
 	}
 
 	private void init() {
-		this.accountService = new AccountServiceImpl();
 
 	}
 
 	private void event() {
-		this.btnDoiMatKhau.addActionListener((e) -> {
-			thucHienThucNangDoiMatKhau();
-		});
+		this.btnDoiMatKhau.addActionListener((e) -> thucHienThucNangDoiMatKhau());
 
 	}
 
@@ -195,24 +204,62 @@ public class DoiMatKhauForm extends JFrame {
 		String matKhauCu = this.txtMatKhauCu.getText().trim();
 		String matKhauMoi = this.txtMatKhauMoi.getText().trim();
 		Account account_1 = new Account(ac.getTaiKhoan(), matKhauCu);
-		account_1 = this.accountService.timKiemTaiKhoanHoatDongBangTaiKhoanVaMatKhau(ac.getTaiKhoan(), matKhauCu);
-		if (!thucHienChucNangKiemTra()) {
+		Callable<Account> accountTest = new HandlerAccount(account_1);
+		FutureTask<Account> futureTask = new FutureTask<>(accountTest);
+		Thread t1 = new Thread(futureTask);
+		t1.start();
+		while(t1.isAlive()) {}
+
+        try {
+            account_1 = futureTask.get();
+        } catch (InterruptedException | ExecutionException e) {
+            throw new RuntimeException(e);
+        }
+
+        if (!thucHienChucNangKiemTra()) {
 			return;
 		}
-		if (account_1 != null) {
-			boolean capNhatMatKhau = this.accountService.capNhatMatKhau(ac.getTaiKhoan(), matKhauMoi);
-			if (capNhatMatKhau) {
-				JOptionPane.showMessageDialog(this,
-						SystemConstants.BUNDLE.getString("doiMatKhau.capNhatMK"));
-//				JOptionPane.showMessageDialog(this,
-//						"Cập nhật mật khẩu thành công. Vui lòng đăng nhập lại để sử dụng ứng dụng.");
-				dispose();
-				this.iSendResponse.confirm(true);
 
-			}
+		if (account_1 != null) {
+			new Thread(() -> {
+				try (var socket = new Socket(
+						BUNDLE.getString("host"),
+						Integer.parseInt(BUNDLE.getString("server.port")));
+					 var dos = new DataOutputStream(socket.getOutputStream());
+					 var dis = new DataInputStream(socket.getInputStream())) {
+					Map<String, Object> data = new HashMap<>();
+					data.put("taiKhoan", ac.getTaiKhoan());
+					data.put("matKhau", matKhauMoi);
+					// send request
+					RequestDTO request = RequestDTO.builder()
+							.request("capNhatMatKhau")
+							.requestType("DoiMatKhauForm")
+							.data(data)
+							.build();
+
+					String json = AppUtils.GSON.toJson(request);
+					dos.writeUTF(json);
+					dos.flush();
+
+					// receive response
+					json = new String(dis.readAllBytes());
+					ResponseDTO response = AppUtils.GSON.fromJson(json, ResponseDTO.class);
+
+					boolean capNhatMatKhau = (boolean) response.getData();
+					if (capNhatMatKhau) {
+						JOptionPane.showMessageDialog(this,
+								SystemConstants.BUNDLE.getString("doiMatKhau.capNhatMK"));
+						dispose();
+						this.iSendResponse.confirm(true);
+
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+
+			}).start();
 		} else {
 			JOptionPane.showMessageDialog(this, SystemConstants.BUNDLE.getString("doiMatKhau.matKhauKhongDung"));
-			//JOptionPane.showMessageDialog(this, "Mật khẩu không chính xác.");
 		}
 	}
 }

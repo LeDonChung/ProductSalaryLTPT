@@ -1,7 +1,7 @@
 package com.product.salary.client.view.contract;
 
-/**
- * @author Trần Tuấn Kiệt: Code giao diện
+/*
+  @author Trần Tuấn Kiệt: Code giao diện
  * @author Lê Đôn Chủng: Xử lý code
  */
 
@@ -10,9 +10,6 @@ import com.product.salary.application.utils.*;
 import com.product.salary.client.common.SystemConstants;
 import com.product.salary.application.entity.ChiTietHopDong;
 import com.product.salary.application.entity.HopDong;
-import com.product.salary.client.interfaces.ISendChiTietHopDong;
-import com.product.salary.application.service.HopDongService;
-import com.product.salary.application.service.impl.HopDongServiceImpl;
 import com.product.salary.application.utils.pdf.HopDongPdfUtils;
 import com.toedter.calendar.JDateChooser;
 import org.apache.commons.lang3.ObjectUtils;
@@ -444,15 +441,9 @@ public class HopDongForm extends JPanel {
     }
 
     private void event() {
-        this.btnXoaTrang.addActionListener((e) -> {
-            thucHienChucNangLamMoi();
-        });
-        this.btnThanhLy.addActionListener((e) -> {
-            thucHienChucNangThanhLy();
-        });
-        this.btnXuatHopDong.addActionListener((e) -> {
-            thucHienChucNangXuatHopDong();
-        });
+        this.btnXoaTrang.addActionListener((e) -> thucHienChucNangLamMoi());
+        this.btnThanhLy.addActionListener((e) -> thucHienChucNangThanhLy());
+        this.btnXuatHopDong.addActionListener((e) -> thucHienChucNangXuatHopDong());
         this.tblHopDong.addMouseListener(new MouseListener() {
 
             @Override
@@ -485,18 +476,10 @@ public class HopDongForm extends JPanel {
             }
 
         });
-        this.btnThemSanPham.addActionListener((e) -> {
-            thucHienChucNangThemSanPham();
-        });
-        this.btnXoa.addActionListener((e) -> {
-            thucHienChucNangXoaSanPham();
-        });
-        this.btnCapNhat.addActionListener((e) -> {
-            thucHienChucNangCapNhatSanPham();
-        });
-        this.btnThem.addActionListener((e) -> {
-            thucHienChucNangThemHopDong();
-        });
+        this.btnThemSanPham.addActionListener((e) -> thucHienChucNangThemSanPham());
+        this.btnXoa.addActionListener((e) -> thucHienChucNangXoaSanPham());
+        this.btnCapNhat.addActionListener((e) -> thucHienChucNangCapNhatSanPham());
+        this.btnThem.addActionListener((e) -> thucHienChucNangThemHopDong());
     }
 
     private void thucHienChucNangXuatHopDong() {
@@ -824,8 +807,8 @@ public class HopDongForm extends JPanel {
     }
 
     private void init() {
-        this.hopDongs = new ArrayList<HopDong>();
-        this.chiTietHopDongs = new ArrayList<ChiTietHopDong>();
+        this.hopDongs = new ArrayList<>();
+        this.chiTietHopDongs = new ArrayList<>();
         loadTableHopDong();
     }
 
@@ -953,7 +936,7 @@ public class HopDongForm extends JPanel {
         this.jcNgayKetThuc.setDate(null);
         loadTableHopDong();
 
-        this.chiTietHopDongs = new ArrayList<ChiTietHopDong>();
+        this.chiTietHopDongs = new ArrayList<>();
         tableModelChiTietHopDong.setRowCount(0);
         thucHienChucNangLamMoiLoi();
 
