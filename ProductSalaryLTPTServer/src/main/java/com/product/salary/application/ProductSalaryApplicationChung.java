@@ -137,6 +137,79 @@ public class ProductSalaryApplicationChung {
 								dos.flush();
 								break;
 							}
+							case "timKiemTatCaSanPham": {
+								List<SanPham> sanPhams = sanPhamService.timKiemTatCaSanPham();
+								ResponseDTO response = ResponseDTO.builder()
+										.data(sanPhams)
+										.build();
+
+								json = AppUtils.GSON.toJson(response);
+								System.out.println("Response: " + json);
+								byte[] bytes = json.getBytes(StandardCharsets.UTF_8);
+								dos.write(bytes);
+								dos.flush();
+								break;
+							}
+							case "themSanPham": {
+								SanPham sanPham = AppUtils.convert((Map<String, Object>) requestObject.getData(), SanPham.class);
+								sanPham = sanPhamService.themSanPham(sanPham);
+								ResponseDTO response = ResponseDTO.builder()
+										.data(sanPham)
+										.build();
+
+								json = AppUtils.GSON.toJson(response);
+								System.out.println("Response: " + json);
+								byte[] bytes = json.getBytes(StandardCharsets.UTF_8);
+								dos.write(bytes);
+								dos.flush();
+								break;
+							}
+							case "capNhatTrangThaiSanPham": {
+								Map<String, Object> data = (Map<String, Object>) requestObject.getData();
+								String maSanPham = (String) data.get("maSanPham");
+								boolean trangThai = (boolean) data.get("trangThai");
+								boolean result = sanPhamService.capNhatTrangThaiSanPham(maSanPham, trangThai);
+
+								ResponseDTO response = ResponseDTO.builder()
+										.data(result)
+										.build();
+
+								json = AppUtils.GSON.toJson(response);
+								System.out.println("Response: " + json);
+								byte[] bytes = json.getBytes(StandardCharsets.UTF_8);
+								dos.write(bytes);
+								dos.flush();
+								break;
+							}
+							case "capNhatSanPham": {
+								SanPham sanPham = AppUtils.convert((Map<String, Object>) requestObject.getData(), SanPham.class);
+								sanPham = sanPhamService.capNhatSanPham(sanPham);
+								ResponseDTO response = ResponseDTO.builder()
+										.data(sanPham)
+										.build();
+
+								json = AppUtils.GSON.toJson(response);
+								System.out.println("Response: " + json);
+								byte[] bytes = json.getBytes(StandardCharsets.UTF_8);
+								dos.write(bytes);
+								dos.flush();
+								break;
+							}
+							case "timKiemSanPham": {
+								Map<String, Object> data = (Map<String, Object>) requestObject.getData();
+								SanPham sanPham = AppUtils.convert(data, SanPham.class);
+								List<SanPham> sanPhams = sanPhamService.timKiemSanPham(sanPham);
+								ResponseDTO response = ResponseDTO.builder()
+										.data(sanPhams)
+										.build();
+
+								json = AppUtils.GSON.toJson(response);
+								System.out.println("Response: " + json);
+								byte[] bytes = json.getBytes(StandardCharsets.UTF_8);
+								dos.write(bytes);
+								dos.flush();
+								break;
+							}
 						}
 					}
 					case "CongDoanSanPhamForm": {
