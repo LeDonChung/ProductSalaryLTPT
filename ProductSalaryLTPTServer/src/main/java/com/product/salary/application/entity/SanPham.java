@@ -47,7 +47,7 @@ public class SanPham implements Serializable {
 	private Boolean trangThai;
 
 	@OneToMany(mappedBy = "sanPham", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-	private List<CongDoanSanPham> congDoanSanPhams;
+	private transient List<CongDoanSanPham> congDoanSanPhams;
 
 	public SanPham(String maSanPham, String tenSanPham, String donViTinh, int soLuongTon, String chatLieu,
 			Double donGia, byte[] hinhAnh) throws Exception {
