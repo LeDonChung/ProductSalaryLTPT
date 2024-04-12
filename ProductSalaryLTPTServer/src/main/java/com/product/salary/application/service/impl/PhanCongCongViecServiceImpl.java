@@ -69,7 +69,8 @@ public class PhanCongCongViecServiceImpl implements PhanCongCongViecService {
 				// JOptionPane.showMessageDialog(null, "Phân công công nhân đã tồn tại.");
 				return null;
 			}
-
+			phanCongCongNhan.setMaPhanCong(generateMaPhanCongCongNhan(phanCongCongNhan.getCongNhan().getMaCongNhan(),
+					phanCongCongNhan.getCongDoanSanPham().getMaCongDoan()));
 			phanCongCongNhan = phanCongDAO.phanCongCongNhan(phanCongCongNhan);
 			return phanCongCongNhan;
 

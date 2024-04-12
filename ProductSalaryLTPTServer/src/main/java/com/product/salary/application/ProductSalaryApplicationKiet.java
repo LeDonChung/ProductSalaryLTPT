@@ -50,6 +50,9 @@ public class ProductSalaryApplicationKiet {
 		private final ToNhomService toNhomService;
 		private final TayNgheService tayNgheService;
 		private final CongNhanService congNhanService;
+		private final SanPhamService sanPhamService;
+		private final CongDoanSanPhamService congDoanSanPhamService;
+		private final PhanCongCongViecService phanCongCongViecService;
 		public handlerClient(Socket socket) {
 			this.socket = socket;
 			this.accountService = new AccountServiceImpl();
@@ -57,6 +60,9 @@ public class ProductSalaryApplicationKiet {
 			this.tayNgheService = new TayNgheServiceImpl();
 			this.toNhomService = new ToNhomServiceImpl();
 			this.congNhanService = new CongNhanServiceImpl();
+			this.sanPhamService = new SanPhamServiceImpl();
+			this.congDoanSanPhamService = new CongDoanSanPhamServiceImpl();
+			this.phanCongCongViecService = new PhanCongCongViecServiceImpl();
 		}
 
 
@@ -302,6 +308,120 @@ public class ProductSalaryApplicationKiet {
 								byte[] bytes = json.getBytes(StandardCharsets.UTF_8);
 								dos.write(bytes);
 								dos.flush();
+								break;
+							}
+						}
+						break;
+					}
+					case "PhanCongCongNhanForm": {
+						switch (requestObject.getRequest()) {
+							case "timKiemTatCaSanPham": {
+								List<SanPham> sanPhams = sanPhamService.timKiemTatCaSanPham();
+								ResponseDTO response = ResponseDTO.builder()
+										.data(sanPhams)
+										.build();
+								//System.out.println("Response: " + response);
+								json = AppUtils.GSON.toJson(response);
+								//System.out.println("Response: " + json);
+								byte[] bytes = json.getBytes(StandardCharsets.UTF_8);
+								dos.write(bytes);
+								dos.flush();
+								break;
+							}
+							case "timKiemTatCaCongNhan": {
+								List<CongNhan> congNhans = congNhanService.timKiemTatCaCongNhan();
+								ResponseDTO response = ResponseDTO.builder()
+										.data(congNhans)
+										.build();
+								//System.out.println("Response: " + response);
+								json = AppUtils.GSON.toJson(response);
+								//System.out.println("Response: " + json);
+								byte[] bytes = json.getBytes(StandardCharsets.UTF_8);
+								dos.write(bytes);
+								dos.flush();
+								break;
+							}
+							case "timTatCaCongDoanSanPham": {
+								List<CongDoanSanPham> congDoanSanPhams = congDoanSanPhamService.timTatCaCongDoanSanPham(requestObject.getData().toString());
+								ResponseDTO response = ResponseDTO.builder()
+										.data(congDoanSanPhams)
+										.build();
+								//System.out.println("Response: " + response);
+								json = AppUtils.GSON.toJson(response);
+								//System.out.println("Response: " + json);
+								byte[] bytes = json.getBytes(StandardCharsets.UTF_8);
+								dos.write(bytes);
+								dos.flush();
+								break;
+							}
+							case "timTatCaCongNhanChuaPhanCongVaoCongDoan": {
+								PhanCongCongNhan phanCongCongNhan = AppUtils.convert((Map<String, Object>) requestObject.getData(), PhanCongCongNhan.class);
+								List<CongNhan> CongNhans = phanCongCongViecService.timTatCaCongNhanChuaPhanCongVaoCongDoan(phanCongCongNhan.getCongDoanSanPham().getSanPham().getMaSanPham(), phanCongCongNhan.getCongDoanSanPham().getMaCongDoan());
+								ResponseDTO response = ResponseDTO.builder()
+										.data(CongNhans)
+										.build();
+								//System.out.println("Response: " + response);
+								json = AppUtils.GSON.toJson(response);
+								//System.out.println("Response: " + json);
+								byte[] bytes = json.getBytes(StandardCharsets.UTF_8);
+								dos.write(bytes);
+								dos.flush();
+								break;
+							}
+							case "timTatCaPhanCongTheoMaCongDoan": {
+								List<PhanCongCongNhan> phanCongCongNhans = phanCongCongViecService.timTatCaPhanCongTheoMaCongDoan(requestObject.getData().toString());
+								ResponseDTO response = ResponseDTO.builder()
+										.data(phanCongCongNhans)
+										.build();
+								//System.out.println("Response: " + response);
+								json = AppUtils.GSON.toJson(response);
+								//System.out.println("Response: " + json);
+								byte[] bytes = json.getBytes(StandardCharsets.UTF_8);
+								dos.write(bytes);
+								dos.flush();
+								break;
+							}
+							case "timTatCaPhanCongTheoMaCongNhanChuaHoanThanh": {
+								List<PhanCongCongNhan> phanCongCongNhans = phanCongCongViecService.timTatCaPhanCongTheoMaCongNhanChuaHoanThanh(requestObject.getData().toString());
+								ResponseDTO response = ResponseDTO.builder()
+										.data(phanCongCongNhans)
+										.build();
+								//System.out.println("Response: " + response);
+								json = AppUtils.GSON.toJson(response);
+								//System.out.println("Response: " + json);
+								byte[] bytes = json.getBytes(StandardCharsets.UTF_8);
+								dos.write(bytes);
+								dos.flush();
+								break;
+							}
+							case "xoaPhanCongCongNhan": {
+								boolean result = phanCongCongViecService.xoaPhanCongCongNhan(requestObject.getData().toString());
+								ResponseDTO response = ResponseDTO.builder()
+										.data(result)
+										.build();
+								//System.out.println("Response: " + response);
+								json = AppUtils.GSON.toJson(response);
+								//System.out.println("Response: " + json);
+								byte[] bytes = json.getBytes(StandardCharsets.UTF_8);
+								dos.write(bytes);
+								dos.flush();
+								break;
+							}
+
+							case "phanCongNhieuCongNhan": {
+								List<PhanCongCongNhan> phanCongCongNhans = phanCongCongViecService.phanCongNhieuCongNhan((List<PhanCongCongNhan>) requestObject.getData());
+								for (PhanCongCongNhan phanCongCongNhan : phanCongCongNhans) {
+									System.out.println("xxxxxxxxx-----: " + phanCongCongNhan.getMaPhanCong());
+								}
+//								ResponseDTO response = ResponseDTO.builder()
+//										.data(phanCongCongNhans)
+//										.build();
+//								//System.out.println("Response: " + response);
+//								json = AppUtils.GSON.toJson(response);
+//								//System.out.println("Response: " + json);
+//								byte[] bytes = json.getBytes(StandardCharsets.UTF_8);
+//								dos.write(bytes);
+//								dos.flush();
 								break;
 							}
 						}
