@@ -4,6 +4,9 @@ import com.product.salary.application.common.SystemConstants;
 import com.product.salary.application.entity.PhongBan;
 import com.product.salary.application.service.PhongBanService;
 import com.product.salary.application.service.impl.PhongBanServiceImpl;
+import com.product.salary.application.utils.AppUtils;
+import com.product.salary.application.utils.RequestDTO;
+import com.product.salary.application.utils.ResponseDTO;
 import com.product.salary.application.utils.excels.PhongBanExcelUtils;
 
 import javax.swing.*;
@@ -13,21 +16,30 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.ResourceBundle;
+import java.util.stream.Collectors;
 
 public class TimKiemPhongBanForm extends JPanel {
-	private JTextField txtMaPhongBan;
-	private JTextField txtTenPhongBan;
-	private JTextField txtSoLuongNhanVien;
+	private static final ResourceBundle BUNDLE = ResourceBundle.getBundle("app") ;
+
+	private final JTextField txtMaPhongBan;
+	private final JTextField txtTenPhongBan;
+	private final JTextField txtSoLuongNhanVien;
 	private List<PhongBan> danhSachPhongBan;
 	private PhongBanService phongBanService;
-	private DefaultTableModel tableModelPhongBan;
-	private JButton btnTimKiem;
-	private JTable tblPhongBan;
-	private JButton btnLamMoi;
-	private JComboBox cmbTrangThai;
-	private JButton btnXuatDanhSach;
+	private final DefaultTableModel tableModelPhongBan;
+	private final JButton btnTimKiem;
+	private final JTable tblPhongBan;
+	private final JButton btnLamMoi;
+	private final JComboBox cmbTrangThai;
+	private final JButton btnXuatDanhSach;
 
 	/**
 	 * Create the frame.
@@ -259,46 +271,120 @@ public class TimKiemPhongBanForm extends JPanel {
 	}
 
 	private void loadTablePhongBan() {
-		tableModelPhongBan.setRowCount(0);
-		danhSachPhongBan = phongBanService.timKiemTatCaPhongBan();
-		int stt = 1;
-		for (PhongBan phongBan : danhSachPhongBan) {
-			String trangThai = "";
-			if (phongBan.isTrangThai())
-				trangThai = "Đang hoạt động";
-			else
-				trangThai = "Ngừng hoạt động";
-			tableModelPhongBan.addRow(new Object[] { stt++, phongBan.getMaPhongBan(), phongBan.getTenPhongBan(),
-					phongBan.getSoLuongNhanVien(), trangThai });
-		}
+		new Thread(() -> {
+			try (var socket = new Socket(
+					BUNDLE.getString("host"),
+					Integer.parseInt(BUNDLE.getString("server.port")));
+				 var dos = new DataOutputStream(socket.getOutputStream());
+				 var dis = new DataInputStream(socket.getInputStream());
+			) {
+				//Send data
+				RequestDTO request = RequestDTO.builder()
+						.requestType("PhongBanForm")
+						.request("timKiemTatCaPhongBan")
+						.build();
+
+//                System.out.println("Sending request: " + request);
+				String json = AppUtils.GSON.toJson(request);
+
+				dos.writeUTF(json);
+				dos.flush();
+
+				//Receive data
+				json = new String(dis.readAllBytes());
+				ResponseDTO response = AppUtils.GSON.fromJson(json, ResponseDTO.class);
+//                System.out.println("Receive response: " + response);
+
+				List<Map<String, Object>> data = (List<Map<String, Object>>) response.getData();
+
+				danhSachPhongBan = data.stream().map((value) ->
+						AppUtils.convert(value, PhongBan.class)).collect(Collectors.toList());
+
+				tableModelPhongBan.setRowCount(0);
+				int stt = 1;
+				for (PhongBan phongBan : danhSachPhongBan) {
+					String trangThai = "";
+					if (phongBan.isTrangThai() == true)
+						trangThai = "Đang hoạt động";
+					else
+						trangThai = "Ngừng hoạt động";
+					tableModelPhongBan.addRow(new Object[]{stt++, phongBan.getMaPhongBan(), phongBan.getTenPhongBan(),
+							phongBan.getSoLuongNhanVien(), trangThai});
+				}
+
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}).start();
 	}
 
 	private void thucHienChucNangTimKiem() {
-		tableModelPhongBan.setRowCount(0);
-		String maPhongBan = txtMaPhongBan.getText().trim();
-		String tenPhongBan = txtTenPhongBan.getText().trim();
-		Boolean trangThai = null;
-		if (cmbTrangThai.getSelectedIndex() != 0) {
-			if (cmbTrangThai.getSelectedItem() == "Đang hoạt động")
-				trangThai = true;
-			else
-				trangThai = false;
-		}
+		new Thread(() -> {
+			try (var socket = new Socket(
+					BUNDLE.getString("host"),
+					Integer.parseInt(BUNDLE.getString("server.port")));
+				 var dos = new DataOutputStream(socket.getOutputStream());
+				 var dis = new DataInputStream(socket.getInputStream());
+			) {
 
-		PhongBan pb = new PhongBan(maPhongBan, tenPhongBan, 0, trangThai);
-		danhSachPhongBan = phongBanService.timKiemPhongBan(pb);
-		int stt = 1;
-		for (PhongBan phongBan : danhSachPhongBan) {
-			String trangThaiS = "";
-			if (phongBan.isTrangThai())
-				trangThaiS = "Đang hoạt động";
-			else
-				trangThaiS = "Ngừng hoạt động";
+				tableModelPhongBan.setRowCount(0);
+				String maPhongBan = txtMaPhongBan.getText().trim();
+				String tenPhongBan = txtTenPhongBan.getText().trim();
+				Boolean trangThai = null;
+				if (cmbTrangThai.getSelectedIndex() != 0) {
+					if (cmbTrangThai.getSelectedItem() == "Đang hoạt động")
+						trangThai = true;
+					else
+						trangThai = false;
+				}
 
-			tableModelPhongBan.addRow(new Object[] { stt++, phongBan.getMaPhongBan(), phongBan.getTenPhongBan(),
-					phongBan.getSoLuongNhanVien(), trangThaiS });
+				try {
 
-		}
+					PhongBan phongBanTim = new PhongBan();
+					phongBanTim.setMaPhongBan(maPhongBan);
+					if (!tenPhongBan.isEmpty())
+						phongBanTim.setTenPhongBan(tenPhongBan);
+					phongBanTim.setTrangThai(trangThai);
+
+					//Send data
+					RequestDTO request = RequestDTO.builder()
+							.requestType("PhongBanForm")
+							.request("timKiemPhongBan")
+							.data(phongBanTim)
+							.build();
+					String json = AppUtils.GSON.toJson(request);
+					dos.writeUTF(json);
+					dos.flush();
+
+					//Receive data
+					json = new String(dis.readAllBytes());
+					ResponseDTO response = AppUtils.GSON.fromJson(json, ResponseDTO.class);
+					List<Map<String, Object>> data = (List<Map<String, Object>>) response.getData();
+					danhSachPhongBan = data.stream().map((value) ->
+							AppUtils.convert(value, PhongBan.class)).collect(Collectors.toList());
+					int stt = 1;
+					for (PhongBan phongBan : danhSachPhongBan) {
+						String trangThaiS = "";
+						if (phongBan.isTrangThai())
+							trangThaiS = "Đang hoạt động";
+						else
+							trangThaiS = "Ngừng hoạt động";
+
+						tableModelPhongBan.addRow(new Object[] { stt++, phongBan.getMaPhongBan(), phongBan.getTenPhongBan(),
+								phongBan.getSoLuongNhanVien(), trangThaiS });
+
+					}
+
+				}catch (Exception e) {
+					e.printStackTrace();
+				}
+
+
+
+			}catch (IOException e){
+				e.printStackTrace();
+			}
+		}).start();
 	}
 
 	private void thucHienChucNangLamMoi() {
