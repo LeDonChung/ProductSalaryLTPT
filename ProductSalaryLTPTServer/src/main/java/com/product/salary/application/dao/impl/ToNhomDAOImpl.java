@@ -48,9 +48,6 @@ public class ToNhomDAOImpl extends AbstractDAO implements ToNhomDAO {
 			if (toNhom.isTrangThai() != null) {
 				predicates.add(cb.equal(toNhomS.get("trangThai"), toNhom.isTrangThai()));
 			}
-
-
-
 			cq.where(cb.and(predicates.toArray(new Predicate[0])));
 
 			TypedQuery<ToNhom> query = em.createQuery(cq);

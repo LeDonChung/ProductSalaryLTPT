@@ -201,6 +201,19 @@ public class ProductSalaryApplicationKiet {
 								dos.flush();
 								break;
 							}
+							case "timKiemToNhom": {
+								ToNhom toNhom = AppUtils.convert((Map<String, Object>) requestObject.getData(), ToNhom.class);
+								List<ToNhom> result = toNhomService.timKiemToNhom(toNhom);
+								ResponseDTO response = ResponseDTO.builder()
+										.data(result)
+										.build();
+								//System.out.println("Response: " + response);
+								json = AppUtils.GSON.toJson(response);
+								byte[] bytes = json.getBytes(StandardCharsets.UTF_8);
+								dos.write(bytes);
+								dos.flush();
+								break;
+							}
 						}
 						break;
 					}
