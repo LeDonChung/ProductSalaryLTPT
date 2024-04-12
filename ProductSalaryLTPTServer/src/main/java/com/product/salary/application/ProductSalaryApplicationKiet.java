@@ -148,6 +148,59 @@ public class ProductSalaryApplicationKiet {
 								dos.flush();
 								break;
 							}
+							case "themToNhom": {
+								ToNhom toNhom = AppUtils.convert((Map<String, Object>) requestObject.getData(), ToNhom.class);
+								System.out.println("ToNhom: " + toNhom);
+								ToNhom result = toNhomService.themToNhom(toNhom);
+								ResponseDTO response = ResponseDTO.builder()
+										.data(result)
+										.build();
+								System.out.println("Response: " + response);
+								json = AppUtils.GSON.toJson(response);
+								byte[] bytes = json.getBytes(StandardCharsets.UTF_8);
+								dos.write(bytes);
+								dos.flush();
+								break;
+							}
+							case "capNhatTrangThaiToNhom": {
+								String ma = (String) requestObject.getData();
+								boolean result = toNhomService.capNhatTrangThaiToNhom(ma, false);
+								ResponseDTO response = ResponseDTO.builder()
+										.data(result)
+										.build();
+								//System.out.println("Response: " + response);
+								json = AppUtils.GSON.toJson(response);
+								byte[] bytes = json.getBytes(StandardCharsets.UTF_8);
+								dos.write(bytes);
+								dos.flush();
+								break;
+							}
+							case "capNhatToNhom": {
+								ToNhom toNhom = AppUtils.convert((Map<String, Object>) requestObject.getData(), ToNhom.class);
+								ToNhom result = toNhomService.capNhatToNhom(toNhom);
+								ResponseDTO response = ResponseDTO.builder()
+										.data(result)
+										.build();
+								//System.out.println("Response: " + response);
+								json = AppUtils.GSON.toJson(response);
+								byte[] bytes = json.getBytes(StandardCharsets.UTF_8);
+								dos.write(bytes);
+								dos.flush();
+								break;
+							}
+							case "timKiemCongNhanBangMaToNhom": {
+								String maToNhom = (String) requestObject.getData();
+								List<CongNhan> congNhans = congNhanService.timKiemCongNhanBangMaToNhom(maToNhom);
+								ResponseDTO response = ResponseDTO.builder()
+										.data(congNhans)
+										.build();
+								//System.out.println("Response: " + response);
+								json = AppUtils.GSON.toJson(response);
+								byte[] bytes = json.getBytes(StandardCharsets.UTF_8);
+								dos.write(bytes);
+								dos.flush();
+								break;
+							}
 						}
 						break;
 					}
