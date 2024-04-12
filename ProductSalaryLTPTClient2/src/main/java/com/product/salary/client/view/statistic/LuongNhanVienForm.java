@@ -316,7 +316,7 @@ public class LuongNhanVienForm extends JPanel {
         for (Map<String, Object> luongNhanVien : luongNhanViens) {
             tableModelDanhSachLuong.addRow(new Object[]{stt++, luongNhanVien.get("MaLuong"),
                     luongNhanVien.get("MaNhanVien"), luongNhanVien.get("TenNhanVien"), luongNhanVien.get("CCCD"),
-                    luongNhanVien.get("LuongThang"), luongNhanVien.get("NgayTinhLuong"),
+                    luongNhanVien.get("LuongThang").toString().replace(".0", ""), luongNhanVien.get("NgayTinhLuong"),
                     PriceFormatterUtils.format(Double.valueOf(luongNhanVien.get("TongLuong").toString())),});
         }
     }

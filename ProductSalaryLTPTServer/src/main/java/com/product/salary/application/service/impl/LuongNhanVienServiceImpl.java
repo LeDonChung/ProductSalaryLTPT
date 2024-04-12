@@ -67,6 +67,24 @@ public class LuongNhanVienServiceImpl implements LuongNhanVienService {
 		return results;
 	}
 
+	public static void main(String[] args) {
+		LuongNhanVienDAO luongNhanVienDAO1 = new LuongNhanVienDAOImpl();
+		// Lay so ca lam da cham cong
+		Long soCaLamSangVaChieu = luongNhanVienDAO1.laySoLuongCaSangVaChieuKhongThuocNgayChuNhatBangMaNhanVien(
+				"1020180001", 2, 2022);
+		Long soCaLamToi = luongNhanVienDAO1
+				.laySoLuongCaToiKhongThuocNgayChuNhatBangMaNhanVien("1020180001", 2, 2022);
+		Long soCaLamThuocNgayChuNhat = luongNhanVienDAO1
+				.laySoLuongCaLamNgayChuNhatBangMaNhanVien("1020180001", 2, 2022);
+
+		// lấy số lần đi trễ của nv
+		Long soLanDitre = luongNhanVienDAO1.demSoLuongDiLamTreCuaNhanVien("1020180001", 2, 2022);
+
+		System.out.println(soCaLamSangVaChieu);
+		System.out.println(soCaLamToi);
+		System.out.println(soCaLamThuocNgayChuNhat);
+		System.out.println(soLanDitre);
+	}
 	@Override
 	public boolean tinhLuongNhanVien(int thang, int nam) {
 		try {
@@ -84,7 +102,6 @@ public class LuongNhanVienServiceImpl implements LuongNhanVienService {
 			// Tính luong theo từng nhân viên
 			for (NhanVien nhanVien : dsNhanVien) {
 
-				double troCap = nhanVien.getTroCap();
 				// Phát sinh mã tính lương cho luong
 				String maLuong = generateMaLuong(nhanVien.getMaNhanVien(), thang, nam);
 
@@ -92,15 +109,15 @@ public class LuongNhanVienServiceImpl implements LuongNhanVienService {
 				LuongNhanVien luongNhanVienExists = luongNhanVienDAO.timKiemBangMaLuong(maLuong);
 
 				// Lay so ca lam da cham cong
-				int soCaLamSangVaChieu = luongNhanVienDAO.laySoLuongCaSangVaChieuKhongThuocNgayChuNhatBangMaNhanVien(
+				Long soCaLamSangVaChieu = luongNhanVienDAO.laySoLuongCaSangVaChieuKhongThuocNgayChuNhatBangMaNhanVien(
 						nhanVien.getMaNhanVien(), thang, nam);
-				int soCaLamToi = luongNhanVienDAO
+				Long soCaLamToi = luongNhanVienDAO
 						.laySoLuongCaToiKhongThuocNgayChuNhatBangMaNhanVien(nhanVien.getMaNhanVien(), thang, nam);
-				int soCaLamThuocNgayChuNhat = luongNhanVienDAO
+				Long soCaLamThuocNgayChuNhat = luongNhanVienDAO
 						.laySoLuongCaLamNgayChuNhatBangMaNhanVien(nhanVien.getMaNhanVien(), thang, nam);
 
 				// lấy số lần đi trễ của nv
-				int soLanDitre = luongNhanVienDAO.demSoLuongDiLamTreCuaNhanVien(nhanVien.getMaNhanVien(), thang, nam);
+				Long soLanDitre = luongNhanVienDAO.demSoLuongDiLamTreCuaNhanVien(nhanVien.getMaNhanVien(), thang, nam);
 
 				// tinh luong the ca lam, trung bình mỗi nv chấm công ít nhất 1 ca / ngày
 				double luongNVMotCa = (nhanVien.getHeSoLuong() * nhanVien.getLuongCoSo()) / 26;

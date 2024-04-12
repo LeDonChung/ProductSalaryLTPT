@@ -16,33 +16,33 @@ public interface LuongNhanVienDAO {
 	/**
 	 * Hàm lấy số lượng ca sáng và ca chiều mà nhân viên đi làm, không bao gồm ngày
 	 * chủ nhật
-	 * 
+	 *
 	 * @param maNhanVien
 	 * @param thang
 	 * @param nam
 	 * @return
 	 */
-	int laySoLuongCaSangVaChieuKhongThuocNgayChuNhatBangMaNhanVien(String maNhanVien, int thang, int nam);
+	Long laySoLuongCaSangVaChieuKhongThuocNgayChuNhatBangMaNhanVien(String maNhanVien, int thang, int nam);
 
 	/**
 	 * Hàm lấy số lượng ca tối mà nhân viên đi làm, không bao gồm ngày chủ nhật
-	 * 
+	 *
 	 * @param maNhanVien
 	 * @param thang
 	 * @param nam
 	 * @return
 	 */
-	int laySoLuongCaToiKhongThuocNgayChuNhatBangMaNhanVien(String maNhanVien, int thang, int nam);
+	Long laySoLuongCaToiKhongThuocNgayChuNhatBangMaNhanVien(String maNhanVien, int thang, int nam);
 
 	/**
 	 * Hàm lấy số lượng ca làm mà nhân viên đi làm ngày chủ nhật
-	 * 
+	 *
 	 * @param maNhanVien
 	 * @param thang
 	 * @param nam
 	 * @return
 	 */
-	int laySoLuongCaLamNgayChuNhatBangMaNhanVien(String maNhanVien, int thang, int nam);
+	Long laySoLuongCaLamNgayChuNhatBangMaNhanVien(String maNhanVien, int thang, int nam);
 
 	/**
 	 * Hàm tìm kiếm lương theo tháng, năm của các nhân viên
@@ -102,12 +102,13 @@ public interface LuongNhanVienDAO {
 	
 	/**
 	 * hàm tính số lượng buổi trễ của nhân viên
+	 *
 	 * @param maNhanVien
 	 * @param thang
 	 * @param nam
 	 * @return
 	 */
-	int demSoLuongDiLamTreCuaNhanVien(String maNhanVien, int thang, int nam);
+	Long demSoLuongDiLamTreCuaNhanVien(String maNhanVien, int thang, int nam);
 	
 	
 	

@@ -11,10 +11,7 @@ import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.ResourceBundle;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -76,6 +73,50 @@ public class ProductSalaryApplicationChung {
 				System.out.println("Request: " + requestObject);
 				String request = requestObject.getRequestType();
 				switch (request) {
+					case "ChiTietLuongForm": {
+						switch (requestObject.getRequest()) {
+							case "chiTietLuongCongNhan": {
+								Map<String, Object> data = (Map<String, Object>) requestObject.getData();
+								int thang = Integer.parseInt(data.get("thang").toString().replace(".0", ""));
+								int nam = Integer.parseInt(data.get("nam").toString().replace(".0", ""));
+								String maCongNhan = data.get("maCongNhan").toString();
+								List<Map<String, Object>> result = this.luongCongNhanService.timTatCaChiTietLuongTheoThangVaNam(maCongNhan, thang, nam);
+								CongNhan congNhan = congNhanService.timKiemBangMaCongNhan(maCongNhan);
+								Map<String, Object> dataResponse = new HashMap<>();
+								dataResponse.put("congNhan", congNhan);
+								dataResponse.put("danhSachChiTietLuong", result);
+								// Send Response
+								ResponseDTO response = ResponseDTO.builder()
+										.data(dataResponse)
+										.build();
+								json = AppUtils.GSON.toJson(response);
+								byte[] bytes = json.getBytes(StandardCharsets.UTF_8);
+								dos.write(bytes);
+								dos.flush();
+								break;
+							}
+							case "chiTietLuongNhanVien" :{
+								Map<String, Object> data = (Map<String, Object>) requestObject.getData();
+								int thang = Integer.parseInt(data.get("thang").toString().replace(".0", ""));
+								int nam = Integer.parseInt(data.get("nam").toString().replace(".0", ""));
+								String maNhanVien = data.get("maNhanVien").toString();
+								List<Map<String, Object>> result = this.luongNhanVienService.timTatCaChiTietLuongTheoThangVaNam(maNhanVien, thang, nam);
+								NhanVien nhanVien = nhanVienService.timKiemBangMaNhanVien(maNhanVien);
+								Map<String, Object> dataResponse = new HashMap<>();
+								dataResponse.put("nhanVien", nhanVien);
+								dataResponse.put("danhSachChiTietLuong", result);
+								// Send Response
+								ResponseDTO response = ResponseDTO.builder()
+										.data(dataResponse)
+										.build();
+								json = AppUtils.GSON.toJson(response);
+								byte[] bytes = json.getBytes(StandardCharsets.UTF_8);
+								dos.write(bytes);
+								dos.flush();
+								break;
+							}
+						}
+					}
 					case "LuongCongNhanForm": {
 						switch (requestObject.getRequest()) {
 							case "thongKeLuongCongNhanBangThangVaNam": {
@@ -90,6 +131,55 @@ public class ProductSalaryApplicationChung {
 								json = AppUtils.GSON.toJson(response);
 								byte[] bytes = json.getBytes(StandardCharsets.UTF_8);
 								dos.write(bytes);
+								dos.flush();
+								break;
+							}
+							case "tinhLuongCongNhan": {
+								Map<String, Object> data = (Map<String, Object>) requestObject.getData();
+
+								boolean result = this.luongCongNhanService.tinhLuongCongNhan(Integer.parseInt(data.get("thang").toString().replace(".0", "")), Integer.parseInt(data.get("nam").toString().replace(".0", "")));
+								List<Map<String, Object>> luongCongNhans = new ArrayList<>();
+								if(result) {
+									luongCongNhans = this.luongCongNhanService.timTatCaLuongCongNhanTheoThangVaNam(Integer.parseInt(data.get("thang").toString().replace(".0", "")), Integer.parseInt(data.get("nam").toString().replace(".0", "")));
+
+								}
+								Map<String, Object> dataResponse = new HashMap<>();
+								dataResponse.put("result", result);
+								dataResponse.put("luongCongNhans", luongCongNhans);
+								// Send Response
+								ResponseDTO response = ResponseDTO.builder()
+										.data(dataResponse)
+										.build();
+
+								json = AppUtils.GSON.toJson(response);
+								byte[] bytes = json.getBytes(StandardCharsets.UTF_8);
+								dos.write(bytes);
+								dos.flush();
+								break;
+							}
+							case "timTatCaLuongCongNhanTheoThangVaNam": {
+								Map<String, Object> data = (Map<String, Object>) requestObject.getData();
+								List<Map<String, Object>> result = this.luongCongNhanService.timTatCaLuongCongNhanTheoThangVaNam(Integer.parseInt(data.get("thang").toString().replace(".0", "")), Integer.parseInt(data.get("nam").toString().replace(".0", "")));
+
+								// Send Response
+								ResponseDTO response = ResponseDTO.builder()
+										.data(result)
+										.build();
+
+								json = AppUtils.GSON.toJson(response);
+								byte[] bytes = json.getBytes(StandardCharsets.UTF_8);
+								dos.write(bytes);
+								dos.flush();
+								break;
+							}
+							case "capNhatLuongThuong": {
+								Map<String, Object> data = (Map<String, Object>) requestObject.getData();
+								this.luongCongNhanService.capNhatLuongThuong(data.get("MaLuong").toString(), Double.parseDouble(data.get("LuongThuong").toString()));
+								// send response
+								ResponseDTO response = ResponseDTO.builder()
+										.data(true)
+										.build();
+								dos.writeBytes(AppUtils.GSON.toJson(response));
 								dos.flush();
 								break;
 							}
@@ -112,6 +202,40 @@ public class ProductSalaryApplicationChung {
 								json = AppUtils.GSON.toJson(response);
 								byte[] bytes = json.getBytes(StandardCharsets.UTF_8);
 								dos.write(bytes);
+								dos.flush();
+								break;
+							}
+							case "tinhLuongNhanVien": {
+								Map<String, Object> data = (Map<String, Object>) requestObject.getData();
+
+								boolean result = this.luongNhanVienService.tinhLuongNhanVien(Integer.parseInt(data.get("thang").toString().replace(".0", "")), Integer.parseInt(data.get("nam").toString().replace(".0", "")));
+								List<Map<String, Object>> luongNhanViens = new ArrayList<>();
+								if(result) {
+									luongNhanViens = this.luongNhanVienService.timKiemTatCaLuongNhanVienTheoThangVaNam(Integer.parseInt(data.get("thang").toString().replace(".0", "")), Integer.parseInt(data.get("nam").toString().replace(".0", "")));
+
+								}
+								Map<String, Object> dataResponse = new HashMap<>();
+								dataResponse.put("result", result);
+								dataResponse.put("luongNhanViens", luongNhanViens);
+								// Send Response
+								ResponseDTO response = ResponseDTO.builder()
+										.data(dataResponse)
+										.build();
+
+								json = AppUtils.GSON.toJson(response);
+								byte[] bytes = json.getBytes(StandardCharsets.UTF_8);
+								dos.write(bytes);
+								dos.flush();
+								break;
+							}
+							case "capNhatLuongThuong": {
+								Map<String, Object> data = (Map<String, Object>) requestObject.getData();
+								this.luongNhanVienService.capNhatLuongThuong(data.get("MaLuong").toString(), Double.parseDouble(data.get("LuongThuong").toString()));
+								// send response
+								ResponseDTO response = ResponseDTO.builder()
+										.data(true)
+										.build();
+								dos.writeBytes(AppUtils.GSON.toJson(response));
 								dos.flush();
 								break;
 							}

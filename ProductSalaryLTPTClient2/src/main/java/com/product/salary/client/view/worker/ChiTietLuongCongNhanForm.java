@@ -6,29 +6,36 @@ import com.product.salary.application.service.CongNhanService;
 import com.product.salary.application.service.LuongCongNhanService;
 import com.product.salary.application.service.impl.CongNhanServiceImpl;
 import com.product.salary.application.service.impl.LuongCongNhanServiceImpl;
+import com.product.salary.application.utils.AppUtils;
 import com.product.salary.application.utils.PriceFormatterUtils;
+import com.product.salary.application.utils.RequestDTO;
+import com.product.salary.application.utils.ResponseDTO;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.ResourceBundle;
+import java.util.concurrent.Callable;
 
 public class ChiTietLuongCongNhanForm extends JFrame {
+	private final ResourceBundle BUNDLE = ResourceBundle.getBundle("app");
 
-	private JPanel pnlChinh;
-	private JTable tblChiTietLuongNhanVien;
-	private DefaultTableModel tblModelChiTietLuong;
-	private JTextField txtMaCongNhan;
-	private JTextField txtHoTen;
-	private JTextField txtSoDienThoai;
-	private JTextField txtToNhom;
-	private JTextField txtTayNghe;
-	private JTextField txtGioiTinh;
-	private LuongCongNhanService luongCongNhanService;
+	private final JPanel pnlChinh;
+	private final JTable tblChiTietLuongNhanVien;
+	private final DefaultTableModel tblModelChiTietLuong;
+	private final JTextField txtMaCongNhan;
+	private final JTextField txtHoTen;
+	private final JTextField txtSoDienThoai;
+	private final JTextField txtToNhom;
+	private final JTextField txtTayNghe;
+	private final JTextField txtGioiTinh;
 	private List<Map<String, Object>> danhSachChiTietLuong;
-	private CongNhanService congNhanService;
 
 	/**
 	 * Create the frame.
@@ -183,30 +190,65 @@ public class ChiTietLuongCongNhanForm extends JFrame {
 	}
 
 	private void init() {
-		this.congNhanService = new CongNhanServiceImpl();
-		this.luongCongNhanService = new LuongCongNhanServiceImpl();
 		this.danhSachChiTietLuong = new ArrayList<Map<String, Object>>();
 	}
 
 	private void thucHienChucNangTimKiemChiTietLuong(String maCongNhan, int thang, int nam) {
-		tblModelChiTietLuong.setRowCount(0);
+		new Thread(() -> {
 
-		danhSachChiTietLuong = luongCongNhanService.timTatCaChiTietLuongTheoThangVaNam(maCongNhan, thang, nam);
-		CongNhan congNhan = congNhanService.timKiemBangMaCongNhan(maCongNhan);
-		txtMaCongNhan.setText(congNhan.getMaCongNhan());
-		txtHoTen.setText(congNhan.getHoTen());
-		txtTayNghe.setText(congNhan.getTayNghe().getTenTayNghe());
-		txtGioiTinh.setText(congNhan.getGioiTinh() == 1 ? "Nam" : "Nữ");
-		txtToNhom.setText(congNhan.getToNhom().getTenToNhom());
-		txtSoDienThoai.setText(congNhan.getSoDienThoai());
-		int stt = 1;
+			try (var socket = new Socket(
+					BUNDLE.getString("host"),
+					Integer.parseInt(BUNDLE.getString("server.port")));
+				 var dos = new DataOutputStream(socket.getOutputStream());
+				 var dis = new DataInputStream(socket.getInputStream())) {
 
-		for (Map<String, Object> chiTietLuong : this.danhSachChiTietLuong) {
-			tblModelChiTietLuong.addRow(new Object[] { stt++, chiTietLuong.get("MaChamCong"),
-					chiTietLuong.get("TenSanPham"), chiTietLuong.get("TenCongDoan"), chiTietLuong.get("NgayCham"),
-					chiTietLuong.get("CaLam"), chiTietLuong.get("SoLuongHoanThanh"), chiTietLuong.get("TrangThai"),
-					PriceFormatterUtils.format(Double.valueOf(chiTietLuong.get("TongTien").toString())) });
-		}
-		;
+				Map<String, Object> data = Map.of(
+						"maCongNhan", maCongNhan,
+						"thang", thang,
+						"nam", nam
+				);
+				// send data to server
+				RequestDTO request = RequestDTO
+						.builder()
+						.requestType("ChiTietLuongForm")
+						.request("chiTietLuongCongNhan")
+						.data(data)
+						.build();
+				String json = AppUtils.GSON.toJson(request);
+				dos.writeUTF(json);
+				dos.flush();
+
+				// receive data from server
+				json = new String(dis.readAllBytes());
+				ResponseDTO response = AppUtils.GSON.fromJson(json, ResponseDTO.class);
+				Map<String, Object> result = (Map<String, Object>) response.getData();
+
+				this.danhSachChiTietLuong = (List<Map<String, Object>>) result.get("danhSachChiTietLuong");
+				CongNhan congNhan = AppUtils.convert((Map<String, Object>) result.get("congNhan"), CongNhan.class);
+
+				tblModelChiTietLuong.setRowCount(0);
+
+				txtMaCongNhan.setText(congNhan.getMaCongNhan());
+				txtHoTen.setText(congNhan.getHoTen());
+				txtTayNghe.setText(congNhan.getTayNghe().getTenTayNghe());
+				txtGioiTinh.setText(congNhan.getGioiTinh() == 1 ? "Nam" : "Nữ");
+				txtToNhom.setText(congNhan.getToNhom().getTenToNhom());
+				txtSoDienThoai.setText(congNhan.getSoDienThoai());
+				int stt = 1;
+
+				for (Map<String, Object> chiTietLuong : this.danhSachChiTietLuong) {
+					tblModelChiTietLuong.addRow(new Object[] { stt++, chiTietLuong.get("MaChamCong"),
+							chiTietLuong.get("TenSanPham"), chiTietLuong.get("TenCongDoan"), chiTietLuong.get("NgayCham"),
+							chiTietLuong.get("CaLam"), chiTietLuong.get("SoLuongHoanThanh"), chiTietLuong.get("TrangThai"),
+							PriceFormatterUtils.format(Double.valueOf(chiTietLuong.get("TongTien").toString())) });
+				}
+
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+			}
+
+		}).start();
+
 	}
 }

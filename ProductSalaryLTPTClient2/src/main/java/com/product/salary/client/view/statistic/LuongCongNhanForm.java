@@ -1,8 +1,6 @@
 package com.product.salary.client.view.statistic;
 
 import com.product.salary.application.common.SystemConstants;
-import com.product.salary.application.service.LuongCongNhanService;
-import com.product.salary.application.service.impl.LuongCongNhanServiceImpl;
 import com.product.salary.application.utils.AppUtils;
 import com.product.salary.application.utils.PriceFormatterUtils;
 import com.product.salary.application.utils.RequestDTO;
@@ -319,7 +317,7 @@ public class LuongCongNhanForm extends JPanel {
 		for (Map<String, Object> luongCongNhan : luongCongNhans) {
 			tableModelDanhSachLuong.addRow(new Object[] { stt++, luongCongNhan.get("MaLuong"),
 					luongCongNhan.get("MaCongNhan"), luongCongNhan.get("TenCongNhan"), luongCongNhan.get("CCCD"),
-					luongCongNhan.get("LuongThang"), luongCongNhan.get("NgayTinhLuong"),
+					luongCongNhan.get("LuongThang").toString().replace(".0", ""), luongCongNhan.get("NgayTinhLuong"),
 					PriceFormatterUtils.format(Double.valueOf(luongCongNhan.get("TongLuong").toString()))});
 		}
 	}
