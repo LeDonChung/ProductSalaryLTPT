@@ -4,8 +4,6 @@ import com.product.salary.application.utils.AppUtils;
 import com.product.salary.application.utils.RequestDTO;
 import com.product.salary.application.utils.ResponseDTO;
 import com.product.salary.client.common.SystemConstants;
-import com.product.salary.application.service.*;
-import com.product.salary.application.service.impl.*;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -27,9 +25,7 @@ import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
 import java.util.concurrent.FutureTask;
-import java.util.function.Consumer;
 
 /**
  * @author Lê Đôn Chủng: Code giao diện
@@ -40,12 +36,6 @@ public class TongQuatForm extends JPanel {
     private final JLabel lblSoLuongHopDong;
     private final JLabel lblSoLuongSanPham;
     private final JLabel lblSoLuongNhanVien;
-    private NhanVienService nhanVienService;
-    private CongNhanService congNhanService;
-    private HopDongService hopDongService;
-    private SanPhamService sanPhamService;
-    private LuongCongNhanService luongCongNhanService;
-    private LuongNhanVienService luongNhanVienService;
     private final JButton btnExport;
     private final JPanel pnlMain;
     private final JPanel pnl1;
@@ -208,7 +198,8 @@ public class TongQuatForm extends JPanel {
         FutureTask<Map<String, Map<String, Object>>> futureTask = new FutureTask<>(callable);
         Thread t = new Thread(futureTask);
         t.start();
-        while (t.isAlive()) {}
+        while (t.isAlive()) {
+        }
         Map<String, Map<String, Object>> data = null;
         try {
             data = futureTask.get();
@@ -278,12 +269,6 @@ public class TongQuatForm extends JPanel {
     }
 
     private void init() {
-        this.congNhanService = new CongNhanServiceImpl();
-        this.nhanVienService = new NhanVienServiceImpl();
-        this.hopDongService = new HopDongServiceImpl();
-        this.sanPhamService = new SanPhamServiceImpl();
-        this.luongCongNhanService = new LuongCongNhanServiceImpl();
-        this.luongNhanVienService = new LuongNhanVienServiceImpl();
         thucHienChucNangLoadThongKeSoLuong();
     }
 
@@ -309,12 +294,12 @@ public class TongQuatForm extends JPanel {
                 // receive response
                 json = new String(dis.readAllBytes());
                 ResponseDTO response = AppUtils.GSON.fromJson(json, ResponseDTO.class);
-                Map<String, Integer> map = (Map<String, Integer>) response.getData();
+                Map<String, Object> map = (Map<String, Object>) response.getData();
 
-                lblSoLuongNhanVien.setText(String.valueOf(map.get("soLuongNhanVien")));
-                lblSoLuongCongNhan.setText(String.valueOf(map.get("soLuongCongNhan")));
-                lblSoLuongHopDong.setText(String.valueOf(map.get("soLuongHopDong")));
-                lblSoLuongSanPham.setText(String.valueOf(map.get("soLuongSanPham")));
+                lblSoLuongNhanVien.setText(map.get("soLuongNhanVien").toString().replace(".0", ""));
+                lblSoLuongCongNhan.setText(map.get("soLuongCongNhan").toString().replace(".0", ""));
+                lblSoLuongHopDong.setText(map.get("soLuongHopDong").toString().replace(".0", ""));
+                lblSoLuongSanPham.setText(map.get("soLuongSanPham").toString().replace(".0", ""));
 
             } catch (Exception e) {
                 e.printStackTrace();

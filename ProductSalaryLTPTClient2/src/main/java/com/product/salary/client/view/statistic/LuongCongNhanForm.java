@@ -3,7 +3,10 @@ package com.product.salary.client.view.statistic;
 import com.product.salary.application.common.SystemConstants;
 import com.product.salary.application.service.LuongCongNhanService;
 import com.product.salary.application.service.impl.LuongCongNhanServiceImpl;
+import com.product.salary.application.utils.AppUtils;
 import com.product.salary.application.utils.PriceFormatterUtils;
+import com.product.salary.application.utils.RequestDTO;
+import com.product.salary.application.utils.ResponseDTO;
 import com.toedter.calendar.JMonthChooser;
 import com.toedter.calendar.JYearChooser;
 import org.jfree.chart.ChartFactory;
@@ -19,34 +22,38 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.File;
+import java.net.Socket;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.ResourceBundle;
 
 public class LuongCongNhanForm extends JPanel {
+	private final ResourceBundle BUNDLE = ResourceBundle.getBundle("app");
 
-	private JYearChooser chooseNam;
-	private JMonthChooser chooseThang;
-	private JButton btnTimKiem;
-	private JButton btnExcel;
-	private JLabel lblTienLuongThapNhatGiaTri;
-	private JLabel lblTienLuongCaoNhatGiaTri;
-	private JLabel lblTongSoCongNhanGiaTri;
-	private JLabel lblTongSoTienLuongGiaTri;
-	private JLabel lblCongNhanXuatSacGiaTri;
-	private DefaultTableModel tableModelDanhSachLuong;
-	private LuongCongNhanService luongCongNhanService;
+	private final JYearChooser chooseNam;
+	private final JMonthChooser chooseThang;
+	private final JButton btnTimKiem;
+	private final JButton btnExcel;
+	private final JLabel lblTienLuongThapNhatGiaTri;
+	private final JLabel lblTienLuongCaoNhatGiaTri;
+	private final JLabel lblTongSoCongNhanGiaTri;
+	private final JLabel lblTongSoTienLuongGiaTri;
+	private final JLabel lblCongNhanXuatSacGiaTri;
+	private final DefaultTableModel tableModelDanhSachLuong;
 	private Map<String, Object> thongTinThongKe;
-	private ChartPanel pnlLuongCongNhan;
-	private JPanel pnlMain;
-	private JPanel pnl1;
-	private JPanel pnlTienLuongThapNhat;
-	private JPanel pnlTienLuongCaoNhat;
-	private JPanel pnlTongSoCongNhan;
-	private JPanel pnlTongSoTienLuong;
-	private JPanel pnlCongNhanXuatSac;
-	private JPanel pnl2;
+	private final ChartPanel pnlLuongCongNhan;
+	private final JPanel pnlMain;
+	private final JPanel pnl1;
+	private final JPanel pnlTienLuongThapNhat;
+	private final JPanel pnlTienLuongCaoNhat;
+	private final JPanel pnlTongSoCongNhan;
+	private final JPanel pnlTongSoTienLuong;
+	private final JPanel pnlCongNhanXuatSac;
+	private final JPanel pnl2;
 
 	/**
 	 * Create the panel.
@@ -244,42 +251,66 @@ public class LuongCongNhanForm extends JPanel {
 	}
 
 	private void event() {
-		this.btnTimKiem.addActionListener((e) -> {
-			thucHienChucNangThongKe();
-		});
-		this.btnExcel.addActionListener((e) -> {
-			thucHienChucNangXuatThongKe();
-		});
+		this.btnTimKiem.addActionListener((e) -> thucHienChucNangThongKe());
+		this.btnExcel.addActionListener((e) -> thucHienChucNangXuatThongKe());
 	}
 
 	private void init() {
-		this.luongCongNhanService = new LuongCongNhanServiceImpl();
-		this.thongTinThongKe = new HashMap<String, Object>();
+		this.thongTinThongKe = new HashMap<>();
 	}
 
 	private void thucHienChucNangThongKe() {
-		int thang = this.chooseThang.getMonth() + 1;
-		int nam = this.chooseNam.getYear();
-		this.thongTinThongKe = this.luongCongNhanService.thongKeLuongCongNhanBangThangVaNam(thang, nam);
-		int tongSoCongNhan = Integer.valueOf(this.thongTinThongKe.get("TongSoCongNhan").toString());
-		double tienLuongThapNhat = Double.valueOf(this.thongTinThongKe.get("TienLuongThapNhat").toString());
-		double tienLuongCaoNhat = Double.valueOf(this.thongTinThongKe.get("TienLuongCaoNhat").toString());
-		double tongSotienLuong = Double.valueOf(this.thongTinThongKe.get("TongSotienLuong").toString());
-		String congNhanXuatSac = this.thongTinThongKe.get("CongNhanXuatSac").toString();
+		new Thread(() -> {
+			try(var socket = new Socket(
+					BUNDLE.getString("host"),
+					Integer.parseInt(BUNDLE.getString("server.port")));
+				var dos = new DataOutputStream(socket.getOutputStream());
+				var dis = new DataInputStream(socket.getInputStream()))
+			{
+				int thang = this.chooseThang.getMonth() + 1;
+				int nam = this.chooseNam.getYear();
 
-		List<Map<String, Object>> luongCongNhans = (List<Map<String, Object>>) this.thongTinThongKe
-				.get("LuongCongNhans");
-		Map<String, Double> tongLuongCongNhanTheoThang = (Map<String, Double>) this.thongTinThongKe
-				.get("TongLuongCongNhanTheoThang");
 
-		this.lblCongNhanXuatSacGiaTri.setText(congNhanXuatSac + "");
-		this.lblTienLuongCaoNhatGiaTri.setText(PriceFormatterUtils.format(tienLuongCaoNhat));
-		this.lblTienLuongThapNhatGiaTri.setText(PriceFormatterUtils.format(tienLuongThapNhat));
-		this.lblTongSoCongNhanGiaTri.setText(tongSoCongNhan + "");
-		this.lblTongSoTienLuongGiaTri.setText(PriceFormatterUtils.format(tongSotienLuong));
+				// send request
+				RequestDTO request = RequestDTO.builder()
+						.requestType("LuongCongNhanForm")
+						.request("thongKeLuongCongNhanBangThangVaNam")
+						.data(Map.of("thang", thang, "nam", nam))
+						.build();
 
-		thucHienChucNangLoadLuongCongNhan(luongCongNhans);
-		thucHienChucNangLoadThongKe(tongLuongCongNhanTheoThang, chooseNam.getYear());
+				String json = AppUtils.GSON.toJson(request);
+				dos.writeUTF(json);
+				dos.flush();
+
+				// receive response
+				json = new String(dis.readAllBytes());
+				ResponseDTO response = AppUtils.GSON.fromJson(json, ResponseDTO.class);
+				this.thongTinThongKe = (Map<String, Object>) response.getData();
+
+				int tongSoCongNhan = Integer.valueOf(this.thongTinThongKe.get("TongSoCongNhan").toString().replace(".0", ""));
+				double tienLuongThapNhat = Double.valueOf(this.thongTinThongKe.get("TienLuongThapNhat").toString().replace(".0", ""));
+				double tienLuongCaoNhat = Double.valueOf(this.thongTinThongKe.get("TienLuongCaoNhat").toString().replace(".0", ""));
+				double tongSotienLuong = Double.valueOf(this.thongTinThongKe.get("TongSotienLuong").toString().replace(".0", ""));
+				String congNhanXuatSac = this.thongTinThongKe.get("CongNhanXuatSac").toString();
+
+				List<Map<String, Object>> luongCongNhans = (List<Map<String, Object>>) this.thongTinThongKe
+						.get("LuongCongNhans");
+				Map<String, Double> tongLuongCongNhanTheoThang = (Map<String, Double>) this.thongTinThongKe
+						.get("TongLuongCongNhanTheoThang");
+
+				this.lblCongNhanXuatSacGiaTri.setText(congNhanXuatSac + "");
+				this.lblTienLuongCaoNhatGiaTri.setText(PriceFormatterUtils.format(tienLuongCaoNhat));
+				this.lblTienLuongThapNhatGiaTri.setText(PriceFormatterUtils.format(tienLuongThapNhat));
+				this.lblTongSoCongNhanGiaTri.setText(tongSoCongNhan + "");
+				this.lblTongSoTienLuongGiaTri.setText(PriceFormatterUtils.format(tongSotienLuong));
+
+				thucHienChucNangLoadLuongCongNhan(luongCongNhans);
+				thucHienChucNangLoadThongKe(tongLuongCongNhanTheoThang, chooseNam.getYear());
+			}catch (Exception e) {
+				e.printStackTrace();
+			}
+		}).start();
+
 	}
 
 	private void thucHienChucNangLoadLuongCongNhan(List<Map<String, Object>> luongCongNhans) {

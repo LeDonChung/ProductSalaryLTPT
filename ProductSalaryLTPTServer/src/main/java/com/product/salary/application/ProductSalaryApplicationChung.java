@@ -76,11 +76,52 @@ public class ProductSalaryApplicationChung {
 				System.out.println("Request: " + requestObject);
 				String request = requestObject.getRequestType();
 				switch (request) {
+					case "LuongCongNhanForm": {
+						switch (requestObject.getRequest()) {
+							case "thongKeLuongCongNhanBangThangVaNam": {
+								Map<String, Object> data = (Map<String, Object>) requestObject.getData();
+								data = this.luongCongNhanService.thongKeLuongCongNhanBangThangVaNam(Integer.parseInt(data.get("thang").toString().replace(".0", "")), Integer.parseInt(data.get("nam").toString().replace(".0", "")));
+
+								// Send Response
+								ResponseDTO response = ResponseDTO.builder()
+										.data(data)
+										.build();
+
+								json = AppUtils.GSON.toJson(response);
+								byte[] bytes = json.getBytes(StandardCharsets.UTF_8);
+								dos.write(bytes);
+								dos.flush();
+								break;
+							}
+						}
+					}
+					case "LuongNhanVienForm": {
+						switch (requestObject.getRequest()) {
+							case "thongKeLuongNhanVienBangThangVaNam": {
+								Map<String, Object> data = (Map<String, Object>) requestObject.getData();
+
+								data = this.luongNhanVienService.thongKeLuongNhanVienBangThangVaNam(
+										Integer.parseInt(data.get("thang").toString().replace(".0", "")),
+										Integer.parseInt(data.get("nam").toString().replace(".0", "")));
+
+								// Send Response
+								ResponseDTO response = ResponseDTO.builder()
+										.data(data)
+										.build();
+
+								json = AppUtils.GSON.toJson(response);
+								byte[] bytes = json.getBytes(StandardCharsets.UTF_8);
+								dos.write(bytes);
+								dos.flush();
+								break;
+							}
+						}
+					}
 					case "TongQuatForm": {
 						switch (requestObject.getRequest()) {
 							case "thucHienChucNangLoadThongKeSoLuong": {
 
-								Map<String, Integer> data = new HashMap<>();
+								Map<String, Object> data = new HashMap<>();
 								data.put("soLuongSanPham", sanPhamService.tongSoLuongSanPham());
 								data.put("soLuongCongNhan", congNhanService.tongSoLuongCongNhan());
 								data.put("soLuongNhanVien", nhanVienService.tongSoLuongNhanVien());
