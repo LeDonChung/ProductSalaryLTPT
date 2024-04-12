@@ -1,12 +1,15 @@
 package com.product.salary.application;
 
 import com.product.salary.application.entity.Account;
+import com.product.salary.application.entity.ChucVu;
 import com.product.salary.application.entity.HopDong;
 import com.product.salary.application.entity.PhongBan;
 import com.product.salary.application.service.AccountService;
+import com.product.salary.application.service.ChucVuService;
 import com.product.salary.application.service.HopDongService;
 import com.product.salary.application.service.PhongBanService;
 import com.product.salary.application.service.impl.AccountServiceImpl;
+import com.product.salary.application.service.impl.ChucVuServiceImpl;
 import com.product.salary.application.service.impl.HopDongServiceImpl;
 import com.product.salary.application.service.impl.PhongBanServiceImpl;
 import com.product.salary.application.utils.AppUtils;
@@ -54,12 +57,14 @@ public class ProductSalaryApplicationTuyen {
         private final AccountService accountService;
         private final HopDongService hopDongService;
         private final PhongBanService phongBanService;
+        private final ChucVuService chucVuService;
 
         public handlerClient(Socket socket) {
             this.socket = socket;
             this.accountService = new AccountServiceImpl();
             this.hopDongService = new HopDongServiceImpl();
             this.phongBanService = new PhongBanServiceImpl();
+            this.chucVuService = new ChucVuServiceImpl();
         }
 
 
@@ -180,6 +185,49 @@ public class ProductSalaryApplicationTuyen {
 
                                 ResponseDTO response = ResponseDTO.builder()
                                         .data(phongBans)
+                                        .build();
+                                json = AppUtils.GSON.toJson(response);
+                                byte[] bytes = json.getBytes(StandardCharsets.UTF_8);
+                                dos.write(bytes);
+                                dos.flush();
+                                break;
+
+                            }
+                        }
+                        break;
+                    }
+                    case "ChucVuForm": {
+                        switch (requestObject.getRequest()) {
+                            case "timKiemTatCaChucVu": {
+                                List<ChucVu> chucVus = chucVuService.timKiemTatCaChucVu();
+                                ResponseDTO response = ResponseDTO.builder()
+                                        .data(chucVus)
+                                        .build();
+                                json = AppUtils.GSON.toJson(response);
+                                byte[] bytes = json.getBytes(StandardCharsets.UTF_8);
+                                dos.write(bytes);
+                                dos.flush();
+                                break;
+                            }
+                            case "themChucVu": {
+                                ChucVu chucVu = AppUtils.convert((Map<String, Object>) requestObject.getData(), ChucVu.class);
+                                ChucVu chucVuThem = chucVuService.themChucVu(chucVu);
+
+                                ResponseDTO response = ResponseDTO.builder()
+                                        .data(chucVuThem)
+                                        .build();
+                                json = AppUtils.GSON.toJson(response);
+                                byte[] bytes = json.getBytes(StandardCharsets.UTF_8);
+                                dos.write(bytes);
+                                dos.flush();
+                                break;
+                            }
+                            case "capNhatChucVu": {
+                                ChucVu chucVu = AppUtils.convert((Map<String, Object>) requestObject.getData(), ChucVu.class);
+                                ChucVu chucVuCapNhat = chucVuService.capNhatChucVu(chucVu);
+
+                                ResponseDTO response = ResponseDTO.builder()
+                                        .data(chucVuCapNhat)
                                         .build();
                                 json = AppUtils.GSON.toJson(response);
                                 byte[] bytes = json.getBytes(StandardCharsets.UTF_8);

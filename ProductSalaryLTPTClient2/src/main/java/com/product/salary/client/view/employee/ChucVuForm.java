@@ -4,6 +4,9 @@ import com.product.salary.application.common.SystemConstants;
 import com.product.salary.application.entity.ChucVu;
 import com.product.salary.application.service.ChucVuService;
 import com.product.salary.application.service.impl.ChucVuServiceImpl;
+import com.product.salary.application.utils.AppUtils;
+import com.product.salary.application.utils.RequestDTO;
+import com.product.salary.application.utils.ResponseDTO;
 import org.apache.commons.lang3.ObjectUtils;
 
 import javax.swing.*;
@@ -11,334 +14,402 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.net.Socket;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.ResourceBundle;
 
 public class ChucVuForm extends JPanel {
-	private static final ResourceBundle BUNDLE = ResourceBundle.getBundle("app");
-	private final JTextField txtMaChucVu;
-	private final JTextField txtenChucVu;
-	private final DefaultTableModel tableModelChucVu;
-	private final JTable tblChucVu;
-	private final JButton btnCapNhat;
-	private final JButton btnXoa;
-	private final JButton btnThem;
-	private final JButton btnLamMoi;
-	private List<ChucVu> chucVus;
-	private ChucVuService chucVuService;
-	private final JLabel lblLoiTenChucVu;
+    private static final ResourceBundle BUNDLE = ResourceBundle.getBundle("app");
+    private final JTextField txtMaChucVu;
+    private final JTextField txtenChucVu;
+    private final DefaultTableModel tableModelChucVu;
+    private final JTable tblChucVu;
+    private final JButton btnCapNhat;
+    private final JButton btnXoa;
+    private final JButton btnThem;
+    private final JButton btnLamMoi;
+    private List<ChucVu> chucVus;
+    private ChucVuService chucVuService;
+    private final JLabel lblLoiTenChucVu;
 
-	/**
-	 * Create the panel.
-	 */
-	public ChucVuForm() {
+    /**
+     * Create the panel.
+     */
+    public ChucVuForm() {
 
-		setLayout(null);
+        setLayout(null);
 
-		JPanel pnlChinh = new JPanel();
-		pnlChinh.setBounds(10, 10, 1273, 821);
-		add(pnlChinh);
-		pnlChinh.setLayout(null);
+        JPanel pnlChinh = new JPanel();
+        pnlChinh.setBounds(10, 10, 1273, 821);
+        add(pnlChinh);
+        pnlChinh.setLayout(null);
 
-		JLabel lblTitle = new JLabel(
-				String.format("<html><p>%s</p></html>", SystemConstants.BUNDLE.getString("chucVu.titleChucVu")));
-		lblTitle.setBounds(0, 0, 1250, 80);
-		lblTitle.setBorder(null);
-		lblTitle.setHorizontalAlignment(SwingConstants.CENTER);
-		lblTitle.setFont(new Font("Times New Roman", Font.BOLD, 20));
-		pnlChinh.add(lblTitle);
+        JLabel lblTitle = new JLabel(
+                String.format("<html><p>%s</p></html>", SystemConstants.BUNDLE.getString("chucVu.titleChucVu")));
+        lblTitle.setBounds(0, 0, 1250, 80);
+        lblTitle.setBorder(null);
+        lblTitle.setHorizontalAlignment(SwingConstants.CENTER);
+        lblTitle.setFont(new Font("Times New Roman", Font.BOLD, 20));
+        pnlChinh.add(lblTitle);
 
-		JPanel pnlMaChucVu = new JPanel();
-		pnlMaChucVu.setLayout(null);
-		pnlMaChucVu.setBounds(20, 118, 566, 62);
-		pnlChinh.add(pnlMaChucVu);
+        JPanel pnlMaChucVu = new JPanel();
+        pnlMaChucVu.setLayout(null);
+        pnlMaChucVu.setBounds(20, 118, 566, 62);
+        pnlChinh.add(pnlMaChucVu);
 
-		JLabel lblMaChucVu = new JLabel(
-				String.format("<html><p>%s</p></html>", SystemConstants.BUNDLE.getString("chucVu.maChucVu")));
-		lblMaChucVu.setFont(new Font("Times New Roman", Font.PLAIN, 16));
-		lblMaChucVu.setBounds(10, 0, 150, 40);
-		pnlMaChucVu.add(lblMaChucVu);
+        JLabel lblMaChucVu = new JLabel(
+                String.format("<html><p>%s</p></html>", SystemConstants.BUNDLE.getString("chucVu.maChucVu")));
+        lblMaChucVu.setFont(new Font("Times New Roman", Font.PLAIN, 16));
+        lblMaChucVu.setBounds(10, 0, 150, 40);
+        pnlMaChucVu.add(lblMaChucVu);
 
-		txtMaChucVu = new JTextField();
-		txtMaChucVu.setFont(new Font("Times New Roman", Font.PLAIN, 16));
-		txtMaChucVu.setEnabled(false);
-		txtMaChucVu.setEditable(false);
-		txtMaChucVu.setColumns(10);
-		txtMaChucVu.setBounds(188, 0, 354, 40);
-		pnlMaChucVu.add(txtMaChucVu);
+        txtMaChucVu = new JTextField();
+        txtMaChucVu.setFont(new Font("Times New Roman", Font.PLAIN, 16));
+        txtMaChucVu.setEnabled(false);
+        txtMaChucVu.setEditable(false);
+        txtMaChucVu.setColumns(10);
+        txtMaChucVu.setBounds(188, 0, 354, 40);
+        pnlMaChucVu.add(txtMaChucVu);
 
-		JPanel pnlTenChucVu = new JPanel();
-		pnlTenChucVu.setLayout(null);
-		pnlTenChucVu.setBounds(684, 118, 566, 62);
-		pnlChinh.add(pnlTenChucVu);
+        JPanel pnlTenChucVu = new JPanel();
+        pnlTenChucVu.setLayout(null);
+        pnlTenChucVu.setBounds(684, 118, 566, 62);
+        pnlChinh.add(pnlTenChucVu);
 
-		JLabel lblTenChucVu = new JLabel(
-				String.format("<html><p>%s</p></html>", SystemConstants.BUNDLE.getString("chucVu.tenChucVu")));
-		lblTenChucVu.setFont(new Font("Times New Roman", Font.PLAIN, 16));
-		lblTenChucVu.setBounds(10, 0, 150, 40);
-		pnlTenChucVu.add(lblTenChucVu);
+        JLabel lblTenChucVu = new JLabel(
+                String.format("<html><p>%s</p></html>", SystemConstants.BUNDLE.getString("chucVu.tenChucVu")));
+        lblTenChucVu.setFont(new Font("Times New Roman", Font.PLAIN, 16));
+        lblTenChucVu.setBounds(10, 0, 150, 40);
+        pnlTenChucVu.add(lblTenChucVu);
 
-		txtenChucVu = new JTextField();
-		txtenChucVu.setFont(new Font("Times New Roman", Font.PLAIN, 16));
-		txtenChucVu.setColumns(10);
-		txtenChucVu.setBounds(188, 0, 354, 40);
-		pnlTenChucVu.add(txtenChucVu);
+        txtenChucVu = new JTextField();
+        txtenChucVu.setFont(new Font("Times New Roman", Font.PLAIN, 16));
+        txtenChucVu.setColumns(10);
+        txtenChucVu.setBounds(188, 0, 354, 40);
+        pnlTenChucVu.add(txtenChucVu);
 
-		lblLoiTenChucVu = new JLabel("");
-		lblLoiTenChucVu.setForeground(Color.RED);
-		lblLoiTenChucVu.setFont(new Font("Times New Roman", Font.PLAIN, 12));
-		lblLoiTenChucVu.setBounds(188, 39, 354, 23);
-		pnlTenChucVu.add(lblLoiTenChucVu);
+        lblLoiTenChucVu = new JLabel("");
+        lblLoiTenChucVu.setForeground(Color.RED);
+        lblLoiTenChucVu.setFont(new Font("Times New Roman", Font.PLAIN, 12));
+        lblLoiTenChucVu.setBounds(188, 39, 354, 23);
+        pnlTenChucVu.add(lblLoiTenChucVu);
 
-		btnLamMoi = new JButton(String.format("<html><p>%s</p></html>",
-				SystemConstants.BUNDLE.getString("quanLyPhongBan.btnXoaTrang")));
-		btnLamMoi.setIcon(new ImageIcon("src/main/resources/icon/png/ic_refresh.png"));
-		btnLamMoi.setFont(new Font("Times New Roman", Font.PLAIN, 16));
-		btnLamMoi.setBounds(1060, 240, 190, 44);
-		pnlChinh.add(btnLamMoi);
+        btnLamMoi = new JButton(String.format("<html><p>%s</p></html>",
+                SystemConstants.BUNDLE.getString("quanLyPhongBan.btnXoaTrang")));
+        btnLamMoi.setIcon(new ImageIcon("src/main/resources/icon/png/ic_refresh.png"));
+        btnLamMoi.setFont(new Font("Times New Roman", Font.PLAIN, 16));
+        btnLamMoi.setBounds(1060, 240, 190, 44);
+        pnlChinh.add(btnLamMoi);
 
-		btnThem = new JButton(
-				String.format("<html><p>%s</p></html>", SystemConstants.BUNDLE.getString("quanLyPhongBan.btnThem")));
-		btnThem.setIcon(new ImageIcon("src/main/resources/icon/png/ic_add.png"));
-		btnThem.setFont(new Font("Times New Roman", Font.PLAIN, 16));
-		btnThem.setBounds(27, 240, 190, 44);
-		pnlChinh.add(btnThem);
+        btnThem = new JButton(
+                String.format("<html><p>%s</p></html>", SystemConstants.BUNDLE.getString("quanLyPhongBan.btnThem")));
+        btnThem.setIcon(new ImageIcon("src/main/resources/icon/png/ic_add.png"));
+        btnThem.setFont(new Font("Times New Roman", Font.PLAIN, 16));
+        btnThem.setBounds(27, 240, 190, 44);
+        pnlChinh.add(btnThem);
 
-		btnXoa = new JButton(
-				String.format("<html><p>%s</p></html>", SystemConstants.BUNDLE.getString("quanLyPhongBan.btnXoa")));
-		btnXoa.setIcon(new ImageIcon("src/main/resources/icon/png/ic_remove.png"));
-		btnXoa.setFont(new Font("Times New Roman", Font.PLAIN, 16));
-		btnXoa.setBounds(684, 240, 190, 44);
-		pnlChinh.add(btnXoa);
+        btnXoa = new JButton(
+                String.format("<html><p>%s</p></html>", SystemConstants.BUNDLE.getString("quanLyPhongBan.btnXoa")));
+        btnXoa.setIcon(new ImageIcon("src/main/resources/icon/png/ic_remove.png"));
+        btnXoa.setFont(new Font("Times New Roman", Font.PLAIN, 16));
+        btnXoa.setBounds(684, 240, 190, 44);
+        pnlChinh.add(btnXoa);
 
-		btnCapNhat = new JButton(
-				String.format("<html><p>%s</p></html>", SystemConstants.BUNDLE.getString("quanLyPhongBan.btnCapNhat")));
-		btnCapNhat.setIcon(new ImageIcon("src/main/resources/icon/png/ic_update.png"));
-		btnCapNhat.setFont(new Font("Times New Roman", Font.PLAIN, 16));
-		btnCapNhat.setBounds(396, 240, 190, 44);
-		pnlChinh.add(btnCapNhat);
+        btnCapNhat = new JButton(
+                String.format("<html><p>%s</p></html>", SystemConstants.BUNDLE.getString("quanLyPhongBan.btnCapNhat")));
+        btnCapNhat.setIcon(new ImageIcon("src/main/resources/icon/png/ic_update.png"));
+        btnCapNhat.setFont(new Font("Times New Roman", Font.PLAIN, 16));
+        btnCapNhat.setBounds(396, 240, 190, 44);
+        pnlChinh.add(btnCapNhat);
 
-		JLabel lblDanhSachChucVu = new JLabel(
-				String.format("<html><p>%s</p></html>", SystemConstants.BUNDLE.getString("chucVu.danhSachChucVu")));
-		lblDanhSachChucVu.setFont(new Font("Times New Roman", Font.BOLD, 16));
-		lblDanhSachChucVu.setBounds(10, 386, 350, 36);
-		pnlChinh.add(lblDanhSachChucVu);
+        JLabel lblDanhSachChucVu = new JLabel(
+                String.format("<html><p>%s</p></html>", SystemConstants.BUNDLE.getString("chucVu.danhSachChucVu")));
+        lblDanhSachChucVu.setFont(new Font("Times New Roman", Font.BOLD, 16));
+        lblDanhSachChucVu.setBounds(10, 386, 350, 36);
+        pnlChinh.add(lblDanhSachChucVu);
 
-		tableModelChucVu = new DefaultTableModel(new String[] {
-				String.format("<html><p>%s</p></html>", SystemConstants.BUNDLE.getString("chucVu.tblChucVu.stt")),
-				String.format("<html><p>%s</p></html>", SystemConstants.BUNDLE.getString("chucVu.tblChucVu.maChucVu")),
-				String.format("<html><p>%s</p></html>",
-						SystemConstants.BUNDLE.getString("chucVu.tblChucVu.tenChucVu")) },
-				15);
+        tableModelChucVu = new DefaultTableModel(new String[]{
+                String.format("<html><p>%s</p></html>", SystemConstants.BUNDLE.getString("chucVu.tblChucVu.stt")),
+                String.format("<html><p>%s</p></html>", SystemConstants.BUNDLE.getString("chucVu.tblChucVu.maChucVu")),
+                String.format("<html><p>%s</p></html>",
+                        SystemConstants.BUNDLE.getString("chucVu.tblChucVu.tenChucVu"))},
+                15);
 
-		tblChucVu = new JTable(tableModelChucVu);
-		tblChucVu.setShowVerticalLines(true);
-		tblChucVu.setShowHorizontalLines(true);
-		tblChucVu.setRowHeight(25);
+        tblChucVu = new JTable(tableModelChucVu);
+        tblChucVu.setShowVerticalLines(true);
+        tblChucVu.setShowHorizontalLines(true);
+        tblChucVu.setRowHeight(25);
 
-		JScrollPane scrChucVu = new JScrollPane(tblChucVu);
-		scrChucVu.setLocation(10, 432);
-		scrChucVu.setSize(1240, 379);
-		tblChucVu.setBounds(0, 570, 1273, 263);
-		pnlChinh.add(scrChucVu);
+        JScrollPane scrChucVu = new JScrollPane(tblChucVu);
+        scrChucVu.setLocation(10, 432);
+        scrChucVu.setSize(1240, 379);
+        tblChucVu.setBounds(0, 570, 1273, 263);
+        pnlChinh.add(scrChucVu);
 
-		init();
-		event();
-	}
+        init();
+        event();
+    }
 
-	private void event() {
-		tblChucVu.addMouseListener(new MouseListener() {
+    private void event() {
+        tblChucVu.addMouseListener(new MouseListener() {
 
-			@Override
-			public void mouseReleased(MouseEvent e) {
-				// TODO Auto-generated method stub
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                // TODO Auto-generated method stub
 
-			}
+            }
 
-			@Override
-			public void mousePressed(MouseEvent e) {
-				// TODO Auto-generated method stub
+            @Override
+            public void mousePressed(MouseEvent e) {
+                // TODO Auto-generated method stub
 
-			}
+            }
 
-			@Override
-			public void mouseExited(MouseEvent e) {
-				// TODO Auto-generated method stub
+            @Override
+            public void mouseExited(MouseEvent e) {
+                // TODO Auto-generated method stub
 
-			}
+            }
 
-			@Override
-			public void mouseEntered(MouseEvent e) {
-				// TODO Auto-generated method stub
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                // TODO Auto-generated method stub
 
-			}
+            }
 
-			@Override
-			public void mouseClicked(MouseEvent e) {
-				thucHienChucNangClickChucVu();
-			}
-		});
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                thucHienChucNangClickChucVu();
+            }
+        });
 
-		this.btnLamMoi.addActionListener((e) -> {
-			thucHienChucNangLamMoi();
-		});
+        this.btnLamMoi.addActionListener((e) -> {
+            thucHienChucNangLamMoi();
+        });
 
-		this.btnThem.addActionListener((e) -> {
-			thucHienChucNangThem();
-		});
-		this.btnCapNhat.addActionListener((e) -> {
-			thucHienThucNangCapNhat();
-		});
-		this.btnXoa.addActionListener((e) -> {
-			thucHienChucNangXoa();
-		});
-	}
+        this.btnThem.addActionListener((e) -> {
+            thucHienChucNangThem();
+        });
+        this.btnCapNhat.addActionListener((e) -> {
+            thucHienThucNangCapNhat();
+        });
+        this.btnXoa.addActionListener((e) -> {
+            thucHienChucNangXoa();
+        });
+    }
 
-	private void init() {
-		this.chucVus = new ArrayList<ChucVu>();
-		this.chucVuService = new ChucVuServiceImpl();
-		this.loadTable();
-	}
+    private void init() {
+        this.chucVus = new ArrayList<ChucVu>();
+        this.chucVuService = new ChucVuServiceImpl();
+        this.loadTable();
+    }
 
-	private void loadTable() {
-		tableModelChucVu.setRowCount(0);
-		this.chucVus = this.chucVuService.timKiemTatCaChucVu();
-		int stt = 1;
-		for (ChucVu chucVu : this.chucVus) {
-			tableModelChucVu.addRow(new Object[] { stt++, chucVu.getMaChucVu(), chucVu.getTenChucVu() });
-		}
-	}
+    private void loadTable() {
+        new Thread(() -> {
+            try (var socket = new Socket(
+                    BUNDLE.getString("host"),
+                    Integer.parseInt(BUNDLE.getString("server.port")));
+                 var dis = new DataInputStream(socket.getInputStream());
+                 var dos = new DataOutputStream(socket.getOutputStream());
+            ) {
 
-	private void thucHienChucNangClickChucVu() {
-		int index = tblChucVu.getSelectedRow();
-		if (index >= 0) {
-			ChucVu cv = this.chucVus.get(index);
-			this.txtenChucVu.setText(cv.getTenChucVu());
-			this.txtMaChucVu.setText(cv.getMaChucVu());
-		}
-	}
+                //send data
+                RequestDTO request = RequestDTO.builder()
+                        .requestType("ChucVuForm")
+                        .request("timKiemTatCaChucVu")
+                        .build();
+                String json = AppUtils.GSON.toJson(request);
+                dos.writeUTF(json);
+                dos.flush();
 
-	private void thucHienChucNangLamMoi() {
-		this.txtenChucVu.setText("");
-		this.txtMaChucVu.setText("");
-		this.loadTable();
-		thucHienThucLamLamMoiLoi();
-	}
+                //Receive data
+                json = new String(dis.readAllBytes());
+                ResponseDTO response = AppUtils.GSON.fromJson(json, ResponseDTO.class);
+                List<Map<String, Object>> data = (List<Map<String, Object>>) response.getData();
+                chucVus = data.stream().map(value -> AppUtils.convert(value, ChucVu.class)).toList();
+                this.tableModelChucVu.setRowCount(0);
+                int i = 1;
+                for (ChucVu cv : this.chucVus) {
+                    this.tableModelChucVu.addRow(new Object[]{i++, cv.getMaChucVu(), cv.getTenChucVu()});
+                }
 
-	private void thucHienThucLamLamMoiLoi() {
-		this.lblLoiTenChucVu.setText("");
-	}
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }).start();
+    }
 
-	private void thucHienChucNangThem() {
-		if (!thucHienChucNangKiemTra()) {
-			return;
-		}
-		String maChucVu = this.chucVuService.generateMaChucVu();
-		String tenChucVu = this.txtenChucVu.getText().trim();
-		try {
-			ChucVu chucVu = new ChucVu(maChucVu, tenChucVu);
-			chucVu = this.chucVuService.themChucVu(chucVu);
-			if (chucVu != null) {
-				JOptionPane.showMessageDialog(this, String.format("<html><p>%s</p></html>",
-						SystemConstants.BUNDLE.getString("chucVu.thongBaoThemThanhCong")));
-				this.thucHienChucNangLamMoi();
-			} else {
-				JOptionPane.showMessageDialog(this, String.format("<html><p>%s</p></html>",
-						SystemConstants.BUNDLE.getString("chucVu.thongBaoThemKhongThanhCong")));
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
+    private void thucHienChucNangClickChucVu() {
+        int index = tblChucVu.getSelectedRow();
+        if (index >= 0) {
+            ChucVu cv = this.chucVus.get(index);
+            this.txtenChucVu.setText(cv.getTenChucVu());
+            this.txtMaChucVu.setText(cv.getMaChucVu());
+        }
+    }
 
-	private boolean thucHienChucNangKiemTra() {
-		thucHienThucLamLamMoiLoi();
+    private void thucHienChucNangLamMoi() {
+        this.txtenChucVu.setText("");
+        this.txtMaChucVu.setText("");
+        this.loadTable();
+        thucHienThucLamLamMoiLoi();
+    }
 
-		String tenChucVu = this.txtenChucVu.getText().trim();
+    private void thucHienThucLamLamMoiLoi() {
+        this.lblLoiTenChucVu.setText("");
+    }
 
-		boolean status = true;
-		if (ObjectUtils.isEmpty(tenChucVu)) {
-			lblLoiTenChucVu.setText(String.format("<html><p>%s</p></html>",
-					SystemConstants.BUNDLE.getString("chucVu.thongBaoLoiTenChucVu")));
-			status = false;
-		}
+    private void thucHienChucNangThem() {
+        new Thread(() -> {
+            try (var socket = new Socket(
+                    BUNDLE.getString("host"),
+                    Integer.parseInt(BUNDLE.getString("server.port")));
+                 var dis = new DataInputStream(socket.getInputStream());
+                 var dos = new DataOutputStream(socket.getOutputStream());
+            ) {
+                String tenChucVu = this.txtenChucVu.getText().trim();
+                try {
+                    ChucVu chucVu = new ChucVu();
+                    chucVu.setTenChucVu(tenChucVu);
 
-		return status;
-	}
+                    RequestDTO request = RequestDTO.builder()
+                            .requestType("ChucVuForm")
+                            .request("themChucVu")
+                            .data(chucVu)
+                            .build();
 
-	private void thucHienThucNangCapNhat() {
-		int isSelected = this.tblChucVu.getSelectedRow();
-		if (isSelected >= 0) {
-			if (!thucHienChucNangKiemTra()) {
-				return;
-			}
+                    String json = AppUtils.GSON.toJson(request);
+                    dos.writeUTF(json);
+                    dos.flush();
 
-			String maChucVu = this.txtMaChucVu.getText().trim();
-			String tenChucVu = this.txtenChucVu.getText().trim();
-			try {
-				ChucVu chucVu = new ChucVu(maChucVu, tenChucVu);
+                    //Receive data
+                    json = new String(dis.readAllBytes());
+                    ResponseDTO response = AppUtils.GSON.fromJson(json, ResponseDTO.class);
+                    chucVu = AppUtils.convert((Map<String, Object>) response.getData(), ChucVu.class);
+                    if (chucVu != null) {
+                        JOptionPane.showMessageDialog(this, String.format("<html><p>%s</p></html>",
+                                SystemConstants.BUNDLE.getString("chucVu.thongBaoThemThanhCong")));
+                        this.thucHienChucNangLamMoi();
+                    } else {
+                        JOptionPane.showMessageDialog(this, String.format("<html><p>%s</p></html>",
+                                SystemConstants.BUNDLE.getString("chucVu.thongBaoThemKhongThanhCong")));
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
 
-				int choose = -1;
-				if (SystemConstants.LANGUAGE == 1) {
-					choose = JOptionPane.showConfirmDialog(this,
-							"You want to update position " + chucVu.getTenChucVu() + " ?.", "Confirm",
-							JOptionPane.YES_NO_OPTION);
-				} else {
-					choose = JOptionPane.showConfirmDialog(this,
-							"Bạn có muốn cập nhật chức vụ " + chucVu.getTenChucVu() + " ?.", "Xác nhận",
-							JOptionPane.YES_NO_OPTION);
-				}
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }).start();
+    }
 
-				if (choose == JOptionPane.OK_OPTION) {
-					chucVu = this.chucVuService.capNhatChucVu(chucVu);
-					if (chucVu != null) {
-						JOptionPane.showMessageDialog(this, String.format("<html><p>%s</p></html>",
-								SystemConstants.BUNDLE.getString("chucVu.thongBaoCapNhatThanhCong")));
-						this.thucHienChucNangLamMoi();
-					} else {
-						JOptionPane.showMessageDialog(this, String.format("<html><p>%s</p></html>",
-								SystemConstants.BUNDLE.getString("chucVu.thonBaoCapNhatKhongThanhCong")));
-					}
-				}
+    private boolean thucHienChucNangKiemTra() {
+        thucHienThucLamLamMoiLoi();
 
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		} else {
-			JOptionPane.showMessageDialog(this, String.format("<html><p>%s</p></html>",
-					SystemConstants.BUNDLE.getString("chucVu.thongBaoChonChucVuCanCapNhat")));
-		}
-	}
+        String tenChucVu = this.txtenChucVu.getText().trim();
 
-	private void thucHienChucNangXoa() {
-		int isSelected = this.tblChucVu.getSelectedRow();
-		if (isSelected >= 0) {
+        boolean status = true;
+        if (ObjectUtils.isEmpty(tenChucVu)) {
+            lblLoiTenChucVu.setText(String.format("<html><p>%s</p></html>",
+                    SystemConstants.BUNDLE.getString("chucVu.thongBaoLoiTenChucVu")));
+            status = false;
+        }
 
-			ChucVu chucVu = this.chucVus.get(isSelected);
-			int choose = -1;
-			if (SystemConstants.LANGUAGE == 1) {
-				choose = JOptionPane.showConfirmDialog(this,
-						"You want to delete position " + chucVu.getTenChucVu() + " ?.", "Confirm",
-						JOptionPane.YES_NO_OPTION);
-			} else {
-				choose = JOptionPane.showConfirmDialog(this, "Bạn có muốn xóa chức vụ " + chucVu.getTenChucVu() + " ?.",
-						"Xác nhận", JOptionPane.YES_NO_OPTION);
-			}
-			if (choose == JOptionPane.OK_OPTION) {
-				boolean trangThai = this.chucVuService.xoaChucVuBangMa(chucVu.getMaChucVu());
-				if (trangThai) {
-					JOptionPane.showMessageDialog(this, String.format("<html><p>%s</p></html>",
-							SystemConstants.BUNDLE.getString("chucVu.thongBaoXoaThanhCong")));
-					this.thucHienChucNangLamMoi();
-				} else {
-					JOptionPane.showMessageDialog(this, String.format("<html><p>%s</p></html>",
-							SystemConstants.BUNDLE.getString("chucVu.thongBaoXoaKhongThanhCong")));
-				}
-			}
-		} else {
-			JOptionPane.showMessageDialog(this, String.format("<html><p>%s</p></html>",
-					SystemConstants.BUNDLE.getString("chucVu.thongBaoChonChucVuDeXoa")));
-		}
-	}
+        return status;
+    }
+
+    private void thucHienThucNangCapNhat() {
+        new Thread(() -> {
+            try (var socket = new Socket(
+                    BUNDLE.getString("host"),
+                    Integer.parseInt(BUNDLE.getString("server.port")));
+                 var dis = new DataInputStream(socket.getInputStream());
+                 var dos = new DataOutputStream(socket.getOutputStream());
+            ) {
+                if (thucHienChucNangKiemTra()) {
+                    int isSelected = this.tblChucVu.getSelectedRow();
+                    if (isSelected < 0) {
+                        JOptionPane.showMessageDialog(this, String.format("<html><p>%s</p></html>",
+                                SystemConstants.BUNDLE.getString("chucVu.thongBaoChonChucVuDeCapNhat")));
+                        return;
+                    }
+                    if (!thucHienChucNangKiemTra()) {
+                        return;
+                    }
+                    String tenChucVu = this.txtenChucVu.getText().trim();
+
+                    try {
+                        ChucVu chucVu = chucVus.get(isSelected);
+                        chucVu.setTenChucVu(tenChucVu);
+
+                        RequestDTO request = RequestDTO.builder()
+                                .requestType("ChucVuForm")
+                                .request("capNhatChucVu")
+                                .data(chucVu)
+                                .build();
+
+                        String json = AppUtils.GSON.toJson(request);
+                        dos.writeUTF(json);
+                        dos.flush();
+
+                        //Receive data
+                        json = new String(dis.readAllBytes());
+                        RequestDTO response = AppUtils.GSON.fromJson(json, RequestDTO.class);
+                        chucVu = AppUtils.convert((Map<String, Object>) response.getData(), ChucVu.class);
+                        System.out.println(chucVu);
+                        if (chucVu != null) {
+                            JOptionPane.showMessageDialog(this, String.format("<html><p>%s</p></html>",
+                                    SystemConstants.BUNDLE.getString("chucVu.thongBaoCapNhatThanhCong")));
+                            this.thucHienChucNangLamMoi();
+                        } else {
+                            JOptionPane.showMessageDialog(this, String.format("<html><p>%s</p></html>",
+                                    SystemConstants.BUNDLE.getString("chucVu.thongBaoCapNhatKhongThanhCong")));
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }).start();
+    }
+
+    private void thucHienChucNangXoa() {
+        int isSelected = this.tblChucVu.getSelectedRow();
+        if (isSelected >= 0) {
+
+            ChucVu chucVu = this.chucVus.get(isSelected);
+            int choose = -1;
+            if (SystemConstants.LANGUAGE == 1) {
+                choose = JOptionPane.showConfirmDialog(this,
+                        "You want to delete position " + chucVu.getTenChucVu() + " ?.", "Confirm",
+                        JOptionPane.YES_NO_OPTION);
+            } else {
+                choose = JOptionPane.showConfirmDialog(this, "Bạn có muốn xóa chức vụ " + chucVu.getTenChucVu() + " ?.",
+                        "Xác nhận", JOptionPane.YES_NO_OPTION);
+            }
+            if (choose == JOptionPane.OK_OPTION) {
+                boolean trangThai = this.chucVuService.xoaChucVuBangMa(chucVu.getMaChucVu());
+                if (trangThai) {
+                    JOptionPane.showMessageDialog(this, String.format("<html><p>%s</p></html>",
+                            SystemConstants.BUNDLE.getString("chucVu.thongBaoXoaThanhCong")));
+                    this.thucHienChucNangLamMoi();
+                } else {
+                    JOptionPane.showMessageDialog(this, String.format("<html><p>%s</p></html>",
+                            SystemConstants.BUNDLE.getString("chucVu.thongBaoXoaKhongThanhCong")));
+                }
+            }
+        } else {
+            JOptionPane.showMessageDialog(this, String.format("<html><p>%s</p></html>",
+                    SystemConstants.BUNDLE.getString("chucVu.thongBaoChonChucVuDeXoa")));
+        }
+    }
 }
