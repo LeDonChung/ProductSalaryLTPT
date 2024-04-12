@@ -13,19 +13,21 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ResourceBundle;
 
 public class ChucVuForm extends JPanel {
-	private JTextField txtMaChucVu;
-	private JTextField txtenChucVu;
-	private DefaultTableModel tableModelChucVu;
-	private JTable tblChucVu;
-	private JButton btnCapNhat;
-	private JButton btnXoa;
-	private JButton btnThem;
-	private JButton btnLamMoi;
+	private static final ResourceBundle BUNDLE = ResourceBundle.getBundle("app");
+	private final JTextField txtMaChucVu;
+	private final JTextField txtenChucVu;
+	private final DefaultTableModel tableModelChucVu;
+	private final JTable tblChucVu;
+	private final JButton btnCapNhat;
+	private final JButton btnXoa;
+	private final JButton btnThem;
+	private final JButton btnLamMoi;
 	private List<ChucVu> chucVus;
 	private ChucVuService chucVuService;
-	private JLabel lblLoiTenChucVu;
+	private final JLabel lblLoiTenChucVu;
 
 	/**
 	 * Create the panel.
