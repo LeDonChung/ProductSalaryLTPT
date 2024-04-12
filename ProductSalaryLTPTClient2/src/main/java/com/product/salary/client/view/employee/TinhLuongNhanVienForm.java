@@ -6,13 +6,11 @@ package com.product.salary.client.view.employee;
  */
 
 import com.product.salary.application.common.SystemConstants;
-import com.product.salary.application.entity.NhanVien;
 import com.product.salary.application.service.LuongNhanVienService;
 import com.product.salary.application.service.NhanVienService;
 import com.product.salary.application.service.impl.LuongNhanVienServiceImpl;
 import com.product.salary.application.service.impl.NhanVienServiceImpl;
-import com.product.salary.application.utils.PhoneUtils;
-import com.product.salary.application.utils.PriceFormatterUtils;
+import com.product.salary.application.utils.*;
 import com.product.salary.application.utils.pdf.LuongNhanVienPdfUtils;
 import com.toedter.calendar.JMonthChooser;
 import com.toedter.calendar.JYearChooser;
@@ -22,27 +20,28 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.net.Socket;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.ResourceBundle;
 
 public class TinhLuongNhanVienForm extends JPanel {
+	private final ResourceBundle BUNDLE = ResourceBundle.getBundle("app");
 
-	private DefaultTableModel tblModelLuongNhanVien;
-	private JTable tblLuong;
-	private JYearChooser yearChooser;
-	private JMonthChooser monthChooser;
-	private JButton btnTinhLuong;
-	private JButton btnXuatBaoCao;
+	private final DefaultTableModel tblModelLuongNhanVien;
+	private final JTable tblLuong;
+	private final JYearChooser yearChooser;
+	private final JMonthChooser monthChooser;
+	private final JButton btnTinhLuong;
+	private final JButton btnXuatBaoCao;
 	private List<Map<String, Object>> danhSachLuongNhanVien;
-	private LuongNhanVienService luongNhanVienService;
-	private JButton btnGuiLuong;
-	private NhanVienService nhanVienService;
+	private final JButton btnGuiLuong;
 
 	/**
 	 * Create the panel.
@@ -174,15 +173,11 @@ public class TinhLuongNhanVienForm extends JPanel {
 	}
 
 	private void init() {
-		this.danhSachLuongNhanVien = new ArrayList<Map<String, Object>>();
-		this.luongNhanVienService = new LuongNhanVienServiceImpl();
-		this.nhanVienService = new NhanVienServiceImpl();
+		this.danhSachLuongNhanVien = new ArrayList<>();
 	}
 
 	private void event() {
-		this.btnGuiLuong.addActionListener((e) -> {
-			thucHienChucNangGuiThongTin();
-		});
+		this.btnGuiLuong.addActionListener((e) -> thucHienChucNangGuiThongTin());
 		tblLuong.addMouseListener(new MouseListener() {
 
 			@Override
@@ -199,7 +194,7 @@ public class TinhLuongNhanVienForm extends JPanel {
 						Map<String, Object> result = danhSachLuongNhanVien.get(index);
 
 						new ChiTietLuongNhanVienForm(result.get("MaNhanVien").toString(),
-								Integer.valueOf(result.get("LuongThang").toString()), yearChooser.getYear())
+								Integer.valueOf(result.get("LuongThang").toString().replace(".0", "")), yearChooser.getYear())
 								.setVisible(true);
 					} catch (Exception x) {
 						x.printStackTrace();
@@ -227,47 +222,33 @@ public class TinhLuongNhanVienForm extends JPanel {
 			}
 		});
 
-		btnTinhLuong.addActionListener(new ActionListener() {
+		btnTinhLuong.addActionListener(e -> thucHienChucNangTinhLuong());
 
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				thucHienChucNangTinhLuong();
-
-			}
-		});
-
-		btnXuatBaoCao.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				thucHienChucNangXuatBaoCao();
-
-			}
-		});
+		btnXuatBaoCao.addActionListener(e -> thucHienChucNangXuatBaoCao());
 
 	}
 
 	private void thucHienChucNangGuiThongTin() {
-		boolean status = false;
-		for (Map<String, Object> luongNhanVien : danhSachLuongNhanVien) {
-			String maNhanVien = luongNhanVien.get("MaNhanVien").toString();
-			NhanVien nhanVien = nhanVienService.timKiemBangMaNhanVien(maNhanVien);
-
-			int year = yearChooser.getYear();
-			int month = monthChooser.getMonth() + 1;
-			String message = String.format("CTK Home thông báo: Lương tháng %s năm %s của nhân viên %s là: %s", month,
-					year, nhanVien.getHoTen() + " - " + nhanVien.getMaNhanVien(),
-					PriceFormatterUtils.format(Double.valueOf(luongNhanVien.get("TongLuong").toString())));
-			String phone = String.format("84%s", nhanVien.getSoDienThoai().substring(1));
-			PhoneUtils.sendNotification(phone, message);
-			status = true;
-		}
-		if (status) {
-			JOptionPane.showMessageDialog(this,
-					SystemConstants.BUNDLE.getString("luongCongNhan.thongBao.guiThanhCong"));
-		} else {
-			JOptionPane.showMessageDialog(this, SystemConstants.BUNDLE.getString("luongCongNhan.thongBao.guiThatBai"));
-		}
+//		boolean status = false;
+//		for (Map<String, Object> luongNhanVien : danhSachLuongNhanVien) {
+//			String maNhanVien = luongNhanVien.get("MaNhanVien").toString();
+//			NhanVien nhanVien = nhanVienService.timKiemBangMaNhanVien(maNhanVien);
+//
+//			int year = yearChooser.getYear();
+//			int month = monthChooser.getMonth() + 1;
+//			String message = String.format("CTK Home thông báo: Lương tháng %s năm %s của nhân viên %s là: %s", month,
+//					year, nhanVien.getHoTen() + " - " + nhanVien.getMaNhanVien(),
+//					PriceFormatterUtils.format(Double.valueOf(luongNhanVien.get("TongLuong").toString())));
+//			String phone = String.format("84%s", nhanVien.getSoDienThoai().substring(1));
+//			PhoneUtils.sendNotification(phone, message);
+//			status = true;
+//		}
+//		if (status) {
+//			JOptionPane.showMessageDialog(this,
+//					SystemConstants.BUNDLE.getString("luongCongNhan.thongBao.guiThanhCong"));
+//		} else {
+//			JOptionPane.showMessageDialog(this, SystemConstants.BUNDLE.getString("luongCongNhan.thongBao.guiThatBai"));
+//		}
 	}
 
 	class ButtonRenderer extends JButton implements TableCellRenderer {
@@ -301,49 +282,69 @@ public class TinhLuongNhanVienForm extends JPanel {
 	}
 
 	private void thucHienChucNangTinhLuong() {
-		int thang = monthChooser.getMonth() + 1;
-		int nam = yearChooser.getYear();
+		new Thread(() -> {
+			try (var socket = new Socket(
+					BUNDLE.getString("host"),
+					Integer.parseInt(BUNDLE.getString("server.port")));
+				 var dos = new DataOutputStream(socket.getOutputStream());
+				 var dis = new DataInputStream(socket.getInputStream())) {
 
-		try {
-			boolean status = luongNhanVienService.tinhLuongNhanVien(thang, nam);
+				int thang = monthChooser.getMonth() + 1;
+				int nam = yearChooser.getYear();
 
-			if (status == true) {
-				if (SystemConstants.LANGUAGE == 1) {
-					JOptionPane.showMessageDialog(this,
-							String.format("Payroll in %02d - %04d of employees successfully!", thang, nam));
+				// send request
+				RequestDTO request = RequestDTO
+						.builder()
+						.request("tinhLuongNhanVien")
+						.requestType("LuongNhanVienForm")
+						.data(Map.of("thang", thang, "nam", nam))
+						.build();
+				String json = AppUtils.GSON.toJson(request);
+				dos.writeUTF(json);
+				dos.flush();
+
+				// receive response
+				json = new String(dis.readAllBytes());
+				ResponseDTO response = AppUtils.GSON.fromJson(json, ResponseDTO.class);
+
+				boolean trangThai = (boolean) ((Map<String, Object>) response.getData()).get("result");
+				if (trangThai) {
+					if (SystemConstants.LANGUAGE == 1) {
+						JOptionPane.showMessageDialog(this,
+								String.format("Payroll in %02d - %04d of employees successfully!", thang, nam));
+					} else {
+						JOptionPane.showMessageDialog(this,
+								String.format("Tính lương tháng %02d năm %04d của nhân viên thành công!", thang, nam));
+					}
+					List<Map<String, Object>> luongNhanViens = (List<Map<String, Object>>) ((Map<String, Object>) response.getData()).get("luongNhanViens");
+
+					loadDanhSachLuong(luongNhanViens);
 				} else {
-					JOptionPane.showMessageDialog(this,
-							String.format("Tính lương tháng %02d năm %04d của nhân viên thành công!", thang, nam));
-				}
+					if (SystemConstants.LANGUAGE == 1) {
+						JOptionPane.showMessageDialog(this,
+								String.format("Payroll in %02d - %04d of employees unsuccessfully!", thang, nam));
+					} else {
+						JOptionPane.showMessageDialog(this, String
+								.format("Tính lương tháng %02d năm %04d của nhân viên không thành công!", thang, nam));
+					}
 
-				loadDanhSachLuong(thang, nam);
-				return;
-			} else {
-				if (SystemConstants.LANGUAGE == 1) {
-					JOptionPane.showMessageDialog(this,
-							String.format("Payroll in %02d - %04d of employees unsuccessfully!", thang, nam));
-				} else {
-					JOptionPane.showMessageDialog(this, String
-							.format("Tính lương tháng %02d năm %04d của nhân viên không thành công!", thang, nam));
 				}
-
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		}).start();
 
 	}
 
-	private void loadDanhSachLuong(int thang, int nam) {
+	private void loadDanhSachLuong(List<Map<String, Object>> luongNhanViens) {
+		this.danhSachLuongNhanVien = luongNhanViens;
 		tblModelLuongNhanVien.setRowCount(0);
-		danhSachLuongNhanVien = luongNhanVienService.timKiemTatCaLuongNhanVienTheoThangVaNam(thang, nam);
-
 		int stt = 1;
 		for (Map<String, Object> luongNV : danhSachLuongNhanVien) {
 
 			tblModelLuongNhanVien.addRow(
 					new Object[] { stt++, luongNV.get("MaLuong"), luongNV.get("MaNhanVien"), luongNV.get("TenNhanVien"),
-							luongNV.get("GioiTinh"), luongNV.get("SoDienThoai"), luongNV.get("LuongThang"),
+							luongNV.get("GioiTinh"), luongNV.get("SoDienThoai"), luongNV.get("LuongThang").toString().replace(".0", ""),
 							PriceFormatterUtils.format(Double.valueOf(luongNV.get("TroCap").toString())),
 							PriceFormatterUtils.format(Double.valueOf(luongNV.get("LuongThuong").toString())),
 							PriceFormatterUtils.format(Double.valueOf(luongNV.get("TongLuong").toString())),
@@ -366,34 +367,53 @@ public class TinhLuongNhanVienForm extends JPanel {
 			super(checkBox);
 			button = new JButton();
 			button.setOpaque(true);
-			button.addActionListener(new ActionListener() {
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					try {
-						String value = JOptionPane.showInputDialog(null, "Nhập lương thưởng", 0);
-						thucHienChucNangCapNhatLuongThuong(PriceFormatterUtils.parse(value));
-					} catch (Exception xe) {
+			button.addActionListener(e -> {
+                try {
+                    String value = JOptionPane.showInputDialog(null, "Nhập lương thưởng", 0);
+                    thucHienChucNangCapNhatLuongThuong(PriceFormatterUtils.parse(value));
+                } catch (Exception xe) {
 
-					}
-				}
-
-			});
+                }
+            });
 		}
 
 		private void thucHienChucNangCapNhatLuongThuong(double luongThuong) {
-			int select = tblLuong.getSelectedRow();
-			if (select >= 0) {
-				int thang = monthChooser.getMonth() + 1;
-				int nam = yearChooser.getYear();
+			new Thread(() -> {
+				try (var socket = new Socket(
+						BUNDLE.getString("host"),
+						Integer.parseInt(BUNDLE.getString("server.port")));
+					 var dos = new DataOutputStream(socket.getOutputStream());
+					 var dis = new DataInputStream(socket.getInputStream())) {
+					int select = tblLuong.getSelectedRow();
+					if (select >= 0) {
+						Map<String, Object> luongNhanViens = danhSachLuongNhanVien.get(select);
+						Map<String, Object> data = Map.of("MaLuong", luongNhanViens.get("MaLuong").toString(), "LuongThuong", luongThuong);
 
-				Map<String, Object> luongNV = danhSachLuongNhanVien.get(select);
+						// send request
+						RequestDTO request = RequestDTO
+								.builder()
+								.request("capNhatLuongThuong")
+								.requestType("LuongNhanVienForm")
+								.data(data)
+								.build();
 
-				luongNhanVienService.capNhatLuongThuong(luongNV.get("MaLuong").toString(), luongThuong);
+						String json = AppUtils.GSON.toJson(request);
+						dos.writeUTF(json);
+						dos.flush();
 
-				luongNhanVienService.tinhLuongNhanVien(thang, nam);
+						// receive response
+						json = new String(dis.readAllBytes());
+						ResponseDTO response = AppUtils.GSON.fromJson(json, ResponseDTO.class);
+						boolean trangThai = (boolean) response.getData();
+						if (trangThai) {
+							thucHienChucNangTinhLuong();
+						}
+					}
 
-				loadDanhSachLuong(thang, nam);
-			}
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}).start();
 		}
 
 		@Override

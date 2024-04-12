@@ -4,38 +4,40 @@ package com.product.salary.client.view.employee;
  * @author Trần Thị Thanh Tuyền code giao diện, xử lý hiển thị
  */
 
-import com.product.salary.application.common.SystemConstants;
+import com.product.salary.application.utils.AppUtils;
+import com.product.salary.application.utils.RequestDTO;
+import com.product.salary.application.utils.ResponseDTO;
+import com.product.salary.client.common.SystemConstants;
 import com.product.salary.application.entity.NhanVien;
-import com.product.salary.application.service.LuongNhanVienService;
-import com.product.salary.application.service.NhanVienService;
-import com.product.salary.application.service.impl.LuongNhanVienServiceImpl;
-import com.product.salary.application.service.impl.NhanVienServiceImpl;
 import com.product.salary.application.utils.PriceFormatterUtils;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.ResourceBundle;
 
 public class ChiTietLuongNhanVienForm extends JFrame {
-	private JPanel pnlChinh;
-	private JTable tblChiTietLuongNhanVien;
-	private DefaultTableModel tblModelChiTietLuong;
-	private JTextField txtMaNhanVien;
-	private JTextField txtHoTen;
-	private JTextField txtSoDienThoai;
-	private JTextField txtPhongBan;
-	private JTextField txtChucVu;
-	private JTextField txtGioiTinh;
-	private LuongNhanVienService luongNhanVienService;
+	private final ResourceBundle BUNDLE = ResourceBundle.getBundle("app");
+	private final JPanel pnlChinh;
+	private final JTable tblChiTietLuongNhanVien;
+	private final DefaultTableModel tblModelChiTietLuong;
+	private final JTextField txtMaNhanVien;
+	private final JTextField txtHoTen;
+	private final JTextField txtSoDienThoai;
+	private final JTextField txtPhongBan;
+	private final JTextField txtChucVu;
+	private final JTextField txtGioiTinh;
 	private List<Map<String, Object>> danhSachChiTietLuong;
-	private NhanVienService nhanVienService;
-	private JTextField txtSoLanDiTre;
-	private JTextField txtTienPhat;
-	private JTextField txtSoNgayNghi;
-	private JTextField txtSoNgayLam;
+	private final JTextField txtSoLanDiTre;
+	private final JTextField txtTienPhat;
+	private final JTextField txtSoNgayNghi;
+	private final JTextField txtSoNgayLam;
 
 	public ChiTietLuongNhanVienForm(String maNhanVien, int thang, int nam) {
 		setResizable(false);
@@ -257,41 +259,76 @@ public class ChiTietLuongNhanVienForm extends JFrame {
 	}
 
 	private void init() {
-		this.danhSachChiTietLuong = new ArrayList<Map<String, Object>>();
-		this.luongNhanVienService = new LuongNhanVienServiceImpl();
-		this.nhanVienService = new NhanVienServiceImpl();
+		this.danhSachChiTietLuong = new ArrayList<>();
 	}
 
 	private void thucHienChucNangTimKiemChiTietLuong(String maNhanVien, int thang, int nam) {
-		tblModelChiTietLuong.setRowCount(0);
+		new Thread(() -> {
 
-		danhSachChiTietLuong = luongNhanVienService.timTatCaChiTietLuongTheoThangVaNam(maNhanVien, thang, nam);
-		NhanVien nv = nhanVienService.timKiemBangMaNhanVien(maNhanVien);
-		txtMaNhanVien.setText(maNhanVien);
-		txtHoTen.setText(nv.getHoTen());
-		txtChucVu.setText(nv.getChucVu().getTenChucVu());
-		txtGioiTinh.setText(nv.getGioiTinh() == 1 ? "Nam" : "Nữ");
-		txtPhongBan.setText(nv.getPhongBan().getTenPhongBan());
-		txtSoDienThoai.setText(nv.getSoDienThoai());
-		int soLanDiTre = 0;
-		int soLanNghi = 0;
-		int stt = 1;
-		for (Map<String, Object> chiTietLuong : danhSachChiTietLuong) {
-			tblModelChiTietLuong.addRow(new Object[] { stt++, chiTietLuong.get("MaChamCong"), chiTietLuong.get("CaLam"),
-					chiTietLuong.get("NgayChamCong"), chiTietLuong.get("TrangThai") });
-			if (chiTietLuong.get("TrangThai").equals("Đi trễ")) {
-				soLanDiTre++;
+			try (var socket = new Socket(
+					BUNDLE.getString("host"),
+					Integer.parseInt(BUNDLE.getString("server.port")));
+				 var dos = new DataOutputStream(socket.getOutputStream());
+				 var dis = new DataInputStream(socket.getInputStream())) {
+
+				Map<String, Object> data = Map.of(
+						"maNhanVien", maNhanVien,
+						"thang", thang,
+						"nam", nam
+				);
+				// send data to server
+				RequestDTO request = RequestDTO
+						.builder()
+						.requestType("ChiTietLuongForm")
+						.request("chiTietLuongNhanVien")
+						.data(data)
+						.build();
+				String json = AppUtils.GSON.toJson(request);
+				dos.writeUTF(json);
+				dos.flush();
+
+				// receive data from server
+				json = new String(dis.readAllBytes());
+				ResponseDTO response = AppUtils.GSON.fromJson(json, ResponseDTO.class);
+				Map<String, Object> result = (Map<String, Object>) response.getData();
+
+				this.danhSachChiTietLuong = (List<Map<String, Object>>) result.get("danhSachChiTietLuong");
+				NhanVien nv = AppUtils.convert((Map<String, Object>) result.get("nhanVien"), NhanVien.class);
+
+				tblModelChiTietLuong.setRowCount(0);
+
+				txtMaNhanVien.setText(maNhanVien);
+				txtHoTen.setText(nv.getHoTen());
+				txtChucVu.setText(nv.getChucVu().getTenChucVu());
+				txtGioiTinh.setText(nv.getGioiTinh() == 1 ? "Nam" : "Nữ");
+				txtPhongBan.setText(nv.getPhongBan().getTenPhongBan());
+				txtSoDienThoai.setText(nv.getSoDienThoai());
+				int soLanDiTre = 0;
+				int soLanNghi = 0;
+				int stt = 1;
+				for (Map<String, Object> chiTietLuong : danhSachChiTietLuong) {
+					tblModelChiTietLuong.addRow(new Object[] { stt++, chiTietLuong.get("MaChamCong"), chiTietLuong.get("CaLam"),
+							chiTietLuong.get("NgayChamCong"), chiTietLuong.get("TrangThai") });
+					if (chiTietLuong.get("TrangThai").equals("Đi trễ")) {
+						soLanDiTre++;
+					}
+
+					if (chiTietLuong.get("TrangThai").equals("Nghỉ")) {
+						soLanNghi++;
+					}
+				}
+
+				txtSoLanDiTre.setText(String.format("%d", soLanDiTre));
+				txtSoNgayNghi.setText(String.format("%d", soLanNghi));
+				txtSoNgayLam.setText(String.format("%d", danhSachChiTietLuong.size()));
+				double tienPhat = soLanDiTre * 50000;
+				txtTienPhat.setText(PriceFormatterUtils.format(tienPhat));
+
+			}
+			catch (Exception e) {
+				e.printStackTrace();
 			}
 
-			if (chiTietLuong.get("TrangThai").equals("Nghỉ")) {
-				soLanNghi++;
-			}
-		}
-
-		txtSoLanDiTre.setText(String.format("%d", soLanDiTre));
-		txtSoNgayNghi.setText(String.format("%d", soLanNghi));
-		txtSoNgayLam.setText(String.format("%d", danhSachChiTietLuong.size()));
-		double tienPhat = soLanDiTre * 50000;
-		txtTienPhat.setText(PriceFormatterUtils.format(tienPhat));
+		}).start();
 	}
 }

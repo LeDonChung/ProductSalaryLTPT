@@ -5,8 +5,6 @@ import com.product.salary.application.dao.LuongNhanVienDAO;
 import jakarta.persistence.Query;
 
 import java.sql.*;
-import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,65 +13,33 @@ public class LuongNhanVienDAOImpl extends AbstractDAO implements LuongNhanVienDA
 
     @Override
     public Map<String, Double> thongKeLuongNhanVienTheoNam() {
-        Connection conn = getConnection();
-        Statement statement = null;
-        ResultSet rs = null;
-        Map<String, Double> results = new HashMap<String, Double>();
-        if (conn != null) {
-            try {
-                StringBuilder query = new StringBuilder(
-                        "SELECT Nam, SUM(Luong) AS 'Luong' FROM LuongNhanVien GROUP BY Nam ORDER BY Nam");
-                statement = conn.createStatement();
-                rs = statement.executeQuery(query.toString());
-                while (rs.next()) {
-                    results.put(String.format("%s", rs.getInt("Nam")), rs.getDouble("Luong"));
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-            } catch (Exception e) {
-                e.printStackTrace();
-            } finally {
-                if (conn != null) {
-                    try {
-                        conn.close();
-                    } catch (SQLException e) {
-                        e.printStackTrace();
-                    }
-                }
-                if (statement != null) {
-                    try {
-                        statement.close();
-                    } catch (SQLException e) {
-                        e.printStackTrace();
-                    }
-                }
-                if (rs != null) {
-                    try {
-                        rs.close();
-                    } catch (SQLException e) {
-                        e.printStackTrace();
-                    }
-                }
+
+        try(var em = getEntityManager()) {
+            Query query = em.createQuery("SELECT l.nam, SUM(l.luong) FROM LuongNhanVien l GROUP BY l.nam");
+            List<Object[]> results = query.getResultList();
+            Map<String, Double> map = new HashMap<>();
+            for (Object[] result : results) {
+                map.put(String.valueOf(result[0]), (Double) result[1]);
             }
+            return map;
         }
-        return results;
     }
 
     @Override
-    public int laySoLuongCaSangVaChieuKhongThuocNgayChuNhatBangMaNhanVien(String maNhanVien, int thang, int nam) {
+    public Long laySoLuongCaSangVaChieuKhongThuocNgayChuNhatBangMaNhanVien(String maNhanVien, int thang, int nam) {
         try (var em = getEntityManager()) {
             Query query = em.createQuery("SELECT COUNT(*) FROM ChamCongNhanVien ccnv " +
                     "WHERE ccnv.nhanVien.maNhanVien = :maNhanVien AND MONTH(ccnv.ngayChamCong) = :thang " +
-                    "AND YEAR(ccnv.ngayChamCong) = :nam AND ccnv.caLam.maCa IN ('SA', 'CH') AND ccnv.trangThai IN (1, 2)");
+                    "AND YEAR(ccnv.ngayChamCong) = :nam AND ccnv.caLam.maCa IN ('SA', 'CH') AND ccnv.trangThai = 1");
             query.setParameter("maNhanVien", maNhanVien);
             query.setParameter("thang", thang);
             query.setParameter("nam", nam);
-            return query.getFirstResult();
+            return (Long) query.getSingleResult();
         }
     }
 
     @Override
-    public int laySoLuongCaToiKhongThuocNgayChuNhatBangMaNhanVien(String maNhanVien, int thang, int nam) {
+    public Long laySoLuongCaToiKhongThuocNgayChuNhatBangMaNhanVien(String maNhanVien, int thang, int nam) {
         try (var em = getEntityManager()) {
             Query query = em.createQuery("SELECT COUNT(*) FROM ChamCongNhanVien ccnv " +
                     "WHERE ccnv.nhanVien.maNhanVien = :maNhanVien AND MONTH(ccnv.ngayChamCong) = :thang " +
@@ -81,23 +47,23 @@ public class LuongNhanVienDAOImpl extends AbstractDAO implements LuongNhanVienDA
             query.setParameter("maNhanVien", maNhanVien);
             query.setParameter("thang", thang);
             query.setParameter("nam", nam);
-            return query.getFirstResult();
+            return (Long) query.getSingleResult();
         }
     }
 
     @Override
-    public int laySoLuongCaLamNgayChuNhatBangMaNhanVien(String maNhanVien, int thang, int nam) {
+    public Long laySoLuongCaLamNgayChuNhatBangMaNhanVien(String maNhanVien, int thang, int nam) {
         try (var em = getEntityManager()) {
             // Query: SELECT COUNT(*) FROM ChamCongNhanVien ccnv WHERE ccnv.nhanVien.maNhanVien = :maNhanVien AND MONTH(ccnv.ngayChamCong) = :thang AND YEAR(ccnv.ngayChamCong) = :nam AND  (ccnv.ngayChamCong) = 1 AND ccnv.trangThai IN (1, 2)
             // So sánh ngày chủ nhật trong tuần sửa dụng jpa: DAYOFWEEK(ccnv.ngayChamCong) = 1
 
             Query query = em.createQuery("SELECT COUNT(*) FROM ChamCongNhanVien ccnv " +
                     "WHERE ccnv.nhanVien.maNhanVien = :maNhanVien AND MONTH(ccnv.ngayChamCong) = :thang " +
-                    "AND YEAR(ccnv.ngayChamCong) = :nam AND FUNCTION('DAYOFWEEK', ccnv.ngayChamCong) = 7 AND ccnv.trangThai IN (1, 2)");
+                    "AND YEAR(ccnv.ngayChamCong) = :nam AND ccnv.trangThai IN (1, 2)");
             query.setParameter("maNhanVien", maNhanVien);
             query.setParameter("thang", thang);
             query.setParameter("nam", nam);
-            return query.getFirstResult();
+            return (Long) query.getSingleResult();
         }
     }
 
@@ -142,7 +108,7 @@ public class LuongNhanVienDAOImpl extends AbstractDAO implements LuongNhanVienDA
     @Override
     public List<Map<String, Object>> timTatCaChiTietLuongTheoThangVaNam(String maNhanVien, int thang, int nam) {
         try (var em = getEntityManager()) {
-            Query query = em.createQuery("SELECT ccnv.maChamCong, ccnv.caLam.maCa, ccnv.ngayChamCong, ccnv.trangThai FROM ChamCongNhanVien ccnv " +
+            Query query = em.createQuery("SELECT ccnv.maChamCong, ccnv.caLam.tenCa, ccnv.ngayChamCong, ccnv.trangThai FROM ChamCongNhanVien ccnv " +
                     "WHERE ccnv.nhanVien.maNhanVien = :maNhanVien AND MONTH(ccnv.ngayChamCong) = :thang " +
                     "AND YEAR(ccnv.ngayChamCong) = :nam", Object[].class);
             query.setParameter("maNhanVien", maNhanVien);
@@ -153,7 +119,7 @@ public class LuongNhanVienDAOImpl extends AbstractDAO implements LuongNhanVienDA
             return results.stream().map(result -> {
                 Map<String, Object> map = new HashMap<String, Object>();
                 map.put("MaChamCong", result[0]);
-                map.put("MaCa", result[1]);
+                map.put("CaLam", result[1]);
                 map.put("NgayChamCong", result[2]);
                 String trangThai = "";
                 if ((int) result[3] == 1) {
@@ -171,7 +137,7 @@ public class LuongNhanVienDAOImpl extends AbstractDAO implements LuongNhanVienDA
 
     @Override
     public Map<String, Double> thongKeLuongNhanVienTheoThang(int nam) {
-        try (var em = getEntityManager()){
+        try (var em = getEntityManager()) {
             Query query = em.createQuery("SELECT l.thang AS thang, SUM(l.luong) AS tongLuong " +
                     "FROM LuongNhanVien l WHERE l.nam = :nam GROUP BY l.thang", Object[].class);
             query.setParameter("nam", nam);
@@ -189,7 +155,7 @@ public class LuongNhanVienDAOImpl extends AbstractDAO implements LuongNhanVienDA
         try (var em = getEntityManager()) {
             em.getTransaction().begin();
             LuongNhanVien luongNV = em.find(LuongNhanVien.class, maLuong);
-            if(luongNV == null) {
+            if (luongNV == null) {
                 return;
             }
             luongNV.setLuongThuong(luongThuong);
@@ -200,7 +166,7 @@ public class LuongNhanVienDAOImpl extends AbstractDAO implements LuongNhanVienDA
     }
 
     @Override
-    public int demSoLuongDiLamTreCuaNhanVien(String maNhanVien, int thang, int nam) {
+    public Long demSoLuongDiLamTreCuaNhanVien(String maNhanVien, int thang, int nam) {
         try (var em = getEntityManager()) {
             Query query = em.createQuery("SELECT COUNT(*) FROM ChamCongNhanVien ccnv " +
                     "WHERE ccnv.nhanVien.maNhanVien = :maNhanVien AND MONTH(ccnv.ngayChamCong) = :thang " +
@@ -208,7 +174,7 @@ public class LuongNhanVienDAOImpl extends AbstractDAO implements LuongNhanVienDA
             query.setParameter("maNhanVien", maNhanVien);
             query.setParameter("thang", thang);
             query.setParameter("nam", nam);
-            return query.getFirstResult();
+            return (Long) query.getSingleResult();
         }
     }
 
