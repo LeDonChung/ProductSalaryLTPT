@@ -4,6 +4,9 @@ import com.product.salary.application.common.SystemConstants;
 import com.product.salary.application.entity.ToNhom;
 import com.product.salary.application.service.ToNhomService;
 import com.product.salary.application.service.impl.ToNhomServiceImpl;
+import com.product.salary.application.utils.AppUtils;
+import com.product.salary.application.utils.RequestDTO;
+import com.product.salary.application.utils.ResponseDTO;
 import com.product.salary.application.utils.excels.ToNhomExcelUtils;
 
 import javax.swing.*;
@@ -13,21 +16,28 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.ResourceBundle;
+import java.util.stream.Collectors;
 
 public class TimKiemToNhomForm extends JPanel {
-	private JTextField txtMaToNhom;
-	private JTextField txtTenToNhom;
-	private JTextField txtSoLuongCongNhan;
+	private final static ResourceBundle BUNDLE = ResourceBundle.getBundle("app");
+	private final JTextField txtMaToNhom;
+	private final JTextField txtTenToNhom;
+	private final JTextField txtSoLuongCongNhan;
 	private List<ToNhom> danhSachToNhom;
 	private ToNhomService toNhomService;
-	private DefaultTableModel tblModelToNhom;
-	private JButton btnTimKiem;
-	private JTable tblToNhom;
-	private JButton btnLamMoi;
-	private JComboBox cmbTrangThai;
-	private JButton btnXuat;
+	private final DefaultTableModel tblModelToNhom;
+	private final JButton btnTimKiem;
+	private final JTable tblToNhom;
+	private final JButton btnLamMoi;
+	private final JComboBox cmbTrangThai;
+	private final JButton btnXuat;
 
 	/**
 	 * Create the frame.
@@ -263,18 +273,46 @@ public class TimKiemToNhomForm extends JPanel {
 	}
 
 	private void loadTableToNhom() {
-		tblModelToNhom.setRowCount(0);
-		danhSachToNhom = toNhomService.timKiemTatCaToNhom();
-		int stt = 1;
-		for (ToNhom toNhom : danhSachToNhom) {
-			String trangThai = "";
-			if (toNhom.isTrangThai())
-				trangThai = "Đang hoạt động";
-			else
-				trangThai = "Ngừng hoạt động";
-			tblModelToNhom.addRow(new Object[] { stt++, toNhom.getMaToNhom(), toNhom.getTenToNhom(),
-					toNhom.getSoLuongCongNhan(), trangThai });
-		}
+		new Thread(() -> {
+			try (var socket = new Socket(
+					BUNDLE.getString("host"),
+					Integer.parseInt(BUNDLE.getString("server.port")));
+				 var dos = new DataOutputStream(socket.getOutputStream());
+				 var dis = new DataInputStream(socket.getInputStream())
+			){
+				// Send Data
+				RequestDTO request = RequestDTO.builder()
+						.requestType("ToNhomForm")
+						.request("timKiemTatCaToNhom")
+						.data("")
+						.build();
+				System.out.println("Sending request: " + request);
+				String json = AppUtils.GSON.toJson(request);
+				dos.writeUTF(json);
+				dos.flush();
+
+				// Receive Data
+				json = new String(dis.readAllBytes());
+				ResponseDTO response = AppUtils.GSON.fromJson(json, ResponseDTO.class);
+				//System.out.println("Receive response: " + response);
+				List<Map<String, Object>> data = (List<Map<String, Object>>) response.getData();
+
+				danhSachToNhom = data.stream().map((value) -> AppUtils.convert(value, ToNhom.class)).collect(Collectors.toList());
+				tblModelToNhom.setRowCount(0);
+				int stt = 1;
+				for (ToNhom toNhom : danhSachToNhom) {
+					String trangThai = "";
+					if (toNhom.isTrangThai())
+						trangThai = "Đang hoạt động";
+					else
+						trangThai = "Ngừng hoạt động";
+					tblModelToNhom.addRow(new Object[] { stt++, toNhom.getMaToNhom(), toNhom.getTenToNhom(),
+							toNhom.getSoLuongCongNhan(), trangThai });
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}).start();
 	}
 
 	private void thucHienChucNangTimKiem() {
@@ -291,20 +329,45 @@ public class TimKiemToNhomForm extends JPanel {
 
 		ToNhom tNhom = new ToNhom(maToNhom, tenToNhom, 0, trangThai);
 
-		danhSachToNhom = toNhomService.timKiemToNhom(tNhom);
+		new Thread(() -> {
+			try (var socket = new Socket(
+					BUNDLE.getString("host"),
+					Integer.parseInt(BUNDLE.getString("server.port")));
+				 var dos = new DataOutputStream(socket.getOutputStream());
+				 var dis = new DataInputStream(socket.getInputStream())
+			){
+				// Send Data
+				RequestDTO request = RequestDTO.builder()
+						.requestType("ToNhomForm")
+						.request("timKiemToNhom")
+						.data(tNhom)
+						.build();
+				System.out.println("Sending request: " + request);
+				String json = AppUtils.GSON.toJson(request);
+				dos.writeUTF(json);
+				dos.flush();
 
-		int stt = 1;
-		for (ToNhom toNhom : danhSachToNhom) {
-			String trThai = "";
-			if (toNhom.isTrangThai())
-				trThai = "Đang hoạt động";
-			else
-				trThai = "Ngừng hoạt động";
+				// Receive Data
+				json = new String(dis.readAllBytes());
+				ResponseDTO response = AppUtils.GSON.fromJson(json, ResponseDTO.class);
+				//System.out.println("Receive response: " + response);
+				List<Map<String, Object>> data = (List<Map<String, Object>>) response.getData();
+				danhSachToNhom = data.stream().map((value) -> AppUtils.convert(value, ToNhom.class)).collect(Collectors.toList());
+				int stt = 1;
+				for (ToNhom toNhom : danhSachToNhom) {
+					String trThai = "";
+					if (toNhom.isTrangThai())
+						trThai = "Đang hoạt động";
+					else
+						trThai = "Ngừng hoạt động";
 
-			tblModelToNhom.addRow(new Object[] { stt++, toNhom.getMaToNhom(), toNhom.getTenToNhom(),
-					toNhom.getSoLuongCongNhan(), trThai });
-
-		}
+					tblModelToNhom.addRow(new Object[] { stt++, toNhom.getMaToNhom(), toNhom.getTenToNhom(),
+							toNhom.getSoLuongCongNhan(), trThai });
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}).start();
 	}
 
 	private void thucHienChucNangLamMoi() {
