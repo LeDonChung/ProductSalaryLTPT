@@ -41,4 +41,6 @@ public interface PhanCongCongViecService {
 	List<PhanCongCongNhan> timTatCaPhanCongTheoMaCongDoan(String maCongDoan);
 
 	List<PhanCongCongNhan> phanCongNhieuCongNhan(List<PhanCongCongNhan> phanCongCongNhans);
+
+    PhanCongCongNhan timPhanCongTheoMa(String maPhanCong);
 }

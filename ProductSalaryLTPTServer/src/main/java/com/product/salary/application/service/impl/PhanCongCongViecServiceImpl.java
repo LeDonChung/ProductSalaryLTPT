@@ -96,6 +96,17 @@ public class PhanCongCongViecServiceImpl implements PhanCongCongViecService {
 	}
 
 	@Override
+	public PhanCongCongNhan timPhanCongTheoMa(String maPhanCong) {
+		try {
+			return phanCongDAO.timKiemBangMaPhanCong(maPhanCong);
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null, SystemConstants.BUNDLE.getString("congNhan.loiHeThong"));
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	@Override
 	public String generateMaPhanCongCongNhan(String maCongNhan, String maCongDoan) {
 		String rs = "";
 		CongNhan macn = congNhanDAO.timKiemBangMaCongNhan(maCongNhan);

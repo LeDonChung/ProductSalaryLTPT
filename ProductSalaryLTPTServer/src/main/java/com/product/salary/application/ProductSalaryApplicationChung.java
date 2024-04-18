@@ -11,6 +11,7 @@ import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -50,6 +51,8 @@ public class ProductSalaryApplicationChung {
 		private final CongDoanSanPhamService congDoanSanPhamService;
 		private final LuongCongNhanService luongCongNhanService;
 		private final LuongNhanVienService luongNhanVienService;
+		private final ChamCongCongNhanService chamCongCongNhanService;
+		private final PhanCongCongViecService phanCongCongViecService;
 		public handlerClient(Socket socket) {
 			this.socket = socket;
 			this.accountService = new AccountServiceImpl();
@@ -60,6 +63,8 @@ public class ProductSalaryApplicationChung {
 			this.luongCongNhanService = new LuongCongNhanServiceImpl();
 			this.luongNhanVienService = new LuongNhanVienServiceImpl();
 			this.congDoanSanPhamService = new CongDoanSanPhamServiceImpl();
+			this.chamCongCongNhanService = new ChamCongCongNhanServiceImpl();
+			this.phanCongCongViecService = new PhanCongCongViecServiceImpl();
 		}
 
 
@@ -73,6 +78,106 @@ public class ProductSalaryApplicationChung {
 				System.out.println("Request: " + requestObject);
 				String request = requestObject.getRequestType();
 				switch (request) {
+					case "ChamCongCongNhanForm": {
+						switch (requestObject.getRequest()) {
+							case "themNhieuChamCongCongNhan": {
+								List<Map<String, Object>> data = (List<Map<String, Object>>) requestObject.getData();
+								List<ChamCongCongNhan> chamCongCongNhans = data.stream()
+										.map(map -> AppUtils.convert(map, ChamCongCongNhan.class))
+										.toList();
+
+								for (ChamCongCongNhan chamCongCongNhan : chamCongCongNhans) {
+									chamCongCongNhanService.themChamCongCongNhan(chamCongCongNhan);
+								}
+
+								ResponseDTO response = ResponseDTO.builder()
+										.data(true)
+										.build();
+
+								json = AppUtils.GSON.toJson(response);
+								byte[] bytes = json.getBytes(StandardCharsets.UTF_8);
+								dos.write(bytes);
+								dos.flush();
+								break;
+							}
+							case "timTatCaCongNhanChuaChamCongTheoCaVaNgayChamCong": {
+								Map<String, Object> data = (Map<String, Object>) requestObject.getData();
+								List<CongNhan> congNhans = chamCongCongNhanService.timTatCaCongNhanChuaChamCongTheoCaVaNgayChamCong(
+                                        LocalDate.parse(data.get("ngayChamCong").toString()),
+										data.get("maCa").toString()
+								);
+								ResponseDTO response = ResponseDTO.builder()
+										.data(congNhans)
+										.build();
+
+								json = AppUtils.GSON.toJson(response);
+								byte[] bytes = json.getBytes(StandardCharsets.UTF_8);
+								dos.write(bytes);
+								dos.flush();
+								break;
+							}
+							case "timKiemTatCaChamCongCongNhan":  {
+								LocalDate ngayChamCong = LocalDate.parse(requestObject.getData().toString());
+								List<ChamCongCongNhan> chamCongCongNhans = chamCongCongNhanService.timKiemTatCaChamCongCongNhan(ngayChamCong);
+								ResponseDTO response = ResponseDTO.builder()
+										.data(chamCongCongNhans)
+										.build();
+
+								json = AppUtils.GSON.toJson(response);
+								byte[] bytes = json.getBytes(StandardCharsets.UTF_8);
+								dos.write(bytes);
+								dos.flush();
+								break;
+							}
+							case "timTatCaPhanCongTheoMaCongNhanChuaHoanThanh": {
+								String maCongNhan = (String) requestObject.getData();
+								List<PhanCongCongNhan> phanCongCongNhans = phanCongCongViecService.timTatCaPhanCongTheoMaCongNhanChuaHoanThanh(maCongNhan);
+								ResponseDTO response = ResponseDTO.builder()
+										.data(phanCongCongNhans)
+										.build();
+
+								json = AppUtils.GSON.toJson(response);
+								byte[] bytes = json.getBytes(StandardCharsets.UTF_8);
+								dos.write(bytes);
+								dos.flush();
+								break;
+							}
+							case "themChamCongCongNhan": {
+								ChamCongCongNhan chamCongCongNhan = AppUtils.convert((Map<String, Object>) requestObject.getData(), ChamCongCongNhan.class);
+								chamCongCongNhan = chamCongCongNhanService.themChamCongCongNhan(chamCongCongNhan);
+
+								if (chamCongCongNhan != null) {
+									PhanCongCongNhan phanCongCongNhan = phanCongCongViecService.timPhanCongTheoMa(chamCongCongNhan.getPhanCongCongNhan().getMaPhanCong());
+									CongDoanSanPham  congDoanSanPham = phanCongCongNhan.getCongDoanSanPham();
+									congDoanSanPhamService.capNhatSoLuongCanCuaCongDoan(congDoanSanPham.getMaCongDoan(), chamCongCongNhan.getSoLuongHoanThanh());
+								}
+
+								ResponseDTO response = ResponseDTO.builder()
+										.data(chamCongCongNhan)
+										.build();
+
+								json = AppUtils.GSON.toJson(response);
+								byte[] bytes = json.getBytes(StandardCharsets.UTF_8);
+								dos.write(bytes);
+								dos.flush();
+								break;
+							}
+							case "capNhatChamCongCongNhan": {
+								Map<String, Object> data = (Map<String, Object>) requestObject.getData();
+								boolean result = chamCongCongNhanService.capNhatChamCongCongNhan(data.get("maChamCong").toString(), Integer.parseInt(data.get("trangThai").toString().replace(".0", "")), Integer.parseInt(data.get("soLuongHoanThanh").toString().replace(".0", "")));
+								ResponseDTO response = ResponseDTO.builder()
+										.data(result)
+										.build();
+
+								json = AppUtils.GSON.toJson(response);
+								byte[] bytes = json.getBytes(StandardCharsets.UTF_8);
+								dos.write(bytes);
+								dos.flush();
+								break;
+							}
+						}
+
+					}
 					case "ChiTietLuongForm": {
 						switch (requestObject.getRequest()) {
 							case "chiTietLuongCongNhan": {
