@@ -383,22 +383,36 @@ public class ChucVuForm extends JPanel {
     }
 
     private void thucHienChucNangXoa() {
-        int isSelected = this.tblChucVu.getSelectedRow();
-        if (isSelected >= 0) {
+        new Thread(() -> {
+            try (var socket = new Socket(
+                    BUNDLE.getString("host"),
+                    Integer.parseInt(BUNDLE.getString("server.port")));
+                 var dis = new DataInputStream(socket.getInputStream());
+                 var dos = new DataOutputStream(socket.getOutputStream());
+            ) {
+                int isSelected = this.tblChucVu.getSelectedRow();
+                if (isSelected < 0) {
+                    JOptionPane.showMessageDialog(this, String.format("<html><p>%s</p></html>",
+                            SystemConstants.BUNDLE.getString("chucVu.thongBaoChonChucVuDeXoa")));
+                    return;
+                }
+                ChucVu chucVu = chucVus.get(isSelected);
 
-            ChucVu chucVu = this.chucVus.get(isSelected);
-            int choose = -1;
-            if (SystemConstants.LANGUAGE == 1) {
-                choose = JOptionPane.showConfirmDialog(this,
-                        "You want to delete position " + chucVu.getTenChucVu() + " ?.", "Confirm",
-                        JOptionPane.YES_NO_OPTION);
-            } else {
-                choose = JOptionPane.showConfirmDialog(this, "Bạn có muốn xóa chức vụ " + chucVu.getTenChucVu() + " ?.",
-                        "Xác nhận", JOptionPane.YES_NO_OPTION);
-            }
-            if (choose == JOptionPane.OK_OPTION) {
-                boolean trangThai = this.chucVuService.xoaChucVuBangMa(chucVu.getMaChucVu());
-                if (trangThai) {
+                RequestDTO request = RequestDTO.builder()
+                        .requestType("ChucVuForm")
+                        .request("xoaChucVu")
+                        .data(chucVu)
+                        .build();
+
+                String json = AppUtils.GSON.toJson(request);
+                dos.writeUTF(json);
+                dos.flush();
+
+                //Receive data
+                json = new String(dis.readAllBytes());
+                ResponseDTO response = AppUtils.GSON.fromJson(json, ResponseDTO.class);
+                boolean result = (boolean) response.getData();
+                if (result) {
                     JOptionPane.showMessageDialog(this, String.format("<html><p>%s</p></html>",
                             SystemConstants.BUNDLE.getString("chucVu.thongBaoXoaThanhCong")));
                     this.thucHienChucNangLamMoi();
@@ -406,10 +420,9 @@ public class ChucVuForm extends JPanel {
                     JOptionPane.showMessageDialog(this, String.format("<html><p>%s</p></html>",
                             SystemConstants.BUNDLE.getString("chucVu.thongBaoXoaKhongThanhCong")));
                 }
+            } catch (IOException e) {
+                throw new RuntimeException(e);
             }
-        } else {
-            JOptionPane.showMessageDialog(this, String.format("<html><p>%s</p></html>",
-                    SystemConstants.BUNDLE.getString("chucVu.thongBaoChonChucVuDeXoa")));
-        }
+        }).start();
     }
 }

@@ -236,6 +236,20 @@ public class ProductSalaryApplicationTuyen {
                                 break;
 
                             }
+                            case "xoaChucVu": {
+                                ChucVu chucVu = AppUtils.convert((Map<String, Object>) requestObject.getData(), ChucVu.class);
+                                boolean status = chucVuService.xoaChucVuBangMa(chucVu.getMaChucVu());
+
+                                ResponseDTO response = ResponseDTO.builder()
+                                        .data(status)
+                                        .build();
+                                json = AppUtils.GSON.toJson(response);
+                                byte[] bytes = json.getBytes(StandardCharsets.UTF_8);
+                                dos.write(bytes);
+                                dos.flush();
+                                break;
+
+                            }
                         }
                         break;
                     }
