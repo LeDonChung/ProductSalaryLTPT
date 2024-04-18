@@ -47,10 +47,12 @@ public class ChamCongCongNhanServiceImpl implements ChamCongCongNhanService {
 	@Override
 	public ChamCongCongNhan themChamCongCongNhan(ChamCongCongNhan chamCong) {
 		try {
+			String maPhanCong = genertateMaChamCongCongNhan(chamCong.getNgayChamCong(), chamCong.getCaLam());
+			chamCong.setMaChamCong(maPhanCong);
+
 			ChamCongCongNhan isExists = chamCongDAO.timKiemBangMaChamCongCongNhan(chamCong.getMaChamCong());
 			if (isExists != null) {
 				JOptionPane.showMessageDialog(null, SystemConstants.BUNDLE.getString("congNhan.congNhanTonTai"));
-				//JOptionPane.showMessageDialog(null, "Chấm công công nhân đã tồn tại!");
 				return null;
 			}
 
