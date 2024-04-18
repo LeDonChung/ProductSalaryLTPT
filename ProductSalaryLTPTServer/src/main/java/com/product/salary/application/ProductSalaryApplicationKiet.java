@@ -1,5 +1,6 @@
 package com.product.salary.application;
 
+import com.google.gson.internal.LinkedTreeMap;
 import com.product.salary.application.entity.*;
 import com.product.salary.application.service.*;
 import com.product.salary.application.service.impl.*;
@@ -13,9 +14,7 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
-import java.util.List;
-import java.util.Map;
-import java.util.ResourceBundle;
+import java.util.*;
 
 /**
  * @author Lê Đôn Chủng: Code giao diện
@@ -315,6 +314,24 @@ public class ProductSalaryApplicationKiet {
 					}
 					case "PhanCongCongNhanForm": {
 						switch (requestObject.getRequest()) {
+							case "phanCongCongNhan": {
+								List<Map<String, Object>> data = (List<Map<String, Object>>) requestObject.getData();
+								System.out.println("Data: " + data);
+								List<PhanCongCongNhan> danhSachPhanCong = data.stream()
+										.map(e -> AppUtils.convert(e, PhanCongCongNhan.class))
+										.toList();
+								System.out.println("DanhSachPhanCong: " + danhSachPhanCong);
+								List<PhanCongCongNhan> dsPhanCong = phanCongCongViecService.phanCongNhieuCongNhan(danhSachPhanCong);
+								ResponseDTO response = ResponseDTO.builder()
+										.data(dsPhanCong)
+										.build();
+								//System.out.println("Response: " + response);
+								json = AppUtils.GSON.toJson(response);
+								byte[] bytes = json.getBytes(StandardCharsets.UTF_8);
+								dos.write(bytes);
+								dos.flush();
+								break;
+							}
 							case "timKiemTatCaSanPham": {
 								List<SanPham> sanPhams = sanPhamService.timKiemTatCaSanPham();
 								ResponseDTO response = ResponseDTO.builder()
@@ -405,23 +422,6 @@ public class ProductSalaryApplicationKiet {
 								byte[] bytes = json.getBytes(StandardCharsets.UTF_8);
 								dos.write(bytes);
 								dos.flush();
-								break;
-							}
-
-							case "phanCongNhieuCongNhan": {
-								List<PhanCongCongNhan> phanCongCongNhans = phanCongCongViecService.phanCongNhieuCongNhan((List<PhanCongCongNhan>) requestObject.getData());
-								for (PhanCongCongNhan phanCongCongNhan : phanCongCongNhans) {
-									System.out.println("xxxxxxxxx-----: " + phanCongCongNhan.getMaPhanCong());
-								}
-//								ResponseDTO response = ResponseDTO.builder()
-//										.data(phanCongCongNhans)
-//										.build();
-//								//System.out.println("Response: " + response);
-//								json = AppUtils.GSON.toJson(response);
-//								//System.out.println("Response: " + json);
-//								byte[] bytes = json.getBytes(StandardCharsets.UTF_8);
-//								dos.write(bytes);
-//								dos.flush();
 								break;
 							}
 						}
