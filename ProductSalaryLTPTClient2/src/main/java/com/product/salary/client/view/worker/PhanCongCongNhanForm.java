@@ -31,10 +31,8 @@ import java.net.Socket;
 import java.sql.Date;
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.util.ArrayList;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
-import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 
 public class PhanCongCongNhanForm extends JPanel {
@@ -659,31 +657,6 @@ public class PhanCongCongNhanForm extends JPanel {
 			if (!thucHienChucNangKiemTra()) {
 				return;
 			}
-			List<Integer> viTriCongNhanDuocChon = new ArrayList<Integer>();
-			for (int i = 0; i < dsCongNhan.size(); i++) {
-				Boolean isSelected = (Boolean) this.tblCongNhan.getValueAt(i, 5);
-				if (isSelected != null) {
-					if(isSelected == true) {
-						viTriCongNhanDuocChon.add(i);
-					}
-				}
-			}
-			// Thông tin chung
-			LocalDate ngayPhanCong = DateConvertUtils.asLocalDate(jcNgayPhanCong.getDate(), ZoneId.systemDefault());
-			CongDoanSanPham congDoan = (CongDoanSanPham) modelCongDoan.getSelectedItem();
-			SanPham sp = (SanPham) modelSanPham.getSelectedItem();
-			// Danh sách phân công được thêm
-			List<PhanCongCongNhan> danhSachPhanCong = new ArrayList<PhanCongCongNhan>();
-			PhanCongCongNhan genMa = new PhanCongCongNhan();
-
-			for (int i = 0; i < viTriCongNhanDuocChon.size(); i++) {
-				CongNhan congNhan = dsCongNhan.get(viTriCongNhanDuocChon.get(i));
-				genMa.setCongNhan(congNhan);
-				genMa.setCongDoanSanPham(congDoan);
-				String ma = null;
-				PhanCongCongNhan phanCong = new PhanCongCongNhan(ma, congNhan, congDoan, ngayPhanCong);
-				danhSachPhanCong.add(phanCong);
-			}
 			new Thread(() -> {
 				try (var socket = new Socket(
 						BUNDLE.getString("host"),
@@ -691,24 +664,52 @@ public class PhanCongCongNhanForm extends JPanel {
 					 var dos = new DataOutputStream(socket.getOutputStream());
 					 var dis = new DataInputStream(socket.getInputStream())
 				){
+					List<Integer> viTriCongNhanDuocChon = new ArrayList<Integer>();
+					for (int i = 0; i < dsCongNhan.size(); i++) {
+						Boolean isSelected = (Boolean) this.tblCongNhan.getValueAt(i, 5);
+						if (isSelected != null) {
+							if(isSelected == true) {
+								viTriCongNhanDuocChon.add(i);
+							}
+						}
+					}
+					// Thông tin chung
+					LocalDate ngayPhanCong = DateConvertUtils.asLocalDate(jcNgayPhanCong.getDate(), ZoneId.systemDefault());
+					CongDoanSanPham congDoan = (CongDoanSanPham) modelCongDoan.getSelectedItem();
+					CongDoanSanPham congDoanNew = new CongDoanSanPham();
+					String maCongDoan = this.txtMaCongDoan.getText();
+//					System.out.println("Ma cong doan: " + maCongDoan);
+					congDoanNew.setTenCongDoan(congDoan.getTenCongDoan());
+					congDoanNew.setMaCongDoan(congDoan.getMaCongDoan());
+					SanPham sp = (SanPham) modelSanPham.getSelectedItem();
+					// Danh sách phân công được thêm
+					List<PhanCongCongNhan> danhSachPhanCong = new ArrayList<PhanCongCongNhan>();
+					for (int i = 0; i < viTriCongNhanDuocChon.size(); i++) {
+						CongNhan congNhan = dsCongNhan.get(viTriCongNhanDuocChon.get(i));
+						CongNhan congNhanNew = new CongNhan();
+						congNhanNew.setMaCongNhan(congNhan.getMaCongNhan());
+						PhanCongCongNhan phanCong = new PhanCongCongNhan(null, congNhanNew, congDoanNew, ngayPhanCong);
+						danhSachPhanCong.add(phanCong);
+					}
 					// Send Data
 					RequestDTO request = RequestDTO.builder()
 							.requestType("PhanCongCongNhanForm")
-							.request("phanCongNhieuCongNhan")
+							.request("phanCongCongNhan")
 							.data(danhSachPhanCong)
 							.build();
-					//System.out.println("Sending request: " + request);
+					System.out.println("PhanCong request: " + request);
 					String json = AppUtils.GSON.toJson(request);
+//					System.out.println("PhanCong request json1020170001: " + json);
 					dos.writeUTF(json);
 					dos.flush();
 
 					// Receive Data
 					json = new String(dis.readAllBytes());
 					ResponseDTO response = AppUtils.GSON.fromJson(json, ResponseDTO.class);
-					//System.out.println("Receive response: " + response);
-					List<Map<String, Object>> data = (List<Map<String, Object>>) response.getData();
-					List<PhanCongCongNhan> danhSachPhanCongs = data.stream().map((value) -> AppUtils.convert(value, PhanCongCongNhan.class)).collect(Collectors.toList());
-					if (!danhSachPhanCongs.isEmpty()) {
+//					System.out.println("Receive response: " + response);
+					List<PhanCongCongNhan> data = (List<PhanCongCongNhan>) response.getData();
+
+					if (!data.isEmpty()) {
 						JOptionPane.showMessageDialog(this,
 								SystemConstants.BUNDLE.getString("phanCongCongNhan.phanCongThanhCong"));
 						thucHienChucNangChonCongDoan();
