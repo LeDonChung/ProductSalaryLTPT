@@ -89,7 +89,7 @@ public class PhanCongCongViecServiceImpl implements PhanCongCongViecService {
 				phanCongCongNhanNews.add(phanCongCongNhan(phanCongCongNhan));
 			}
 		} catch (Exception e) {
-			JOptionPane.showMessageDialog(null, SystemConstants.BUNDLE.getString("congNhan.loiHeThong"));
+			//JOptionPane.showMessageDialog(null, SystemConstants.BUNDLE.getString("congNhan.loiHeThong"));
 			e.printStackTrace();
 		}
 		return phanCongCongNhanNews;

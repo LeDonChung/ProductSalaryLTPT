@@ -58,6 +58,7 @@ public class PhanCongCongViecDAOImpl extends AbstractDAO implements PhanCongCong
 	public PhanCongCongNhan phanCongCongNhan(PhanCongCongNhan phanCongCongNhan) {
 		try(var em = getEntityManager()){
 			em.getTransaction().begin();
+			phanCongCongNhan.getCongNhan().setHinhAnh(null);
 			em.persist(phanCongCongNhan);
 			em.getTransaction().commit();
 			return phanCongCongNhan;
