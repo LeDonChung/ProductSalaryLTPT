@@ -5,10 +5,8 @@ package com.product.salary.client.view.product;
  * @author Lê Đôn Chủng: Code xử lý
  */
 
-import com.product.salary.application.common.SystemConstants;
+import com.product.salary.client.common.SystemConstants;
 import com.product.salary.application.entity.SanPham;
-import com.product.salary.application.service.SanPhamService;
-import com.product.salary.application.service.impl.SanPhamServiceImpl;
 import com.product.salary.application.utils.*;
 import com.product.salary.application.utils.excels.SanPhamExcelUtils;
 import org.apache.commons.lang3.ObjectUtils;
@@ -31,31 +29,30 @@ import java.util.stream.Collectors;
 
 public class TimKiemSanPhamForm extends JPanel {
 	private static final long serialVersionUID = 1L;
-	private JTextField txtMaSanPham;
-	private JTextField txtTenSanPham;
-	private JTextField txtSoLuongTon;
-	private JTextField txtChatLieu;
-	private JTextField txtSoCongDoan;
-	private JTextField txtDonViTinh;
-	private JComboBox cmbTrangThai;
-	private SanPhamService sanPhamService;
+	private final JTextField txtMaSanPham;
+	private final JTextField txtTenSanPham;
+	private final JTextField txtSoLuongTon;
+	private final JTextField txtChatLieu;
+	private final JTextField txtSoCongDoan;
+	private final JTextField txtDonViTinh;
+	private final JComboBox cmbTrangThai;
 	private List<SanPham> sanPhams;
 	private DefaultTableModel tableModelSanPham;
-	private JTable tblSanPham;
-	private JButton btnTimKiem;
-	private JTextField txtDonGia;
-	private DefaultComboBoxModel cbmdfTrangThai;
-	private JLabel lblHinhAnh;
-	private JLabel lblLoiMaSanPham;
-	private JLabel lblLoiTenSanPham;
-	private JLabel lblLoiSoLuongTon;
-	private JLabel lblLoiChatLieu;
-	private JLabel lblLoiDonViTinh;
-	private JLabel lblLoiSoCongDoan;
-	private JLabel lblLoiTrangThai;
-	private JLabel lblLoiDonGia;
-	private JButton btnLamMoi;
-	private JButton btnExport;
+	private final JTable tblSanPham;
+	private final JButton btnTimKiem;
+	private final JTextField txtDonGia;
+	private final DefaultComboBoxModel cbmdfTrangThai;
+	private final JLabel lblHinhAnh;
+	private final JLabel lblLoiMaSanPham;
+	private final JLabel lblLoiTenSanPham;
+	private final JLabel lblLoiSoLuongTon;
+	private final JLabel lblLoiChatLieu;
+	private final JLabel lblLoiDonViTinh;
+	private final JLabel lblLoiSoCongDoan;
+	private final JLabel lblLoiTrangThai;
+	private final JLabel lblLoiDonGia;
+	private final JButton btnLamMoi;
+	private final JButton btnExport;
 	private final ResourceBundle BUNDLE = ResourceBundle.getBundle("app");
 
 	/**
@@ -442,8 +439,7 @@ public class TimKiemSanPhamForm extends JPanel {
 	}
 
 	private void init() {
-		this.sanPhamService = new SanPhamServiceImpl();
-		this.sanPhams = new ArrayList<SanPham>();
+		this.sanPhams = new ArrayList<>();
 
 		this.loadTable();
 	}

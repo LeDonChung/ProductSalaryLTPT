@@ -4,7 +4,7 @@ package com.product.salary.client.view.contract;
   @author Lê Đôn Chủng: Code giao diện, Xử lý code
  */
 
-import com.product.salary.application.common.SystemConstants;
+import com.product.salary.client.common.SystemConstants;
 import com.product.salary.application.entity.ChiTietHopDong;
 import com.product.salary.application.entity.HopDong;
 import com.product.salary.application.entity.SanPham;

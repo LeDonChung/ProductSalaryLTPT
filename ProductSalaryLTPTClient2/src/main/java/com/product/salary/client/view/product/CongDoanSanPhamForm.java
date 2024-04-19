@@ -3,9 +3,6 @@ package com.product.salary.client.view.product;
 import com.product.salary.client.common.SystemConstants;
 import com.product.salary.application.entity.CongDoanSanPham;
 import com.product.salary.application.entity.SanPham;
-import com.product.salary.application.service.CongDoanSanPhamService;
-import com.product.salary.application.service.impl.CongDoanSanPhamServiceImpl;
-import com.product.salary.application.service.impl.SanPhamServiceImpl;
 import com.product.salary.application.utils.*;
 import com.product.salary.application.utils.excels.CongDoanSanPhamExcelUtils;
 import com.toedter.calendar.JDateChooser;
@@ -50,7 +47,6 @@ public class CongDoanSanPhamForm extends JPanel {
     private final JButton btnXoaTrang;
     private final JTable tblDanhSachSanPham;
     private final DefaultTableModel tableModelSanPham;
-    private CongDoanSanPhamService congDoanSanPhamService;
     private final DefaultTableModel tableModelCongDoanSanPham;
     private final JDateChooser jcThoiHan;
     private List<CongDoanSanPham> congDoanSanPhamLamTruoc;
@@ -59,7 +55,7 @@ public class CongDoanSanPhamForm extends JPanel {
     private final JButton btnExport;
     private final JCheckBox cbxCongDoanLamTruoc;
     private final JComboBox cbbCongDoanSanPhamLamTruoc;
-    private DefaultComboBoxModel<CongDoanSanPham> dfcbbCongDoanSanPhamLamTruoc;
+    private final DefaultComboBoxModel<CongDoanSanPham> dfcbbCongDoanSanPhamLamTruoc;
 
     /**
      * Create the panel.
@@ -204,7 +200,7 @@ public class CongDoanSanPhamForm extends JPanel {
         cbxCongDoanLamTruoc.setBounds(101, 0, 159, 40);
         pnlThuTuLam.add(cbxCongDoanLamTruoc);
 
-        dfcbbCongDoanSanPhamLamTruoc = new DefaultComboBoxModel<CongDoanSanPham>();
+        dfcbbCongDoanSanPhamLamTruoc = new DefaultComboBoxModel<>();
         cbbCongDoanSanPhamLamTruoc = new JComboBox(dfcbbCongDoanSanPhamLamTruoc);
         cbbCongDoanSanPhamLamTruoc.setFont(new Font("Times New Roman", Font.PLAIN, 16));
         cbbCongDoanSanPhamLamTruoc.setBounds(266, 0, 224, 40);
@@ -412,7 +408,6 @@ public class CongDoanSanPhamForm extends JPanel {
         this.sanPhams = new ArrayList<>();
         this.congDoanSanPhams = new ArrayList<>();
         this.congDoanSanPhamLamTruoc = new ArrayList<>();
-        this.congDoanSanPhamService = new CongDoanSanPhamServiceImpl();
         this.loadDataSanPham();
     }
 
@@ -595,27 +590,27 @@ public class CongDoanSanPhamForm extends JPanel {
     }
 
     private void thucHienChucNangThemNhieu() {
-        int index = this.tblDanhSachSanPham.getSelectedRow();
-        if (index >= 0) {
-            List<CongDoanSanPham> congDoanSanPhams = CongDoanSanPhamExcelUtils.importExcelSanPham();
-            if (!congDoanSanPhams.isEmpty()) {
-                SanPham sanPham = sanPhams.get(index);
-                congDoanSanPhams = this.congDoanSanPhamService.themNhieuCongDoanSanPham(sanPham, congDoanSanPhams);
-                String message = "";
-                if (SystemConstants.LANGUAGE == 0) {
-                    message = String.format("Đã thêm %d công đoạn sản phẩm vào sản phẩm %s.", congDoanSanPhams.size(),
-                            sanPham.getTenSanPham());
-                } else {
-                    message = String.format("Added %d of the product stage to the product %s.", congDoanSanPhams.size(),
-                            sanPham.getTenSanPham());
-                }
-                JOptionPane.showMessageDialog(this, message);
-                thucHienChucNangXoaTrang();
-            }
-        } else {
-            JOptionPane.showMessageDialog(this,
-                    SystemConstants.BUNDLE.getString("congDoanSanPham.thongBao.vuiLongChonSanPham"));
-        }
+//        int index = this.tblDanhSachSanPham.getSelectedRow();
+//        if (index >= 0) {
+//            List<CongDoanSanPham> congDoanSanPhams = CongDoanSanPhamExcelUtils.importExcelSanPham();
+//            if (!congDoanSanPhams.isEmpty()) {
+//                SanPham sanPham = sanPhams.get(index);
+//                congDoanSanPhams = this.congDoanSanPhamService.themNhieuCongDoanSanPham(sanPham, congDoanSanPhams);
+//                String message = "";
+//                if (SystemConstants.LANGUAGE == 0) {
+//                    message = String.format("Đã thêm %d công đoạn sản phẩm vào sản phẩm %s.", congDoanSanPhams.size(),
+//                            sanPham.getTenSanPham());
+//                } else {
+//                    message = String.format("Added %d of the product stage to the product %s.", congDoanSanPhams.size(),
+//                            sanPham.getTenSanPham());
+//                }
+//                JOptionPane.showMessageDialog(this, message);
+//                thucHienChucNangXoaTrang();
+//            }
+//        } else {
+//            JOptionPane.showMessageDialog(this,
+//                    SystemConstants.BUNDLE.getString("congDoanSanPham.thongBao.vuiLongChonSanPham"));
+//        }
 
     }
 

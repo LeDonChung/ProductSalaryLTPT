@@ -4,7 +4,7 @@
 
 package com.product.salary.client.view.other;
 
-import com.product.salary.application.common.SystemConstants;
+import com.product.salary.client.common.SystemConstants;
 import com.product.salary.application.entity.Account;
 import com.product.salary.application.utils.AppUtils;
 import com.product.salary.application.utils.RequestDTO;

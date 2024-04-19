@@ -4,30 +4,16 @@
 
 package com.product.salary.client.view.other;
 
-import com.product.salary.application.common.SystemConstants;
-import com.product.salary.application.entity.NhanVien;
-import com.product.salary.application.service.AccountService;
-import com.product.salary.application.service.NhanVienService;
-import com.product.salary.application.service.impl.AccountServiceImpl;
-import com.product.salary.application.service.impl.NhanVienServiceImpl;
-import com.product.salary.application.utils.PhoneUtils;
-import org.apache.commons.lang3.ObjectUtils;
+import com.product.salary.client.common.SystemConstants;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.Random;
 
 public class QuenMatKhauForm extends JFrame {
-	private JTextField txtMaNhanVien;
-	private JButton btnGuiMatKhauMoi;
-	private JButton btnDangNhap;
-	private NhanVienService nhanVienService;
-	private JTextField txtCccd;
-	private AccountService accountService;
+    private final JButton btnGuiMatKhauMoi;
+	private final JButton btnDangNhap;
 
-	public QuenMatKhauForm() {
+    public QuenMatKhauForm() {
 
 		SystemConstants.initLanguage();
 		setIconImage(Toolkit.getDefaultToolkit()
@@ -59,7 +45,7 @@ public class QuenMatKhauForm extends JFrame {
 		lblMaNhanVien.setBounds(10, 11, 146, 24);
 		pnlMaNhanVien.add(lblMaNhanVien);
 
-		txtMaNhanVien = new JTextField();
+        JTextField txtMaNhanVien = new JTextField();
 		txtMaNhanVien.setFont(new Font("Times New Roman", Font.PLAIN, 16));
 		txtMaNhanVien.setBounds(10, 38, 360, 39);
 		pnlMaNhanVien.add(txtMaNhanVien);
@@ -77,7 +63,7 @@ public class QuenMatKhauForm extends JFrame {
 		lblCccd.setBounds(10, 11, 146, 24);
 		pnlCccd.add(lblCccd);
 
-		txtCccd = new JTextField();
+        JTextField txtCccd = new JTextField();
 		txtCccd.setFont(new Font("Times New Roman", Font.PLAIN, 16));
 		txtCccd.setColumns(10);
 		txtCccd.setBounds(10, 39, 360, 39);
@@ -106,56 +92,48 @@ public class QuenMatKhauForm extends JFrame {
 	}
 
 	public void init() {
-		nhanVienService = new NhanVienServiceImpl();
-		accountService = new AccountServiceImpl();
 	}
 
 	public void event() {
-		btnDangNhap.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				new DangNhapForm().setVisible(true);
-				dispose();
-			}
-		});
-		btnGuiMatKhauMoi.addActionListener((e) -> {
-			thucHienChucNangGuiLaiMatKhau();
-		});
+		btnDangNhap.addActionListener(e -> {
+            new DangNhapForm().setVisible(true);
+            dispose();
+        });
+		btnGuiMatKhauMoi.addActionListener((e) -> thucHienChucNangGuiLaiMatKhau());
 
 	}
 
 	private void thucHienChucNangGuiLaiMatKhau() {
-		String maNhanVien = txtMaNhanVien.getText().trim();
-		String cccd = txtCccd.getText().trim();
-		if (ObjectUtils.isEmpty(cccd) || ObjectUtils.isEmpty(cccd)) {
-			if (SystemConstants.LANGUAGE == 1) {
-				JOptionPane.showMessageDialog(this, "Both employee code and ID Card cannot be empty");
-			} else {
-				JOptionPane.showMessageDialog(this, "Cả mã nhân viên và căn cước công dân đều không được rỗng");
-			}
-		}
-
-		NhanVien nhanVien = nhanVienService.timKiemBangMaNhanVienVaCccd(maNhanVien, cccd);
-
-		Random random = new Random();
-		int max = 999999;
-		int min = 100000;
-		String matKhauMoi = String.format("%s", random.nextInt(max - min + 1) + min);
-		accountService.capNhatMatKhau(nhanVien.getMaNhanVien(), matKhauMoi);
-
-		String message = "Xin chào " + nhanVien.getHoTen()
-				+ "! Mật khẩu mới của tài khoản đăng nhập vào CTK Home của bạn là : " + matKhauMoi;
-		String phone = "84" + nhanVien.getSoDienThoai().substring(1);
-		PhoneUtils.sendNotification(phone, message);
-
-		if (SystemConstants.LANGUAGE == 1) {
-			JOptionPane.showMessageDialog(this, "Resended new password to phone number successfull!");
-		} else {
-			JOptionPane.showMessageDialog(this, "Gửi lại mật khẩu đến số điện thoại thành công!");
-		}
-
-		new DangNhapForm().setVisible(true);
-		dispose();
+//		String maNhanVien = txtMaNhanVien.getText().trim();
+//		String cccd = txtCccd.getText().trim();
+//		if (ObjectUtils.isEmpty(cccd) || ObjectUtils.isEmpty(cccd)) {
+//			if (SystemConstants.LANGUAGE == 1) {
+//				JOptionPane.showMessageDialog(this, "Both employee code and ID Card cannot be empty");
+//			} else {
+//				JOptionPane.showMessageDialog(this, "Cả mã nhân viên và căn cước công dân đều không được rỗng");
+//			}
+//		}
+//
+//		// NhanVien nhanVien = nhanVienService.timKiemBangMaNhanVienVaCccd(maNhanVien, cccd);
+//
+//		Random random = new Random();
+//		int max = 999999;
+//		int min = 100000;
+//		String matKhauMoi = String.format("%s", random.nextInt(max - min + 1) + min);
+////		accountService.capNhatMatKhau(nhanVien.getMaNhanVien(), matKhauMoi);
+//
+//		String message = "Xin chào " + nhanVien.getHoTen()
+//				+ "! Mật khẩu mới của tài khoản đăng nhập vào CTK Home của bạn là : " + matKhauMoi;
+//		String phone = "84" + nhanVien.getSoDienThoai().substring(1);
+//		PhoneUtils.sendNotification(phone, message);
+//
+//		if (SystemConstants.LANGUAGE == 1) {
+//			JOptionPane.showMessageDialog(this, "Resended new password to phone number successfull!");
+//		} else {
+//			JOptionPane.showMessageDialog(this, "Gửi lại mật khẩu đến số điện thoại thành công!");
+//		}
+//
+//		new DangNhapForm().setVisible(true);
+//		dispose();
 	}
 }

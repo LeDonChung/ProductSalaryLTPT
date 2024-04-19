@@ -1,6 +1,6 @@
 package com.product.salary.client.view.statistic;
 
-import com.product.salary.application.common.SystemConstants;
+import com.product.salary.client.common.SystemConstants;
 import com.product.salary.application.utils.AppUtils;
 import com.product.salary.application.utils.PriceFormatterUtils;
 import com.product.salary.application.utils.RequestDTO;
