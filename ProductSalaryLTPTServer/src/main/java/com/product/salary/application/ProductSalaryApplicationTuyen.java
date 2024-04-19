@@ -299,8 +299,8 @@ public class ProductSalaryApplicationTuyen {
                                 break;
                             }
                             case "capNhatTrangThaiNhanVien": {
-                                NhanVien nhanVien = AppUtils.convert((Map<String, Object>) requestObject.getData(), NhanVien.class);
-                                boolean status = nhanVienService.capNhatTrangThaiNghiLamCuaNhanVien(nhanVien.getMaNhanVien());
+                                String maNhanVien = (String) requestObject.getData();
+                                boolean status = nhanVienService.capNhatTrangThaiNghiLamCuaNhanVien(maNhanVien);
 
                                 ResponseDTO response = ResponseDTO.builder()
                                         .data(status)
