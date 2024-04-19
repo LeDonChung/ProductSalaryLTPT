@@ -1,17 +1,8 @@
 package com.product.salary.application;
 
-import com.product.salary.application.entity.Account;
-import com.product.salary.application.entity.ChucVu;
-import com.product.salary.application.entity.HopDong;
-import com.product.salary.application.entity.PhongBan;
-import com.product.salary.application.service.AccountService;
-import com.product.salary.application.service.ChucVuService;
-import com.product.salary.application.service.HopDongService;
-import com.product.salary.application.service.PhongBanService;
-import com.product.salary.application.service.impl.AccountServiceImpl;
-import com.product.salary.application.service.impl.ChucVuServiceImpl;
-import com.product.salary.application.service.impl.HopDongServiceImpl;
-import com.product.salary.application.service.impl.PhongBanServiceImpl;
+import com.product.salary.application.entity.*;
+import com.product.salary.application.service.*;
+import com.product.salary.application.service.impl.*;
 import com.product.salary.application.utils.AppUtils;
 import com.product.salary.application.utils.RequestDTO;
 import com.product.salary.application.utils.ResponseDTO;
@@ -58,13 +49,17 @@ public class ProductSalaryApplicationTuyen {
         private final HopDongService hopDongService;
         private final PhongBanService phongBanService;
         private final ChucVuService chucVuService;
+        private final TrinhDoService trinhDoService;
+        private final NhanVienService nhanVienService;
 
         public handlerClient(Socket socket) {
             this.socket = socket;
+            this.trinhDoService = new TrinhDoServiceImpl();
             this.accountService = new AccountServiceImpl();
             this.hopDongService = new HopDongServiceImpl();
             this.phongBanService = new PhongBanServiceImpl();
             this.chucVuService = new ChucVuServiceImpl();
+            this.nhanVienService = new NhanVienServiceImpl();
         }
 
 
@@ -249,6 +244,72 @@ public class ProductSalaryApplicationTuyen {
                                 dos.flush();
                                 break;
 
+                            }
+                        }
+                        break;
+                    }
+                    case "NhanVienForm": {
+                        switch (requestObject.getRequest()) {
+                            case "timKiemTatCaTrinhDo": {
+                                List<TrinhDo> trinhDos = trinhDoService.timKiemTatCaTrinhDo();
+                                ResponseDTO response = ResponseDTO.builder()
+                                        .data(trinhDos)
+                                        .build();
+                                json = AppUtils.GSON.toJson(response);
+                                byte[] bytes = json.getBytes(StandardCharsets.UTF_8);
+                                dos.write(bytes);
+                                dos.flush();
+                                break;
+                            }
+                            case "timKiemTatCaNhanVien": {
+                                List<NhanVien> nhanViens = nhanVienService.timKiemTatCaNhanVien();
+                                ResponseDTO response = ResponseDTO.builder()
+                                        .data(nhanViens)
+                                        .build();
+                                json = AppUtils.GSON.toJson(response);
+                                byte[] bytes = json.getBytes(StandardCharsets.UTF_8);
+                                dos.write(bytes);
+                                dos.flush();
+                                break;
+                            }
+                            case "themNhanVien": {
+                                NhanVien nhanVien = AppUtils.convert((Map<String, Object>) requestObject.getData(), NhanVien.class);
+                                NhanVien nhanVienThem = nhanVienService.themNhanVien(nhanVien);
+
+                                ResponseDTO response = ResponseDTO.builder()
+                                        .data(nhanVienThem)
+                                        .build();
+                                json = AppUtils.GSON.toJson(response);
+                                byte[] bytes = json.getBytes(StandardCharsets.UTF_8);
+                                dos.write(bytes);
+                                dos.flush();
+                                break;
+                            }
+                            case "capNhatNhanVien": {
+                                NhanVien nhanVien = AppUtils.convert((Map<String, Object>) requestObject.getData(), NhanVien.class);
+                                NhanVien nhanVienCapNhat = nhanVienService.capNhatNhanVien(nhanVien);
+
+                                ResponseDTO response = ResponseDTO.builder()
+                                        .data(nhanVienCapNhat)
+                                        .build();
+                                json = AppUtils.GSON.toJson(response);
+                                byte[] bytes = json.getBytes(StandardCharsets.UTF_8);
+                                dos.write(bytes);
+                                dos.flush();
+                                break;
+                            }
+                            case "capNhatTrangThaiNhanVien": {
+                                NhanVien nhanVien = AppUtils.convert((Map<String, Object>) requestObject.getData(), NhanVien.class);
+                                boolean status = nhanVienService.capNhatTrangThaiNghiLamCuaNhanVien(nhanVien.getMaNhanVien());
+
+                                ResponseDTO response = ResponseDTO.builder()
+                                        .data(status)
+                                        .build();
+                                json = AppUtils.GSON.toJson(response);
+                                byte[] bytes = json.getBytes(StandardCharsets.UTF_8);
+                                dos.write(bytes);
+                                dos.flush();
+                                break;
                             }
                         }
                         break;

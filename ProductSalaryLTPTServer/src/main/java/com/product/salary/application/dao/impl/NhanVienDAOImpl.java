@@ -44,7 +44,7 @@ public class NhanVienDAOImpl extends AbstractDAO implements NhanVienDAO, Seriali
             NhanVien nhanVien = em.find(NhanVien.class, maNhanVien);
             if (nhanVien != null) {
                 em.getTransaction().begin();
-                nhanVien.setTrangThai(!nhanVien.isTrangThai());
+                nhanVien.setTrangThai(false);
                 em.merge(nhanVien);
                 em.getTransaction().commit();
                 return true;
