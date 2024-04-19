@@ -29,7 +29,7 @@ public class LuongNhanVien implements Serializable {
 	@Column(name = "Nam", nullable = false)
 	private int nam;
 
-	@Column(name = "NgayTinhLuong", columnDefinition = "DATETIME NOT NULL DEFAULT GETDATE()")
+	@Column(name = "NgayTinhLuong", columnDefinition = "DATETIME NOT NULL")
 	private LocalDate ngayTinhLuong;
 
 	@Column(name = "Luong", columnDefinition = "FLOAT NOT NULL")

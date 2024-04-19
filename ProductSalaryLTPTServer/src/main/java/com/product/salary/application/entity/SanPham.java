@@ -25,7 +25,7 @@ public class SanPham implements Serializable {
 	@Column(name = "TenSanPham", columnDefinition = "NVARCHAR(70) NOT NULL")
 	private String tenSanPham;
 
-	@Column(name = "SoLuongTon", columnDefinition = "INT NOT NULL CHECK(SoLuongTon >= 0) DEFAULT 0")
+	@Column(name = "SoLuongTon", columnDefinition = "INT NOT NULL")
 	private int soLuongTon;
 
 	@Column(name = "HinhAnh", columnDefinition = "IMAGE")
@@ -37,13 +37,13 @@ public class SanPham implements Serializable {
 	@Column(name = "DonViTinh", columnDefinition = "NVARCHAR(70)")
 	private String donViTinh;
 
-	@Column(name = "DonGia", columnDefinition = "FLOAT NOT NULL DEFAULT 0")
+	@Column(name = "DonGia", columnDefinition = "FLOAT NOT NULL")
 	private Double donGia;
 
-	@Column(name = "SoCongDoan", columnDefinition = "INT DEFAULT 0")
+	@Column(name = "SoCongDoan", columnDefinition = "INT")
 	private int soCongDoan;
 
-	@Column(name = "TrangThai", columnDefinition = "BIT NOT NULL DEFAULT 1")
+	@Column(name = "TrangThai", columnDefinition = "BIT NOT NULL")
 	private Boolean trangThai;
 
 	@OneToMany(mappedBy = "sanPham", fetch = FetchType.EAGER, cascade = CascadeType.ALL)

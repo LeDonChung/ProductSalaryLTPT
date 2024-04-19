@@ -32,7 +32,7 @@ public class CongNhan implements Serializable {
 	@Column(name = "DiaChi", columnDefinition = "NVARCHAR(100)")
 	private String diaChi;
 
-	@Column(name = "GioiTinh", columnDefinition = "INT NOT NULL DEFAULT 0")
+	@Column(name = "GioiTinh", columnDefinition = "INT NOT NULL")
 	private Integer gioiTinh;
 
 	@Column(name = "CCCD", length = 12, unique = true)
@@ -57,7 +57,7 @@ public class CongNhan implements Serializable {
 	@Column(name = "HinhAnh", columnDefinition = "IMAGE")
 	private byte[] hinhAnh;
 
-	@Column(name = "TrangThai", columnDefinition = "BIT NOT NULL DEFAULT 1")
+	@Column(name = "TrangThai", columnDefinition = "BIT NOT NULL")
 	private Boolean trangThai;
 
 	@ManyToOne(fetch = FetchType.EAGER)

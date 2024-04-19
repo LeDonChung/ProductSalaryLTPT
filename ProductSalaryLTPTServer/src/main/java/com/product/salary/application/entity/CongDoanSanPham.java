@@ -22,10 +22,10 @@ public class CongDoanSanPham implements Serializable {
 	@Column(name = "TenCongDoan", columnDefinition = "NVARCHAR(70) NOT NULL")
 	private String tenCongDoan;
 
-	@Column(name = "SoLuongCanLam", columnDefinition = "INT NOT NULL DEFAULT 0")
+	@Column(name = "SoLuongCanLam", nullable = false)
 	private int soLuongCanLam;
 
-	@Column(name = "GiaCongDoan", columnDefinition = "FLOAT NOT NULL DEFAULT 0")
+	@Column(name = "GiaCongDoan", columnDefinition = "FLOAT NOT NULL")
 	private double giaCongDoan;
 
 	@Column(name = "ThoiHan", columnDefinition = "DATETIME")
@@ -39,7 +39,7 @@ public class CongDoanSanPham implements Serializable {
 	@JoinColumn(name = "MaSanPham")
 	private SanPham sanPham;
 
-	@Column(name = "TrangThai", columnDefinition = "BIT NOT NULL DEFAULT 1")
+	@Column(name = "TrangThai", columnDefinition = "BIT NOT NULL")
 	private boolean trangThai;
 
 	@Override

@@ -28,10 +28,10 @@ public class PhanCongCongNhan implements Serializable {
 	@JoinColumn(name = "MaCongDoan")
 	private CongDoanSanPham congDoanSanPham;
 
-	@Column(name = "NgayPhanCong", columnDefinition = "DATETIME NOT NULL DEFAULT GETDATE()")
+	@Column(name = "NgayPhanCong", columnDefinition = "DATETIME NOT NULL")
 	private LocalDate ngayPhanCong;
 
-	@Column(name = "TrangThai", columnDefinition = "BIT NOT NULL DEFAULT 0")
+	@Column(name = "TrangThai", columnDefinition = "BIT NOT NULL")
 	private boolean trangThai;
 
 	public PhanCongCongNhan(String maPhanCong,
