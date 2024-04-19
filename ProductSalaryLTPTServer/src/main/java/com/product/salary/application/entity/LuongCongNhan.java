@@ -27,7 +27,7 @@ public class LuongCongNhan implements Serializable {
 	@Column(name = "Nam")
 	private int nam;
 
-	@Column(name = "NgayTinhLuong", columnDefinition = "DATETIME NOT NULL DEFAULT GETDATE()")
+	@Column(name = "NgayTinhLuong", columnDefinition = "DATETIME NOT NULL")
 	private LocalDate ngayTinhLuong;
 
 	@Column(name = "Luong", columnDefinition = "FLOAT NOT NULL")

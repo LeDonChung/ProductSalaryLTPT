@@ -27,10 +27,10 @@ public class PhongBan implements Serializable {
 	@ToString.Exclude
 	private transient Set<NhanVien> nhanViens;
 
-	@Column(name = "SoLuongNhanVien", columnDefinition = "INT NOT NULL DEFAULT 0")
+	@Column(name = "SoLuongNhanVien", columnDefinition = "INT NOT NULL")
 	private Integer soLuongNhanVien;
 
-	@Column(name = "TrangThai", columnDefinition = "BIT NOT NULL DEFAULT 1")
+	@Column(name = "TrangThai", columnDefinition = "BIT NOT NULL")
 	private Boolean trangThai;
 
 	public Boolean isTrangThai() {

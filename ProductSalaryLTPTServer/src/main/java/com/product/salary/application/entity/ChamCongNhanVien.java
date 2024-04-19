@@ -29,10 +29,10 @@ public class ChamCongNhanVien implements Serializable {
     @JoinColumn(name = "MaCa")
     private CaLam caLam;
 
-    @Column(name = "NgayChamCong", columnDefinition = "DATETIME CHECK (NgayChamCong <= GETDATE())")
+    @Column(name = "NgayChamCong", columnDefinition = "DATETIME")
     private LocalDate ngayChamCong;
 
-    @Column(name = "TrangThai", columnDefinition = "INT NOT NULL DEFAULT 1")
+    @Column(name = "TrangThai", nullable = false)
     private int trangThai;
 
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
