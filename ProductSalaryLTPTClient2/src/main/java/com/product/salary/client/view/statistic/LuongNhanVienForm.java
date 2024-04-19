@@ -4,8 +4,6 @@ import com.product.salary.application.utils.AppUtils;
 import com.product.salary.application.utils.RequestDTO;
 import com.product.salary.application.utils.ResponseDTO;
 import com.product.salary.client.common.SystemConstants;
-import com.product.salary.application.service.LuongNhanVienService;
-import com.product.salary.application.service.impl.LuongNhanVienServiceImpl;
 import com.product.salary.application.utils.PriceFormatterUtils;
 import com.toedter.calendar.JMonthChooser;
 import com.toedter.calendar.JYearChooser;

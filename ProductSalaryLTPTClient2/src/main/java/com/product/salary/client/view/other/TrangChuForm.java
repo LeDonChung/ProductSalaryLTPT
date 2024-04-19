@@ -1,10 +1,8 @@
 package com.product.salary.client.view.other;
 
-import com.product.salary.application.common.SystemConstants;
+import com.product.salary.client.common.SystemConstants;
 import com.product.salary.application.entity.Account;
 import com.product.salary.application.entity.NhanVien;
-import com.product.salary.application.service.NhanVienService;
-import com.product.salary.application.service.impl.NhanVienServiceImpl;
 import com.product.salary.application.utils.AuthUtils;
 
 import javax.imageio.ImageIO;
@@ -17,26 +15,25 @@ import java.io.IOException;
 
 public class TrangChuForm extends JPanel {
 
-	private final JPanel pnlChinh;
-
-	public TrangChuForm() {
+    public TrangChuForm() {
 		setBorder(new LineBorder(new Color(0, 0, 0)));
 
 		setLayout(null);
-		pnlChinh = new JPanel() {
-			public void paintComponent(Graphics g) {
-				super.paintComponent(g);
-				BufferedImage image;
-				try {
-					image = ImageIO.read(new FileInputStream("src/main/resources/icon/png/banner.png"));
+        // TODO Auto-generated catch block
+        JPanel pnlChinh = new JPanel() {
+            public void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                BufferedImage image;
+                try {
+                    image = ImageIO.read(new FileInputStream("src/main/resources/icon/png/banner.png"));
 
-					g.drawImage(image, 0, 0, this);
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+                    g.drawImage(image, 0, 0, this);
+                } catch (IOException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
             }
-		};
+        };
 		pnlChinh.setBounds(10, 10, 1273, 825);
 		add(pnlChinh);
 		pnlChinh.setLayout(null);
