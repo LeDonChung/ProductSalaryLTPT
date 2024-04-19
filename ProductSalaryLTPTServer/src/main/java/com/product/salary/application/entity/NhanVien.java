@@ -58,7 +58,7 @@ public class NhanVien implements Serializable {
     @Column(name = "LuongCoSo", columnDefinition = "FLOAT NOT NULL")
     private double luongCoSo;
 
-    @Column(name = "HeSoLuong", columnDefinition = "DECIMAL(2, 2) NOT NULL")
+    @Column(name = "HeSoLuong", columnDefinition = "REAL NOT NULL")
     private double heSoLuong;
 
     @Column(name = "TroCap", columnDefinition = "FLOAT NOT NULL")

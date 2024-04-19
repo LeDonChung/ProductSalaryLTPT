@@ -705,7 +705,7 @@ public class NhanVienForm extends JPanel {
                         RequestDTO request = RequestDTO.builder()
                                 .requestType("NhanVienForm")
                                 .request("capNhatTrangThaiNhanVien")
-                                .data(nhanVien)
+                                .data(nhanVien.getMaNhanVien())
                                 .build();
                         String json = AppUtils.GSON.toJson(request);
                         dos.writeUTF(json);
@@ -778,8 +778,8 @@ public class NhanVienForm extends JPanel {
                     ChucVu chucVu = (ChucVu) cbbModelChucVu.getSelectedItem();
                     TrinhDo trinhDo = (TrinhDo) cbbModelTrinhDo.getSelectedItem();
                     String heSoLuong = (String) cmbHeSoLuong.getSelectedItem();
-                    byte[] hinhAnh = ImageUtils.convertToByteArray(lblHinhAnh.getIcon());
-
+                    // byte[] hinhAnh = ImageUtils.convertToByteArray(lblHinhAnh.getIcon());
+                    byte[] hinhAnh = new byte[1024];
                     int gioiTinh = radNam.isSelected() ? 1 : 0;
 
                     try {
@@ -812,7 +812,8 @@ public class NhanVienForm extends JPanel {
                             //receive data
                             json = new String(dis.readAllBytes());
                             ResponseDTO response = AppUtils.GSON.fromJson(json, ResponseDTO.class);
-                            nhanVienCapNhat = AppUtils.GSON.fromJson(response.getData().toString(), NhanVien.class);
+                            Map<String, Object> data = (Map<String, Object>) response.getData();
+                            nhanVienCapNhat = AppUtils.convert(data, NhanVien.class);
 
                             if (nhanVienCapNhat != null) {
                                 if (SystemConstants.LANGUAGE == 1) {
@@ -871,8 +872,8 @@ public class NhanVienForm extends JPanel {
                 ChucVu chucVu = (ChucVu) cbbModelChucVu.getSelectedItem();
                 TrinhDo trinhDo = (TrinhDo) cbbModelTrinhDo.getSelectedItem();
                 String heSoLuong = (String) cmbHeSoLuong.getSelectedItem();
-                byte[] hinhAnh = ImageUtils.convertToByteArray(lblHinhAnh.getIcon());
-
+                // byte[] hinhAnh = ImageUtils.convertToByteArray(lblHinhAnh.getIcon());
+                byte[] hinhAnh = new byte[1024];
                 int gioiTinh = radNam.isSelected() ? 1 : 0;
 
                 try {
@@ -889,6 +890,13 @@ public class NhanVienForm extends JPanel {
                             .build();
                     String json = AppUtils.GSON.toJson(request);
                     dos.writeUTF(json);
+
+
+                    // receive data
+                    json = new String(dis.readAllBytes());
+                    ResponseDTO response = AppUtils.GSON.fromJson(json, ResponseDTO.class);
+                    Map<String, Object> data = (Map<String, Object>) response.getData();
+                    nhanVien = AppUtils.convert(data, NhanVien.class);
 
                     if (nhanVien != null) {
                         if (SystemConstants.LANGUAGE == 1) {
