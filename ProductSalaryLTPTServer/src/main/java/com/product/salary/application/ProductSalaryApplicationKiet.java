@@ -1,6 +1,7 @@
 package com.product.salary.application;
 
 import com.google.gson.internal.LinkedTreeMap;
+import com.product.salary.application.common.SystemConstants;
 import com.product.salary.application.entity.*;
 import com.product.salary.application.service.*;
 import com.product.salary.application.service.impl.*;
@@ -32,6 +33,7 @@ public class ProductSalaryApplicationKiet {
 				);
 				) {
 			System.out.println("Server is running on port 23862");
+			SystemConstants.initLanguage();
 			while(true) {
 				Socket socket = sever.accept();
 				System.out.println("Client connected: " + socket.getInetAddress().getHostAddress());
@@ -130,6 +132,45 @@ public class ProductSalaryApplicationKiet {
 
 								json = AppUtils.GSON.toJson(response);
 								//System.out.println("Response: " + json);
+								byte[] bytes = json.getBytes(StandardCharsets.UTF_8);
+								dos.write(bytes);
+								dos.flush();
+								break;
+							}
+							case "themTayNghe": {
+								TayNghe tayNghe = AppUtils.convert((Map<String, Object>) requestObject.getData(), TayNghe.class);
+								TayNghe result = tayNgheService.themTayNghe(tayNghe);
+								ResponseDTO response = ResponseDTO.builder()
+										.data(result)
+										.build();
+								//System.out.println("Response: " + response);
+								json = AppUtils.GSON.toJson(response);
+								byte[] bytes = json.getBytes(StandardCharsets.UTF_8);
+								dos.write(bytes);
+								dos.flush();
+								break;
+							}
+							case "capNhatTayNghe": {
+								TayNghe tayNghe = AppUtils.convert((Map<String, Object>) requestObject.getData(), TayNghe.class);
+								TayNghe result = tayNgheService.capNhatTayNghe(tayNghe);
+								ResponseDTO response = ResponseDTO.builder()
+										.data(result)
+										.build();
+								//System.out.println("Response: " + response);
+								json = AppUtils.GSON.toJson(response);
+								byte[] bytes = json.getBytes(StandardCharsets.UTF_8);
+								dos.write(bytes);
+								dos.flush();
+								break;
+							}
+							case "xoaTayNgheBangMa": {
+								String ma = (String) requestObject.getData();
+								boolean result = tayNgheService.xoaTayNgheBangMa(ma);
+								ResponseDTO response = ResponseDTO.builder()
+										.data(result)
+										.build();
+								//System.out.println("Response: " + response);
+								json = AppUtils.GSON.toJson(response);
 								byte[] bytes = json.getBytes(StandardCharsets.UTF_8);
 								dos.write(bytes);
 								dos.flush();

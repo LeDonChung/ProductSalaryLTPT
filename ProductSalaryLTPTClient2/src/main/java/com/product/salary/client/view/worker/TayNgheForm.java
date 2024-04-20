@@ -2,8 +2,12 @@ package com.product.salary.client.view.worker;
 
 import com.product.salary.application.common.SystemConstants;
 import com.product.salary.application.entity.TayNghe;
+import com.product.salary.application.entity.ToNhom;
 import com.product.salary.application.service.TayNgheService;
 import com.product.salary.application.service.impl.TayNgheServiceImpl;
+import com.product.salary.application.utils.AppUtils;
+import com.product.salary.application.utils.RequestDTO;
+import com.product.salary.application.utils.ResponseDTO;
 import org.apache.commons.lang3.ObjectUtils;
 
 import javax.swing.*;
@@ -11,21 +15,28 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.ResourceBundle;
+import java.util.stream.Collectors;
 
 public class TayNgheForm extends JPanel {
-	private JTextField txtMaTayNghe;
-	private JTextField txtTenTayNghe;
-	private DefaultTableModel tableModelTayNghe;
-	private JTable tblTayNghe;
-	private JButton btnCapNhat;
-	private JButton btnXoa;
-	private JButton btnThem;
-	private JButton btnLamMoi;
+	private final static ResourceBundle BUNDLE = ResourceBundle.getBundle("app");
+	private final JTextField txtMaTayNghe;
+	private final JTextField txtTenTayNghe;
+	private final DefaultTableModel tableModelTayNghe;
+	private final JTable tblTayNghe;
+	private final JButton btnCapNhat;
+	private final JButton btnXoa;
+	private final JButton btnThem;
+	private final JButton btnLamMoi;
 	private List<TayNghe> tayNghes;
 	private TayNgheService tayNgheService;
-	private JLabel lblLoiTenTayNghe;
+	private final JLabel lblLoiTenTayNghe;
 
 	/**
 	 * Create the panel.
@@ -201,12 +212,38 @@ public class TayNgheForm extends JPanel {
 	}
 
 	private void loadTable() {
-		tableModelTayNghe.setRowCount(0);
-		this.tayNghes = this.tayNgheService.timKiemTatCaTayNghe();
-		int stt = 1;
-		for (TayNghe tayNghe : this.tayNghes) {
-			tableModelTayNghe.addRow(new Object[] { stt++, tayNghe.getMaTayNghe(), tayNghe.getTenTayNghe() });
-		}
+		new Thread(() -> {
+			try (var socket = new Socket(
+					BUNDLE.getString("host"),
+					Integer.parseInt(BUNDLE.getString("server.port")));
+				 var dos = new DataOutputStream(socket.getOutputStream());
+				 var dis = new DataInputStream(socket.getInputStream())
+			){
+				// Send Data
+				RequestDTO request = RequestDTO.builder()
+						.requestType("TayNgheForm")
+						.request("timKiemTatCaTayNghe")
+						.data("")
+						.build();
+//				System.out.println("Sending request: " + request);
+				String json = AppUtils.GSON.toJson(request);
+				dos.writeUTF(json);
+				dos.flush();
+
+				// Receive Data
+				json = new String(dis.readAllBytes());
+				ResponseDTO response = AppUtils.GSON.fromJson(json, ResponseDTO.class);
+				List<Map<String, Object>> data = (List<Map<String, Object>>) response.getData();
+				tayNghes = data.stream().map((value) -> AppUtils.convert(value, TayNghe.class)).collect(Collectors.toList());
+				tableModelTayNghe.setRowCount(0);
+				int stt = 1;
+				for (TayNghe tayNghe : this.tayNghes) {
+					tableModelTayNghe.addRow(new Object[] { stt++, tayNghe.getMaTayNghe(), tayNghe.getTenTayNghe() });
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}).start();
 	}
 
 	private void thucHienChucNangClickTayNghe() {
@@ -233,19 +270,45 @@ public class TayNgheForm extends JPanel {
 		if (!thucHienChucNangKiemTra()) {
 			return;
 		}
-		String maTayNghe = this.tayNgheService.generegateMaTayNghe();
+		String maTayNghe = "";
 		String tenTayNghe = this.txtTenTayNghe.getText().trim();
 		try {
-			TayNghe tayNghe = new TayNghe(maTayNghe, tenTayNghe);
-			tayNghe = this.tayNgheService.themTayNghe(tayNghe);
-			if (tayNghe != null) {
-				JOptionPane.showMessageDialog(this, SystemConstants.BUNDLE.getString("tayNghe.themTayNgheThanh"));
-				//JOptionPane.showMessageDialog(this, "Thêm tay nghề thành công.");
-				this.thucHienChucNangLamMoi();
-			} else {
-				JOptionPane.showMessageDialog(this, SystemConstants.BUNDLE.getString("tayNghe.themTayNgheKhongThanh"));
-				//JOptionPane.showMessageDialog(this, "Thêm tay nghề không thành công.");
-			}
+			new Thread(() -> {
+				try (var socket = new Socket(
+						BUNDLE.getString("host"),
+						Integer.parseInt(BUNDLE.getString("server.port")));
+					 var dos = new DataOutputStream(socket.getOutputStream());
+					 var dis = new DataInputStream(socket.getInputStream())
+				){
+					TayNghe tayNghe = new TayNghe(maTayNghe, tenTayNghe);
+					// Send Data
+					RequestDTO request = RequestDTO.builder()
+							.requestType("TayNgheForm")
+							.request("themTayNghe")
+							.data(tayNghe)
+							.build();
+//					System.out.println("Sending request: " + request);
+					String json = AppUtils.GSON.toJson(request);
+					dos.writeUTF(json);
+					dos.flush();
+
+					// Receive Data
+					json = new String(dis.readAllBytes());
+					ResponseDTO response = AppUtils.GSON.fromJson(json, ResponseDTO.class);
+					TayNghe result = AppUtils.convert((Map<String, Object>) response.getData(), TayNghe.class);
+					if (result != null) {
+						JOptionPane.showMessageDialog(this, SystemConstants.BUNDLE.getString("tayNghe.themTayNgheThanh"));
+						//JOptionPane.showMessageDialog(this, "Thêm tay nghề thành công.");
+						this.thucHienChucNangLamMoi();
+					} else {
+						JOptionPane.showMessageDialog(this, SystemConstants.BUNDLE.getString("tayNghe.themTayNgheKhongThanh"));
+						//JOptionPane.showMessageDialog(this, "Thêm tay nghề không thành công.");
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}).start();
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -276,21 +339,47 @@ public class TayNgheForm extends JPanel {
 			String maTayNghe = this.txtMaTayNghe.getText().trim();
 			String tenTayNghe = this.txtTenTayNghe.getText().trim();
 			try {
-				TayNghe tayNghe = new TayNghe(maTayNghe, tenTayNghe);
+
 
 				int choose = JOptionPane.showConfirmDialog(this,
 						SystemConstants.BUNDLE.getString("tayNghe.capNhat"), SystemConstants.BUNDLE.getString("congNhan.xacNhan"),
 						JOptionPane.YES_NO_OPTION);
 				if (choose == JOptionPane.OK_OPTION) {
-					tayNghe = this.tayNgheService.capNhatTayNghe(tayNghe);
-					if (tayNghe != null) {
-						JOptionPane.showMessageDialog(this, SystemConstants.BUNDLE.getString("tayNghe.capNhatThanh"));
-						//JOptionPane.showMessageDialog(this, "Cập nhật tay nghề thành công.");
-						this.thucHienChucNangLamMoi();
-					} else {
-						JOptionPane.showMessageDialog(this, SystemConstants.BUNDLE.getString("tayNghe.capNhatKhongThanh"));
-						//JOptionPane.showMessageDialog(this, "Cập nhật tay nghề không thành công.");
-					}
+					new Thread(() ->{
+						try (var socket = new Socket(
+								BUNDLE.getString("host"),
+								Integer.parseInt(BUNDLE.getString("server.port")));
+							 var dos = new DataOutputStream(socket.getOutputStream());
+							 var dis = new DataInputStream(socket.getInputStream())
+						){
+							TayNghe tayNghe = new TayNghe(maTayNghe, tenTayNghe);
+							// Send Data
+							RequestDTO request = RequestDTO.builder()
+									.requestType("TayNgheForm")
+									.request("capNhatTayNghe")
+									.data(tayNghe)
+									.build();
+							//System.out.println("Sending request: " + request);
+							String json = AppUtils.GSON.toJson(request);
+							dos.writeUTF(json);
+							dos.flush();
+
+							// Receive Data
+							json = new String(dis.readAllBytes());
+							ResponseDTO response = AppUtils.GSON.fromJson(json, ResponseDTO.class);
+							TayNghe result = AppUtils.convert((Map<String, Object>) response.getData(), TayNghe.class);
+							if (result != null) {
+								JOptionPane.showMessageDialog(this, SystemConstants.BUNDLE.getString("tayNghe.capNhatThanh"));
+								//JOptionPane.showMessageDialog(this, "Cập nhật tay nghề thành công.");
+								this.thucHienChucNangLamMoi();
+							} else {
+								JOptionPane.showMessageDialog(this, SystemConstants.BUNDLE.getString("tayNghe.capNhatKhongThanh"));
+								//JOptionPane.showMessageDialog(this, "Cập nhật tay nghề không thành công.");
+							}
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+					}).start();
 				}
 
 			} catch (Exception e) {
@@ -311,15 +400,41 @@ public class TayNgheForm extends JPanel {
 					SystemConstants.BUNDLE.getString("tayNghe.xoaTayNghe"), SystemConstants.BUNDLE.getString("congNhan.xacNhan"),
 					JOptionPane.YES_NO_OPTION);
 			if (choose == JOptionPane.OK_OPTION) {
-				boolean trangThai = this.tayNgheService.xoaTayNgheBangMa(tayNghe.getMaTayNghe());
-				if (trangThai) {
-					JOptionPane.showMessageDialog(this, SystemConstants.BUNDLE.getString("tayNghe.xoaTayNgheThanh"));
-					//JOptionPane.showMessageDialog(this, "Xóa tay nghề thành công.");
-					this.thucHienChucNangLamMoi();
-				} else {
-					JOptionPane.showMessageDialog(this, SystemConstants.BUNDLE.getString("tayNghe.xoaTayNgheKhongThanh"));
-				//	JOptionPane.showMessageDialog(this, "Xóa tay nghề không thành công.");
-				}
+				new Thread(() ->{
+					try (var socket = new Socket(
+							BUNDLE.getString("host"),
+							Integer.parseInt(BUNDLE.getString("server.port")));
+						 var dos = new DataOutputStream(socket.getOutputStream());
+						 var dis = new DataInputStream(socket.getInputStream())
+					){
+						// Send Data
+						RequestDTO request = RequestDTO.builder()
+								.requestType("TayNgheForm")
+								.request("xoaTayNgheBangMa")
+								.data(tayNghe.getMaTayNghe())
+								.build();
+						//System.out.println("Sending request: " + request);
+						String json = AppUtils.GSON.toJson(request);
+						dos.writeUTF(json);
+						dos.flush();
+
+						// Receive Data
+						json = new String(dis.readAllBytes());
+						ResponseDTO response = AppUtils.GSON.fromJson(json, ResponseDTO.class);
+						boolean result = (boolean) response.getData();
+						if (result) {
+							JOptionPane.showMessageDialog(this, SystemConstants.BUNDLE.getString("tayNghe.xoaTayNgheThanh"));
+							//JOptionPane.showMessageDialog(this, "Xóa tay nghề thành công.");
+							this.thucHienChucNangLamMoi();
+						} else {
+							JOptionPane.showMessageDialog(this, SystemConstants.BUNDLE.getString("tayNghe.xoaTayNgheKhongThanh"));
+							//	JOptionPane.showMessageDialog(this, "Xóa tay nghề không thành công.");
+						}
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}).start();
+
 			}
 		} else {
 			JOptionPane.showMessageDialog(this, SystemConstants.BUNDLE.getString("tayNghe.chonTayNgheXoa"));
