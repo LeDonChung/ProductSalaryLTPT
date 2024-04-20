@@ -31,7 +31,7 @@ public class ProductSalaryApplicationServer {
 						Integer.parseInt(BUNDLE.getString("server.port"))
 				)
 				) {
-			System.out.println("Server is running on port 23862");
+			System.out.println("Server is running on port: " + BUNDLE.getString("server.port"));
 			SystemConstants.initLanguage();
 			while(true) {
 				Socket socket = sever.accept();
