@@ -471,7 +471,7 @@ public class PhongBanForm extends JPanel {
                             JOptionPane.YES_NO_OPTION);
                 }
 
-                if(choose == JOptionPane.YES_OPTION){
+                if (choose == JOptionPane.YES_OPTION) {
                     try {
                         RequestDTO request = RequestDTO.builder()
                                 .requestType("PhongBanForm")
@@ -502,29 +502,53 @@ public class PhongBanForm extends JPanel {
                     }
                 }
 
-            }catch (IOException e) {
+            } catch (IOException e) {
                 e.printStackTrace();
             }
         }).start();
     }
 
     private void thucHienChucNangChonPhongBanTable() {
-//        int select = tblPhongBan.getSelectedRow();
-//
-//        if (select >= 0) {
-//            PhongBan phongBan = danhSachPhongBan.get(select);
-//
-//            txtMaPhongBan.setText(phongBan.getMaPhongBan());
-//            txtTenPhongBan.setText(phongBan.getTenPhongBan());
-//            txtSoLuongNhanVien.setText(phongBan.getSoLuongNhanVien() + "");
-//            if (phongBan.isTrangThai() == true)
-//                cmbTrangThai.setSelectedItem("Đang hoạt động");
-//            else
-//                cmbTrangThai.setSelectedItem("Ngừng hoạt động");
-//
-//            danhSachNhanVienCuaPhongBan = nhanVienService.timKiemNhanVienBangMaPhongBan(phongBan.getMaPhongBan());
-//            loadTableNhanVienCuaPhongBan(danhSachNhanVienCuaPhongBan);
-//        }
+        new Thread(() -> {
+            try (var socket = new Socket(
+                    BUNDLE.getString("host"),
+                    Integer.parseInt(BUNDLE.getString("server.port")));
+                 var dos = new DataOutputStream(socket.getOutputStream());
+                 var dis = new DataInputStream(socket.getInputStream());
+            ) {
+                int select = tblPhongBan.getSelectedRow();
+
+                if (select >= 0) {
+                    PhongBan phongBan = danhSachPhongBan.get(select);
+
+                    txtMaPhongBan.setText(phongBan.getMaPhongBan());
+                    txtTenPhongBan.setText(phongBan.getTenPhongBan());
+                    txtSoLuongNhanVien.setText(phongBan.getSoLuongNhanVien() + "");
+                    if (phongBan.isTrangThai() == true)
+                        cmbTrangThai.setSelectedItem("Đang hoạt động");
+                    else
+                        cmbTrangThai.setSelectedItem("Ngừng hoạt động");
+
+                    RequestDTO request = RequestDTO.builder()
+                            .requestType("PhongBanForm")
+                            .request("timKiemNhanVienBangMaPhongBan")
+                            .data(phongBan.getMaPhongBan())
+                            .build();
+                    String json = AppUtils.GSON.toJson(request);
+                    dos.writeUTF(json);
+                    dos.flush();
+
+                    json = new String(dis.readAllBytes());
+                    ResponseDTO response = AppUtils.GSON.fromJson(json, ResponseDTO.class);
+                    List<Map<String, Object>> data = (List<Map<String, Object>>) response.getData();
+                    danhSachNhanVienCuaPhongBan = data.stream().map((value) ->
+                            AppUtils.convert(value, NhanVien.class)).collect(Collectors.toList());
+                    loadTableNhanVienCuaPhongBan(danhSachNhanVienCuaPhongBan);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }).start();
     }
 
     private void loadTableNhanVienCuaPhongBan(List<NhanVien> dsNhanVien) {

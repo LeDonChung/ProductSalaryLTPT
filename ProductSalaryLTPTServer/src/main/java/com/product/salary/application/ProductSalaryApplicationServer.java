@@ -384,6 +384,19 @@ public class ProductSalaryApplicationServer {
 								break;
 
 							}
+							case "timKiemNhanVienBangMaPhongBan": {
+								String maPhongBan = (String) requestObject.getData();
+								List<NhanVien> nhanViens = nhanVienService.timKiemNhanVienBangMaPhongBan(maPhongBan);
+
+								ResponseDTO response = ResponseDTO.builder()
+										.data(nhanViens)
+										.build();
+								json = AppUtils.GSON.toJson(response);
+								byte[] bytes = json.getBytes(StandardCharsets.UTF_8);
+								dos.write(bytes);
+								dos.flush();
+								break;
+							}
 						}
 						break;
 					}
