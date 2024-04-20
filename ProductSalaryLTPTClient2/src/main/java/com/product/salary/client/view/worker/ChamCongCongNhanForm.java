@@ -8,14 +8,6 @@ import com.product.salary.application.entity.CaLam;
 import com.product.salary.application.entity.ChamCongCongNhan;
 import com.product.salary.application.entity.CongNhan;
 import com.product.salary.application.entity.PhanCongCongNhan;
-import com.product.salary.application.service.ChamCongCongNhanService;
-import com.product.salary.application.service.CongDoanSanPhamService;
-import com.product.salary.application.service.CongNhanService;
-import com.product.salary.application.service.PhanCongCongViecService;
-import com.product.salary.application.service.impl.ChamCongCongNhanServiceImpl;
-import com.product.salary.application.service.impl.CongDoanSanPhamServiceImpl;
-import com.product.salary.application.service.impl.CongNhanServiceImpl;
-import com.product.salary.application.service.impl.PhanCongCongViecServiceImpl;
 import com.product.salary.application.utils.DateConvertUtils;
 import com.toedter.calendar.JDateChooser;
 import org.apache.commons.lang3.ObjectUtils;
@@ -57,10 +49,6 @@ public class ChamCongCongNhanForm extends JPanel {
     private final JButton btnLamMoi;
     private final JComboBox cmbTrangThai;
     private final JTable tblDanhSachPhanCong;
-    private CongNhanService congNhanService;
-    private PhanCongCongViecService phanCongService;
-    private ChamCongCongNhanService chamCongService;
-    private CongDoanSanPhamService congDoanService;
     private List<CongNhan> dsCongNhan;
     private List<PhanCongCongNhan> dsPhanCong;
     private List<ChamCongCongNhan> dsChamCong;
@@ -416,11 +404,6 @@ public class ChamCongCongNhanForm extends JPanel {
     }
 
     private void init() {
-        this.chamCongService = new ChamCongCongNhanServiceImpl();
-        this.congNhanService = new CongNhanServiceImpl();
-        this.phanCongService = new PhanCongCongViecServiceImpl();
-        this.congDoanService = new CongDoanSanPhamServiceImpl();
-
         this.dsChamCong = new ArrayList<ChamCongCongNhan>();
         this.dsCongNhan = new ArrayList<CongNhan>();
         this.dsPhanCong = new ArrayList<PhanCongCongNhan>();

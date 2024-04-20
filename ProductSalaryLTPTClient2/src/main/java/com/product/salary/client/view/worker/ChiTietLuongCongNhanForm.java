@@ -1,11 +1,7 @@
 package com.product.salary.client.view.worker;
 
-import com.product.salary.application.common.SystemConstants;
+import com.product.salary.client.common.SystemConstants;
 import com.product.salary.application.entity.CongNhan;
-import com.product.salary.application.service.CongNhanService;
-import com.product.salary.application.service.LuongCongNhanService;
-import com.product.salary.application.service.impl.CongNhanServiceImpl;
-import com.product.salary.application.service.impl.LuongCongNhanServiceImpl;
 import com.product.salary.application.utils.AppUtils;
 import com.product.salary.application.utils.PriceFormatterUtils;
 import com.product.salary.application.utils.RequestDTO;
@@ -21,7 +17,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
-import java.util.concurrent.Callable;
 
 public class ChiTietLuongCongNhanForm extends JFrame {
 	private final ResourceBundle BUNDLE = ResourceBundle.getBundle("app");

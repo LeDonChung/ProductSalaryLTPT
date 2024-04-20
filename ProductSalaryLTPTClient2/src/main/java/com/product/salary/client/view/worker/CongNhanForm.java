@@ -1,16 +1,9 @@
 package com.product.salary.client.view.worker;
 
-import com.product.salary.application.common.SystemConstants;
+import com.product.salary.client.common.SystemConstants;
 import com.product.salary.application.entity.CongNhan;
-import com.product.salary.application.entity.HopDong;
 import com.product.salary.application.entity.TayNghe;
 import com.product.salary.application.entity.ToNhom;
-import com.product.salary.application.service.CongNhanService;
-import com.product.salary.application.service.TayNgheService;
-import com.product.salary.application.service.ToNhomService;
-import com.product.salary.application.service.impl.CongNhanServiceImpl;
-import com.product.salary.application.service.impl.TayNgheServiceImpl;
-import com.product.salary.application.service.impl.ToNhomServiceImpl;
 import com.product.salary.application.utils.*;
 import com.product.salary.application.utils.excels.CongNhanExcelUtils;
 import com.toedter.calendar.JDateChooser;
@@ -58,9 +51,6 @@ public class CongNhanForm extends JPanel {
 	private final JDateChooser jcNgaySinh;
 	private final JDateChooser jcNgayVaoLam;
 	private final JButton btnChonAnh;
-	private CongNhanService congNhanService;
-	private TayNgheService tayNgheService;
-	private ToNhomService toNhomService;
 	private List<CongNhan> dsCongNhan;
 	private List<TayNghe> dsTayNghe;
 	private List<ToNhom> dsToNhom;
@@ -695,10 +685,6 @@ public class CongNhanForm extends JPanel {
 	}
 
 	private void init() {
-		this.congNhanService = new CongNhanServiceImpl();
-		this.tayNgheService = new TayNgheServiceImpl();
-		this.toNhomService = new ToNhomServiceImpl();
-
 		this.dsCongNhan = new ArrayList<CongNhan>();
 		this.dsTayNghe = new ArrayList<TayNghe>();
 		this.dsToNhom = new ArrayList<ToNhom>();
@@ -996,41 +982,32 @@ public class CongNhanForm extends JPanel {
 			// this.lblLoiHoTen.setText("Họ tên không được rỗng");
 			status = false;
 		}
-		boolean ktraCccc = congNhanService.kiemTraCccd(cccd);
 		if (ObjectUtils.isEmpty(cccd)) {
-			this.lblLoiCCCD.setText(SystemConstants.BUNDLE.getString("congNhan.loiCCCD"));
-			// this.lblLoiCCCD.setText("Căn cước công dân không được rỗng");
+			this.lblLoiCCCD.setText(String.format("<html><p>%s</p></html>",
+					com.product.salary.application.common.SystemConstants.BUNDLE.getString("quanLyNhanVien.loiCccd")));
 			status = false;
-//		}else if(ktraCccc) {
-//			this.lblLoiCCCD.setText("Căn cước công dân đã tồn tại");
-//			status = false; 
-		} else if (cccd.length() != 12) {
-			this.lblLoiCCCD.setText(SystemConstants.BUNDLE.getString("congNhan.loiSoCCCD"));
-			// this.lblLoiCCCD.setText("Căn cước công dân gồm 12 số");
+		} else if (!cccd.matches("^0[0-9]{11}$") && cccd.length() != 12) {
+			lblLoiCCCD.setText(String.format("<html><p>%s</p></html>",
+					com.product.salary.application.common.SystemConstants.BUNDLE.getString("quanLyNhanVien.loiCccdRegex")));
 			status = false;
 		}
 
 		if (ObjectUtils.isEmpty(soDienThoai)) {
 			this.lblLoiSoDienThoai.setText(SystemConstants.BUNDLE.getString("congNhan.loiRongSoDienThoai"));
-			// this.lblLoiSoDienThoai.setText("Số điện thoại không được rỗng");
 			status = false;
 		} else if (soDienThoai.length() != 10) {
 			this.lblLoiSoDienThoai.setText(SystemConstants.BUNDLE.getString("congNhan.loiSoSoDienThoai"));
-			// this.lblLoiSoDienThoai.setText("Số điện thoại gồm 10 số");
 			status = false;
 		} else if (!soDienThoai.trim().matches("^0[0-9]{9}$")) {
 			this.lblLoiSoDienThoai.setText(SystemConstants.BUNDLE.getString("congNhan.loiSoDienThoai0"));
-			// this.lblLoiSoDienThoai.setText("Số điện thoại phải bắt đầu là 0");
 			status = false;
 		}
 
 		if (ObjectUtils.isEmpty(email)) {
 			this.lblLoiEmail.setText(SystemConstants.BUNDLE.getString("congNhan.loiRongEmail"));
-			// this.lblLoiEmail.setText("Email không được rỗng");
 			status = false;
 		} else if (!email.trim().matches("^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$")) {
 			this.lblLoiEmail.setText(SystemConstants.BUNDLE.getString("congNhan.loiCuPhapEmail"));
-			// this.lblLoiEmail.setText("Email không đúng cú pháp");
 			status = false;
 		}
 
@@ -1039,25 +1016,21 @@ public class CongNhanForm extends JPanel {
 			double troCapV = Double.valueOf(troCap);
 			if (troCapV < 0) {
 				this.lblLoiTroCap.setText(SystemConstants.BUNDLE.getString("congNhan.loiTroCap"));
-				// this.lblLoiTroCap.setText("Trợ cấp phải là số thực >= 0");
 				status = false;
 			}
 		} catch (Exception e) {
 			this.lblLoiTroCap.setText(SystemConstants.BUNDLE.getString("congNhan.loiSoThucTroCap"));
-			// this.lblLoiTroCap.setText("Trợ cấp phải là số thực");
 			status = false;
 		}
 
 		int tuoi = Period.between(ngaySinh, LocalDate.now()).getYears();
 		if (tuoi < 18) {
 			this.lblLoiNgaySinh.setText(SystemConstants.BUNDLE.getString("congNhan.loiNgaySinh"));
-			// this.lblLoiNgaySinh.setText("Công nhân phải đủ 18 tuổi");
 			status = false;
 		}
 
 		if (ngaoVaoLam.isAfter(LocalDate.now())) {
 			this.lblLoiNgayVaoLam.setText(SystemConstants.BUNDLE.getString("congNhan.loiNgayVaoLam"));
-			// this.lblLoiNgayVaoLam.setText("Ngày vào làm phải <= ngày hiện tại");
 			status = false;
 		}
 

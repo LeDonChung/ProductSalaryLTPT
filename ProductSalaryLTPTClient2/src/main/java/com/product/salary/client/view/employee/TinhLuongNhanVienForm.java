@@ -5,11 +5,7 @@ package com.product.salary.client.view.employee;
  * @author Trần Thị Thanh Tuyền: xử lý các chức năng
  */
 
-import com.product.salary.application.common.SystemConstants;
-import com.product.salary.application.service.LuongNhanVienService;
-import com.product.salary.application.service.NhanVienService;
-import com.product.salary.application.service.impl.LuongNhanVienServiceImpl;
-import com.product.salary.application.service.impl.NhanVienServiceImpl;
+import com.product.salary.client.common.SystemConstants;
 import com.product.salary.application.utils.*;
 import com.product.salary.application.utils.pdf.LuongNhanVienPdfUtils;
 import com.toedter.calendar.JMonthChooser;
