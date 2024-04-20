@@ -133,6 +133,7 @@ public class ToNhomServiceImpl implements ToNhomService {
 	@Override
 	public ToNhom themToNhom(ToNhom toNhom) {
 		try {
+			toNhom.setMaToNhom(generateMaToNhom());
 			ToNhom exists = toNhomDAO.timKiemBangMaToNhom(toNhom.getMaToNhom());
 			if (exists != null) {
 				JOptionPane.showMessageDialog(null, SystemConstants.BUNDLE.getString("congNhan.toNhomTonTai"));

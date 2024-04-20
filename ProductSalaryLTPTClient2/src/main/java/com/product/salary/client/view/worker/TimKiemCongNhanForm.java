@@ -1,15 +1,9 @@
 package com.product.salary.client.view.worker;
 
-import com.product.salary.application.common.SystemConstants;
+import com.product.salary.client.common.SystemConstants;
 import com.product.salary.application.entity.CongNhan;
 import com.product.salary.application.entity.TayNghe;
 import com.product.salary.application.entity.ToNhom;
-import com.product.salary.application.service.CongNhanService;
-import com.product.salary.application.service.TayNgheService;
-import com.product.salary.application.service.ToNhomService;
-import com.product.salary.application.service.impl.CongNhanServiceImpl;
-import com.product.salary.application.service.impl.TayNgheServiceImpl;
-import com.product.salary.application.service.impl.ToNhomServiceImpl;
 import com.product.salary.application.utils.*;
 import com.product.salary.application.utils.excels.CongNhanExcelUtils;
 import com.toedter.calendar.JDateChooser;
@@ -49,9 +43,6 @@ public class TimKiemCongNhanForm extends JPanel {
 	private final JTable tblCongNhan;
 	private final JDateChooser jcNgaySinh;
 	private final JDateChooser jcNgayVaoLam;
-	private CongNhanService congNhanService;
-	private TayNgheService tayNgheService;
-	private ToNhomService toNhomService;
 	private List<CongNhan> dsCongNhan;
 	private List<TayNghe> dsTayNghe;
 	private List<ToNhom> dsToNhom;
@@ -622,10 +613,6 @@ public class TimKiemCongNhanForm extends JPanel {
 	}
 
 	private void init() {
-		this.congNhanService = new CongNhanServiceImpl();
-		this.tayNgheService = new TayNgheServiceImpl();
-		this.toNhomService = new ToNhomServiceImpl();
-
 		this.dsCongNhan = new ArrayList<CongNhan>();
 		this.dsTayNghe = new ArrayList<TayNghe>();
 		this.dsToNhom = new ArrayList<ToNhom>();

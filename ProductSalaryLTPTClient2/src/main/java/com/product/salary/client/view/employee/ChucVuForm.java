@@ -1,9 +1,7 @@
 package com.product.salary.client.view.employee;
 
-import com.product.salary.application.common.SystemConstants;
+import com.product.salary.client.common.SystemConstants;
 import com.product.salary.application.entity.ChucVu;
-import com.product.salary.application.service.ChucVuService;
-import com.product.salary.application.service.impl.ChucVuServiceImpl;
 import com.product.salary.application.utils.AppUtils;
 import com.product.salary.application.utils.RequestDTO;
 import com.product.salary.application.utils.ResponseDTO;
@@ -18,7 +16,6 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -35,7 +32,6 @@ public class ChucVuForm extends JPanel {
     private final JButton btnThem;
     private final JButton btnLamMoi;
     private List<ChucVu> chucVus;
-    private ChucVuService chucVuService;
     private final JLabel lblLoiTenChucVu;
 
     /**
@@ -206,7 +202,6 @@ public class ChucVuForm extends JPanel {
 
     private void init() {
         this.chucVus = new ArrayList<ChucVu>();
-        this.chucVuService = new ChucVuServiceImpl();
         this.loadTable();
     }
 

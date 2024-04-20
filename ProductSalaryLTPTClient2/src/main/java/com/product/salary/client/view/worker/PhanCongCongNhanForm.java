@@ -4,16 +4,8 @@ package com.product.salary.client.view.worker;
  * @author Trần Tuấn Kiệt: Code giao diện
  */
 
-import com.product.salary.application.common.SystemConstants;
+import com.product.salary.client.common.SystemConstants;
 import com.product.salary.application.entity.*;
-import com.product.salary.application.service.CongDoanSanPhamService;
-import com.product.salary.application.service.CongNhanService;
-import com.product.salary.application.service.PhanCongCongViecService;
-import com.product.salary.application.service.SanPhamService;
-import com.product.salary.application.service.impl.CongDoanSanPhamServiceImpl;
-import com.product.salary.application.service.impl.CongNhanServiceImpl;
-import com.product.salary.application.service.impl.PhanCongCongViecServiceImpl;
-import com.product.salary.application.service.impl.SanPhamServiceImpl;
 import com.product.salary.application.utils.AppUtils;
 import com.product.salary.application.utils.DateConvertUtils;
 import com.product.salary.application.utils.RequestDTO;
@@ -40,10 +32,6 @@ public class PhanCongCongNhanForm extends JPanel {
 	private final JTextField txtMaPhanCong;
 	private final JTextField txtMaCongDoan;
 	private final JTextField txtSoLuongCan;
-	private SanPhamService sanPhamService;
-	private CongDoanSanPhamService congDoanService;
-	private CongNhanService congNhanService;
-	private PhanCongCongViecService phanCongService;
 	private List<SanPham> dsSanPham;
 	private List<CongDoanSanPham> dsCongDoan;
 	private List<CongNhan> dsCongNhan;
@@ -772,11 +760,6 @@ public class PhanCongCongNhanForm extends JPanel {
 	}
 
 	private void init() {
-		this.sanPhamService = new SanPhamServiceImpl();
-		this.congDoanService = new CongDoanSanPhamServiceImpl();
-		this.congNhanService = new CongNhanServiceImpl();
-		this.phanCongService = new PhanCongCongViecServiceImpl();
-
 		this.dsSanPham = new ArrayList<SanPham>();
 		this.dsCongDoan = new ArrayList<CongDoanSanPham>();
 		this.dsCongNhan = new ArrayList<CongNhan>();

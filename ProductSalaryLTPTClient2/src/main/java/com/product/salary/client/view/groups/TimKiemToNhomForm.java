@@ -1,9 +1,7 @@
 package com.product.salary.client.view.groups;
 
-import com.product.salary.application.common.SystemConstants;
+import com.product.salary.client.common.SystemConstants;
 import com.product.salary.application.entity.ToNhom;
-import com.product.salary.application.service.ToNhomService;
-import com.product.salary.application.service.impl.ToNhomServiceImpl;
 import com.product.salary.application.utils.AppUtils;
 import com.product.salary.application.utils.RequestDTO;
 import com.product.salary.application.utils.ResponseDTO;
@@ -12,8 +10,6 @@ import com.product.salary.application.utils.excels.ToNhomExcelUtils;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.DataInputStream;
@@ -31,7 +27,6 @@ public class TimKiemToNhomForm extends JPanel {
 	private final JTextField txtTenToNhom;
 	private final JTextField txtSoLuongCongNhan;
 	private List<ToNhom> danhSachToNhom;
-	private ToNhomService toNhomService;
 	private final DefaultTableModel tblModelToNhom;
 	private final JButton btnTimKiem;
 	private final JTable tblToNhom;
@@ -185,23 +180,9 @@ public class TimKiemToNhomForm extends JPanel {
 		btnXuat.addActionListener((e) -> {
 			thucHienChucNangXuatExcel();
 		});
-		btnTimKiem.addActionListener(new ActionListener() {
+		btnTimKiem.addActionListener(e -> thucHienChucNangTimKiem());
 
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				thucHienChucNangTimKiem();
-
-			}
-		});
-
-		btnLamMoi.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				thucHienChucNangLamMoi();
-
-			}
-		});
+		btnLamMoi.addActionListener(e -> thucHienChucNangLamMoi());
 
 		tblToNhom.addMouseListener(new MouseListener() {
 
@@ -252,7 +233,6 @@ public class TimKiemToNhomForm extends JPanel {
 
 	private void init() {
 		danhSachToNhom = new ArrayList<>();
-		toNhomService = new ToNhomServiceImpl();
 		loadTableToNhom();
 	}
 

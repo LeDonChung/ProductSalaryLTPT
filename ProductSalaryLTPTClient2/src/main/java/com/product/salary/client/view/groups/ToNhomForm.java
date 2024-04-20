@@ -4,24 +4,17 @@
 
 package com.product.salary.client.view.groups;
 
-import com.product.salary.application.common.SystemConstants;
+import com.product.salary.client.common.SystemConstants;
 import com.product.salary.application.entity.CongNhan;
 import com.product.salary.application.entity.ToNhom;
-import com.product.salary.application.service.CongNhanService;
-import com.product.salary.application.service.ToNhomService;
-import com.product.salary.application.service.impl.CongNhanServiceImpl;
-import com.product.salary.application.service.impl.ToNhomServiceImpl;
 import com.product.salary.application.utils.AppUtils;
 import com.product.salary.application.utils.RequestDTO;
 import com.product.salary.application.utils.ResponseDTO;
-import com.product.salary.application.utils.excels.ToNhomExcelUtils;
 import org.apache.commons.lang3.ObjectUtils;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.DataInputStream;
@@ -47,12 +40,9 @@ public class ToNhomForm extends JPanel {
 	private final DefaultTableModel tblModelCongNhan;
 	private final JTable tblDanhSachCongNhan;
 	private List<ToNhom> danhSachToNhom;
-	private ToNhomService toNhomService;
 	private final JLabel lblLoiTenToNhom;
 	private final JComboBox cmbTrangThai;
 	private List<CongNhan> danhSachCongNhanCuaToNhom;
-	private CongNhanService congNhanService;
-//	private final JButton btnThemNhiu;
 
 	/**
 	 * Create the panel.
@@ -262,11 +252,8 @@ public class ToNhomForm extends JPanel {
 	}
 
 	private void init() {
-		danhSachToNhom = new ArrayList<ToNhom>();
-		danhSachCongNhanCuaToNhom = new ArrayList<CongNhan>();
-		toNhomService = new ToNhomServiceImpl();
-		congNhanService = new CongNhanServiceImpl();
-
+		danhSachToNhom = new ArrayList<>();
+		danhSachCongNhanCuaToNhom = new ArrayList<>();
 		loadTableToNhom();
 	}
 
@@ -274,38 +261,13 @@ public class ToNhomForm extends JPanel {
 //		btnThemNhiu.addActionListener((e) -> {
 //			thucHienChucNangThemNhieu();
 //		});
-		btnXoaTrang.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				thucHienChucNangLamMoi();
-
-			}
-		});
-		btnThem.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				thucHienChucNangThem();
-				//thucHienChucNangLamMoi();
-			}
-		});
-		btnXoa.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				thucHienChucNangXoa();
-
-			}
-		});
-		btnCapNhat.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				thucHienChucNangCapNhat();
-
-			}
-		});
+		btnXoaTrang.addActionListener(e -> thucHienChucNangLamMoi());
+		btnThem.addActionListener(e -> {
+            thucHienChucNangThem();
+            //thucHienChucNangLamMoi();
+        });
+		btnXoa.addActionListener(e -> thucHienChucNangXoa());
+		btnCapNhat.addActionListener(e -> thucHienChucNangCapNhat());
 
 		tblToNhom.addMouseListener(new MouseListener() {
 
@@ -373,13 +335,13 @@ public class ToNhomForm extends JPanel {
 	}
 
 	private void thucHienChucNangThemNhieu() {
-		List<ToNhom> dsToNhom = ToNhomExcelUtils.importExcelToNhom();
-		if (!dsToNhom.isEmpty()) {
-			dsToNhom = this.toNhomService.themNhieuToNhom(dsToNhom);
-			JOptionPane.showMessageDialog(this, SystemConstants.BUNDLE.getString("toNhom.themToNhomThanh"));
-			loadTableToNhom();
-			thucHienChucNangLamMoi();
-		}
+//		List<ToNhom> dsToNhom = ToNhomExcelUtils.importExcelToNhom();
+//		if (!dsToNhom.isEmpty()) {
+//			dsToNhom = this.toNhomService.themNhieuToNhom(dsToNhom);
+//			JOptionPane.showMessageDialog(this, SystemConstants.BUNDLE.getString("toNhom.themToNhomThanh"));
+//			loadTableToNhom();
+//			thucHienChucNangLamMoi();
+//		}
 
 	}
 
@@ -570,7 +532,7 @@ public class ToNhomForm extends JPanel {
 					 var dis = new DataInputStream(socket.getInputStream())
 				){
 					ToNhom toNhom = new ToNhom();
-					toNhom.setMaToNhom(toNhomService.generateMaToNhom());
+					toNhom.setMaToNhom("XXX");
 					toNhom.setTrangThai(true);
 					toNhom.setTenToNhom(tenToNhom);
 					// Send Data
