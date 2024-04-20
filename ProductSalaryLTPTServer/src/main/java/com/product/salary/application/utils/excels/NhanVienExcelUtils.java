@@ -4,9 +4,6 @@ import com.product.salary.application.entity.ChucVu;
 import com.product.salary.application.entity.NhanVien;
 import com.product.salary.application.entity.PhongBan;
 import com.product.salary.application.entity.TrinhDo;
-import com.product.salary.application.service.impl.ChucVuServiceImpl;
-import com.product.salary.application.service.impl.PhongBanServiceImpl;
-import com.product.salary.application.service.impl.TrinhDoServiceImpl;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -104,10 +101,8 @@ public class NhanVienExcelUtils {
 
 					// Chu vu
 					String maChucVu = row.getCell(6).getStringCellValue();
-//					String tenChucVu = row.getCell(7).getStringCellValue();
-//					ChucVu chucVu = new ChucVu(maChucVu, tenChucVu);
-					ChucVuServiceImpl chucVuService = new ChucVuServiceImpl();
-					ChucVu chucVu = chucVuService.timKiemBangMaChucVu(maChucVu);
+					String tenChucVu = row.getCell(7).getStringCellValue();
+					ChucVu chucVu = new ChucVu(maChucVu, tenChucVu);
 
 					String cccd = row.getCell(8).getStringCellValue();
 					String soDienThoai = row.getCell(9).getStringCellValue();
@@ -115,10 +110,8 @@ public class NhanVienExcelUtils {
 
 					// Phong ban
 					String maPhongBan = row.getCell(11).getStringCellValue();
-//					String tenPhongBan = row.getCell(12).getStringCellValue();
-//					PhongBan phongBan = new PhongBan(maPhongBan, tenPhongBan);
-					PhongBanServiceImpl phongBanService = new PhongBanServiceImpl();
-					PhongBan phongBan = phongBanService.timKiemBangMaPhongBan(maPhongBan);
+					String tenPhongBan = row.getCell(12).getStringCellValue();
+					PhongBan phongBan = new PhongBan(maPhongBan, tenPhongBan);
 
 					String ngayVaoLam = row.getCell(13).getStringCellValue();
 					double luongCoSo = row.getCell(14).getNumericCellValue();
@@ -127,10 +120,8 @@ public class NhanVienExcelUtils {
 
 					// trinh do
 					String maTrinhDo = row.getCell(17).getStringCellValue();
-//					String tenTrinhDo = row.getCell(18).getStringCellValue();
-//					TrinhDo trinhDo = new TrinhDo(maTrinhDo, tenTrinhDo);
-					TrinhDoServiceImpl trinhDoService = new TrinhDoServiceImpl();
-					TrinhDo trinhDo = trinhDoService.timKiemBangMaTrinhDo(maTrinhDo);
+					String tenTrinhDo = row.getCell(18).getStringCellValue();
+					TrinhDo trinhDo = new TrinhDo(maTrinhDo, tenTrinhDo);
 
 					Boolean trangThai = row.getCell(19).getBooleanCellValue();
 

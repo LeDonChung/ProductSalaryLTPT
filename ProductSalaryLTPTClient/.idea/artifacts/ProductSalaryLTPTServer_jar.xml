@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="ProductSalaryLTPTServer:jar">
+    <output-path>$PROJECT_DIR$/libs</output-path>
+    <root id="archive" name="ProductSalaryLTPTServer.jar">
+      <element id="module-output" name="ProductSalaryLTPTServer" />
+    </root>
+  </artifact>
+</component>
