@@ -17,9 +17,7 @@ import com.product.salary.application.service.impl.ChucVuServiceImpl;
 import com.product.salary.application.service.impl.NhanVienServiceImpl;
 import com.product.salary.application.service.impl.PhongBanServiceImpl;
 import com.product.salary.application.service.impl.TrinhDoServiceImpl;
-import com.product.salary.application.utils.DateConvertUtils;
-import com.product.salary.application.utils.ImageUtils;
-import com.product.salary.application.utils.PriceFormatterUtils;
+import com.product.salary.application.utils.*;
 import com.product.salary.application.utils.excels.NhanVienExcelUtils;
 import com.toedter.calendar.JDateChooser;
 import org.apache.commons.lang3.ObjectUtils;
@@ -33,30 +31,48 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.net.Socket;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.ResourceBundle;
+import java.util.stream.Collectors;
 
 public class TimKiemNhanVienForm extends JPanel {
-	private JTextField txtMaNhanVien;
-	private JTextField txtHoTen;
-	private JTextField txtCCCD;
-	private JTextField txtDienThoai;
-	private JTextField txtDiaChi;
-	private JTextField txtLuongCoSo;
-	private JTextField txtTroCap;
-	private JTextField txtEmail;
-	private JButton btnTimKiem;
-	private JComboBox cmbTrinhDo;
-	private JComboBox cmbTrangThai;
-	private JDateChooser jcNgayVaoLam;
-	private JDateChooser jcNgaySinh;
-	private JComboBox cmbPhongBan;
-	private JRadioButton radNu;
-	private JRadioButton radNam;
-	private JComboBox cmbChucVu;
-	private JButton btnLamMoi;
+	private static final ResourceBundle BUNDLE = ResourceBundle.getBundle("app");
+	private final JTextField txtMaNhanVien;
+	private final JTextField txtHoTen;
+	private final JTextField txtCCCD;
+	private final JTextField txtDienThoai;
+	private final JTextField txtDiaChi;
+	private final JTextField txtLuongCoSo;
+	private final JTextField txtTroCap;
+	private final JTextField txtEmail;
+	private final JButton btnTimKiem;
+	private final JComboBox cmbTrinhDo;
+	private final JComboBox cmbTrangThai;
+	private final JDateChooser jcNgayVaoLam;
+	private final JDateChooser jcNgaySinh;
+	private final JComboBox cmbPhongBan;
+	private final JRadioButton radNu;
+	private final JRadioButton radNam;
+	private final JComboBox cmbChucVu;
+	private final JButton btnLamMoi;
+	private final JLabel lblHinhAnh;
+	private final DefaultTableModel tblModel;
+	private final JTable tblNhanVien;
+	private final DefaultComboBoxModel<PhongBan> cbbModelPhongBan;
+	private final DefaultComboBoxModel<TrinhDo> cbbModelTrinhDo;
+	private final DefaultComboBoxModel<ChucVu> cbbModelChucVu;
+	private final JComboBox cmbHeSoLuong;
+	private final JRadioButton radTatCa;
+	private final JButton btnXuatDanhSach;
+	private final JLabel lblLoiTroCap;
+	private final JLabel lblLoiLuongCoSo;
 	private List<NhanVien> danhSachNhanVien;
 	private NhanVienService nhanVienService;
 	private List<PhongBan> danhSachPhongBan;
@@ -65,17 +81,6 @@ public class TimKiemNhanVienForm extends JPanel {
 	private TrinhDoService trinhDoService;
 	private List<ChucVu> danhSachChucVu;
 	private ChucVuService chucVuService;
-	private JLabel lblHinhAnh;
-	private DefaultTableModel tblModel;
-	private JTable tblNhanVien;
-	private DefaultComboBoxModel<PhongBan> cbbModelPhongBan;
-	private DefaultComboBoxModel<TrinhDo> cbbModelTrinhDo;
-	private DefaultComboBoxModel<ChucVu> cbbModelChucVu;
-	private JComboBox cmbHeSoLuong;
-	private JRadioButton radTatCa;
-	private JButton btnXuatDanhSach;
-	private JLabel lblLoiTroCap;
-	private JLabel lblLoiLuongCoSo;
 
 	public TimKiemNhanVienForm() {
 
@@ -575,80 +580,114 @@ public class TimKiemNhanVienForm extends JPanel {
 	}
 
 	private void thucHienChucNangTimKiem() {
-		if (!thucHienChucNangKiemTra()) {
-			return;
-		}
-		try {
-			String maNhanVien = txtMaNhanVien.getText().trim();
-			String hoTen = txtHoTen.getText().trim();
-			String diaChi = txtDiaChi.getText().trim();
-			String cccd = txtCCCD.getText().trim();
-			String email = txtEmail.getText().trim();
-			String soDienThoai = txtDienThoai.getText().trim();
-			Boolean trangThai = null;
-			if (cmbTrangThai.getSelectedItem().equals("Đang làm"))
-				trangThai = true;
-			else if (cmbTrangThai.getSelectedItem().equals("Đã nghỉ làm"))
-				trangThai = false;
-
-			Integer gioiTinh = null;
-			if (radNam.isSelected())
-				gioiTinh = 1;
-			else if (radNu.isSelected())
-				gioiTinh = 0;
-			double luongCoSo = 0;
-			try {
-				if (!txtLuongCoSo.getText().trim().equals("")) {
-					luongCoSo = Double.parseDouble(txtLuongCoSo.getText().trim());
+		new Thread(() -> {
+			try(var socket = new Socket(BUNDLE.getString("host"), Integer.parseInt(BUNDLE.getString("server.port")));
+			var dos = new DataOutputStream(socket.getOutputStream());
+			var dis = new DataInputStream(socket.getInputStream())
+			){
+				if (!thucHienChucNangKiemTra()) {
+					return;
 				}
-			} catch (NumberFormatException e) {
-				e.printStackTrace();
-			}
-			double heSoLuong = 0;
-			if (cmbHeSoLuong.getSelectedIndex() != 0) {
 				try {
-					heSoLuong = Double.parseDouble((String) cmbHeSoLuong.getSelectedItem());
-				} catch (NumberFormatException e) {
+					String maNhanVien = txtMaNhanVien.getText().trim();
+					String hoTen = txtHoTen.getText().trim();
+					String diaChi = txtDiaChi.getText().trim();
+					String cccd = txtCCCD.getText().trim();
+					String email = txtEmail.getText().trim();
+					String soDienThoai = txtDienThoai.getText().trim();
+					Boolean trangThai = null;
+					if (cmbTrangThai.getSelectedItem().equals("Đang làm"))
+						trangThai = true;
+					else if (cmbTrangThai.getSelectedItem().equals("Đã nghỉ làm"))
+						trangThai = false;
+
+					Integer gioiTinh = null;
+					if (radNam.isSelected())
+						gioiTinh = 1;
+					else if (radNu.isSelected())
+						gioiTinh = 0;
+					double luongCoSo = 0;
+					try {
+						if (!txtLuongCoSo.getText().trim().equals("")) {
+							luongCoSo = Double.parseDouble(txtLuongCoSo.getText().trim());
+						}
+					} catch (NumberFormatException e) {
+						e.printStackTrace();
+					}
+					double heSoLuong = 0;
+					if (cmbHeSoLuong.getSelectedIndex() != 0) {
+						try {
+							heSoLuong = Double.parseDouble((String) cmbHeSoLuong.getSelectedItem());
+						} catch (NumberFormatException e) {
+							e.printStackTrace();
+						}
+					}
+
+					double troCap = 0;
+					try {
+						if (!txtTroCap.getText().trim().equals(""))
+							troCap = Double.parseDouble(txtTroCap.getText().trim());
+					} catch (NumberFormatException e) {
+						e.printStackTrace();
+					}
+
+					LocalDate ngaySinh = DateConvertUtils.asLocalDate(jcNgaySinh.getDate(), ZoneId.systemDefault());
+					LocalDate ngayVaoLam = DateConvertUtils.asLocalDate(jcNgayVaoLam.getDate(), ZoneId.systemDefault());
+					ChucVu chucVu = null;
+					if(cmbChucVu.getSelectedIndex() != 0){
+						chucVu = danhSachChucVu.get(cmbChucVu.getSelectedIndex() - 1);
+					}
+					PhongBan phongBan = null;
+					if (cmbPhongBan.getSelectedIndex() != 0){
+						phongBan = danhSachPhongBan.get(cmbPhongBan.getSelectedIndex() - 1);
+					}
+					TrinhDo trinhDo = null;
+					if (cmbTrinhDo.getSelectedIndex() != 0){
+						trinhDo = danhSachTrinhDo.get(cmbTrinhDo.getSelectedIndex() - 1);
+					}
+
+
+					NhanVien nv = new NhanVien(maNhanVien, hoTen, email, diaChi, gioiTinh, chucVu, cccd, soDienThoai, ngaySinh,
+							phongBan, ngayVaoLam, luongCoSo, heSoLuong, troCap, trinhDo, null, trangThai);
+
+					// send data
+					RequestDTO request = RequestDTO.builder()
+							.requestType("NhanVienForm")
+							.request("timKiemNhanVien")
+							.data(nv)
+							.build();
+					String json = AppUtils.GSON.toJson(request);
+					dos.writeUTF(json);
+					dos.flush();
+
+					//recieve data
+					json = new String(dis.readAllBytes());
+					ResponseDTO response = AppUtils.GSON.fromJson(json, ResponseDTO.class);
+					List<Map<String, Object>> data = (List<Map<String, Object>>) response.getData();
+					danhSachNhanVien = data.stream().map((value) -> AppUtils.convert(value, NhanVien.class)).collect(Collectors.toList());
+
+					tblModel.setRowCount(0);
+
+					int stt = 1;
+					for (NhanVien nhanVien : danhSachNhanVien) {
+						String giTinh = nhanVien.getGioiTinh() == 0 ? "Nữ" : "Nam";
+
+						tblModel.addRow(new Object[] { stt++, nhanVien.getMaNhanVien(), nhanVien.getHoTen(), nhanVien.getCccd(),
+								nhanVien.getSoDienThoai(), nhanVien.getEmail(), nhanVien.getDiaChi(), giTinh,
+								nhanVien.getNgaySinh(), nhanVien.getChucVu().getTenChucVu(),
+								nhanVien.getPhongBan().getTenPhongBan(), nhanVien.getNgayVaoLam(),
+								PriceFormatterUtils.format(nhanVien.getLuongCoSo()), nhanVien.getHeSoLuong(),
+								PriceFormatterUtils.format(nhanVien.getTroCap()), nhanVien.getTrinhDo().getTenTrinhDo(),
+								nhanVien.isTrangThai() ? "Đang làm" : "Đã nghỉ làm" });
+					}
+
+				} catch (Exception e) {
 					e.printStackTrace();
 				}
-			}
-
-			double troCap = 0;
-			try {
-				if (!txtTroCap.getText().trim().equals(""))
-					troCap = Double.parseDouble(txtTroCap.getText().trim());
-			} catch (NumberFormatException e) {
+			}catch (Exception e) {
 				e.printStackTrace();
 			}
-
-			LocalDate ngaySinh = DateConvertUtils.asLocalDate(jcNgaySinh.getDate(), ZoneId.systemDefault());
-			LocalDate ngayVaoLam = DateConvertUtils.asLocalDate(jcNgayVaoLam.getDate(), ZoneId.systemDefault());
-
-			ChucVu chucVu = danhSachChucVu.get(cmbChucVu.getSelectedIndex());
-			PhongBan phongBan = danhSachPhongBan.get(cmbPhongBan.getSelectedIndex());
-			TrinhDo trinhDo = danhSachTrinhDo.get(cmbTrinhDo.getSelectedIndex());
-
-			NhanVien nv = new NhanVien(maNhanVien, hoTen, email, diaChi, gioiTinh, chucVu, cccd, soDienThoai, ngaySinh,
-					phongBan, ngayVaoLam, luongCoSo, heSoLuong, troCap, trinhDo, null, trangThai);
-			danhSachNhanVien = nhanVienService.timKiemNhanVien(nv);
-			tblModel.setRowCount(0);
-
-			int stt = 1;
-			for (NhanVien nhanVien : danhSachNhanVien) {
-				String giTinh = nhanVien.getGioiTinh() == 0 ? "Nữ" : "Nam";
-
-				tblModel.addRow(new Object[] { stt++, nhanVien.getMaNhanVien(), nhanVien.getHoTen(), nhanVien.getCccd(),
-						nhanVien.getSoDienThoai(), nhanVien.getEmail(), nhanVien.getDiaChi(), giTinh,
-						nhanVien.getNgaySinh(), nhanVien.getChucVu().getTenChucVu(),
-						nhanVien.getPhongBan().getTenPhongBan(), nhanVien.getNgayVaoLam(),
-						PriceFormatterUtils.format(nhanVien.getLuongCoSo()), nhanVien.getHeSoLuong(),
-						PriceFormatterUtils.format(nhanVien.getTroCap()), nhanVien.getTrinhDo().getTenTrinhDo(),
-						nhanVien.isTrangThai() ? "Đang làm" : "Đã nghỉ làm" });
-			}
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		}).start();
 	}
 
 	private boolean thucHienChucNangKiemTra() {
@@ -724,7 +763,7 @@ public class TimKiemNhanVienForm extends JPanel {
 			cbbModelChucVu.setSelectedItem(nhanVien.getChucVu());
 			cbbModelPhongBan.setSelectedItem(nhanVien.getPhongBan());
 			cbbModelTrinhDo.setSelectedItem(nhanVien.getTrinhDo());
-			cmbHeSoLuong.setSelectedItem(nhanVien.getHeSoLuong());
+			cmbHeSoLuong.setSelectedItem(Math.ceil(nhanVien.getHeSoLuong() * 100) / 100 + "");
 
 			if (nhanVien.isTrangThai() == true)
 				cmbTrangThai.setSelectedItem("Đang làm");
@@ -755,50 +794,152 @@ public class TimKiemNhanVienForm extends JPanel {
 	}
 
 	private void loadTable() {
-		tblModel.setRowCount(0);
-		danhSachNhanVien = nhanVienService.timKiemTatCaNhanVien();
-		int stt = 1;
-		for (NhanVien nhanVien : danhSachNhanVien) {
-			String gioiTinh = "";
-			if (nhanVien.getGioiTinh() == 0)
-				gioiTinh = "Nữ";
-			else
-				gioiTinh = "Nam";
+		new Thread(() -> {
+			try(var socket = new Socket(
+					BUNDLE.getString("host"),
+					Integer.parseInt(BUNDLE.getString("server.port")));
+				var dos = new DataOutputStream(socket.getOutputStream());
+				var dis = new DataInputStream(socket.getInputStream());
+			){
+				//send data
+				RequestDTO request = RequestDTO.builder()
+						.requestType("NhanVienForm")
+						.request("timKiemTatCaNhanVien")
+						.build();
+				String json = AppUtils.GSON.toJson(request);
+				dos.writeUTF(json);
+				dos.flush();
 
-			tblModel.addRow(new Object[] { stt++, nhanVien.getMaNhanVien(), nhanVien.getHoTen(), nhanVien.getCccd(),
-					nhanVien.getSoDienThoai(), nhanVien.getEmail(), nhanVien.getDiaChi(), gioiTinh,
-					nhanVien.getNgaySinh(), nhanVien.getChucVu().getTenChucVu(),
-					nhanVien.getPhongBan().getTenPhongBan(), nhanVien.getNgayVaoLam(),
-					PriceFormatterUtils.format(nhanVien.getLuongCoSo()), nhanVien.getHeSoLuong(),
-					PriceFormatterUtils.format(nhanVien.getTroCap()), nhanVien.getTrinhDo().getTenTrinhDo(),
-					nhanVien.isTrangThai() ? "Đang làm" : "Đã nghỉ làm" });
-		}
+				//recieve data
+				json = new String(dis.readAllBytes());
+				ResponseDTO response = AppUtils.GSON.fromJson(json, ResponseDTO.class);
+				List<Map<String, Object>> data = (List<Map<String, Object>>) response.getData();
+				danhSachNhanVien = data.stream().map((value) -> AppUtils.convert(value, NhanVien.class)).collect(Collectors.toList());
+
+				tblModel.setRowCount(0);
+				int stt = 1;
+				for (NhanVien nhanVien : danhSachNhanVien) {
+					String gioiTinh = "";
+					if (nhanVien.getGioiTinh() == 0)
+						gioiTinh = "Nữ";
+					else
+						gioiTinh = "Nam";
+
+					tblModel.addRow(new Object[]{stt++, nhanVien.getMaNhanVien(), nhanVien.getHoTen(), nhanVien.getCccd(),
+							nhanVien.getSoDienThoai(), nhanVien.getEmail(), nhanVien.getDiaChi(), gioiTinh,
+							nhanVien.getNgaySinh(), nhanVien.getChucVu().getTenChucVu(),
+							nhanVien.getPhongBan().getTenPhongBan(), nhanVien.getNgayVaoLam(),
+							PriceFormatterUtils.format(nhanVien.getLuongCoSo()), Math.ceil(nhanVien.getHeSoLuong() * 100) / 100,
+							PriceFormatterUtils.format(nhanVien.getTroCap()), nhanVien.getTrinhDo().getTenTrinhDo(),
+							nhanVien.isTrangThai() ? "Đang làm" : "Đã nghỉ làm"});
+				}
+			}catch (Exception e) {
+				e.printStackTrace();
+			}
+		}).start();
 
 	}
 
 	private void loadCombobox() {
-		cbbModelPhongBan.removeAllElements();
-		danhSachPhongBan = phongBanService.timKiemTatCaPhongBan();
-		PhongBan pb = new PhongBan("xxxx", "Tìm tất cả");
-		danhSachPhongBan.add(0, pb);
-		cbbModelPhongBan.addAll(danhSachPhongBan);
+		new Thread(() -> {
+			try (var socket = new Socket(
+					BUNDLE.getString("host"),
+					Integer.parseInt(BUNDLE.getString("server.port")));
+				 var dos = new DataOutputStream(socket.getOutputStream());
+				 var dis = new DataInputStream(socket.getInputStream());
+			) {
+				// Send data
+				RequestDTO request = RequestDTO.builder()
+						.requestType("PhongBanForm")
+						.request("timKiemTatCaPhongBan")
+						.build();
 
-		cbbModelChucVu.removeAllElements();
-		danhSachChucVu = chucVuService.timKiemTatCaChucVu();
-		ChucVu cv = new ChucVu("xxxx", "Tìm tất cả");
-		danhSachChucVu.add(0, cv);
-		cbbModelChucVu.addAll(danhSachChucVu);
+				String json = AppUtils.GSON.toJson(request);
+				dos.writeUTF(json);
+				dos.flush();
 
-		cbbModelTrinhDo.removeAllElements();
-		danhSachTrinhDo = trinhDoService.timKiemTatCaTrinhDo();
-		TrinhDo td = new TrinhDo("xxxx", "Tìm tất cả");
-		danhSachTrinhDo.add(0, td);
-		cbbModelTrinhDo.addAll(danhSachTrinhDo);
+				//recieve data
+				json = new String(dis.readAllBytes());
+				ResponseDTO response = AppUtils.GSON.fromJson(json, ResponseDTO.class);
+				List<Map<String, Object>> data = (List<Map<String, Object>>) response.getData();
+				cbbModelPhongBan.removeAllElements();
+				danhSachPhongBan = data.stream().map((value) -> AppUtils.convert(value, PhongBan.class)).collect(Collectors.toList());
+				cbbModelPhongBan.addAll(danhSachPhongBan);
+				if (!danhSachPhongBan.isEmpty()) {
+					cmbPhongBan.setSelectedIndex(0);
+				}
 
-		cmbHeSoLuong.setSelectedIndex(0);
-		cmbTrangThai.setSelectedIndex(0);
-		cmbChucVu.setSelectedIndex(0);
-		cmbTrinhDo.setSelectedIndex(0);
-		cmbPhongBan.setSelectedIndex(0);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}).start();
+
+		new Thread(() -> {
+			try (var socket = new Socket(
+					BUNDLE.getString("host"),
+					Integer.parseInt(BUNDLE.getString("server.port")));
+				 var dos = new DataOutputStream(socket.getOutputStream());
+				 var dis = new DataInputStream(socket.getInputStream());
+			) {
+				// Send data
+				RequestDTO request = RequestDTO.builder()
+						.requestType("ChucVuForm")
+						.request("timKiemTatCaChucVu")
+						.build();
+
+				String json = AppUtils.GSON.toJson(request);
+				dos.writeUTF(json);
+				dos.flush();
+
+				//recieve data
+				json = new String(dis.readAllBytes());
+				ResponseDTO response = AppUtils.GSON.fromJson(json, ResponseDTO.class);
+				List<Map<String, Object>> data = (List<Map<String, Object>>) response.getData();
+				cbbModelChucVu.removeAllElements();
+				danhSachChucVu = data.stream().map((value) -> AppUtils.convert(value, ChucVu.class)).collect(Collectors.toList());
+
+				cbbModelChucVu.addElement(new ChucVu("xxx", "Tìm tất cả"));
+				cbbModelChucVu.addAll(danhSachChucVu);
+				if (!danhSachChucVu.isEmpty()) {
+					cmbChucVu.setSelectedIndex(0);
+				}
+
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}).start();
+
+		new Thread(() -> {
+			try (var socket = new Socket(BUNDLE.getString("host"),
+					Integer.parseInt(BUNDLE.getString("server.port")));
+				 var dos = new DataOutputStream(socket.getOutputStream());
+				 var dis = new DataInputStream(socket.getInputStream());
+			) {
+				// Send data
+				RequestDTO request = RequestDTO.builder()
+						.requestType("NhanVienForm")
+						.request("timKiemTatCaTrinhDo")
+						.build();
+
+				String json = AppUtils.GSON.toJson(request);
+				dos.writeUTF(json);
+				dos.flush();
+
+				//recieve data
+				json = new String(dis.readAllBytes());
+				ResponseDTO response = AppUtils.GSON.fromJson(json, ResponseDTO.class);
+				List<Map<String, Object>> data = (List<Map<String, Object>>) response.getData();
+				cbbModelTrinhDo.removeAllElements();
+				danhSachTrinhDo = data.stream().map((value) -> AppUtils.convert(value, TrinhDo.class)).collect(Collectors.toList());
+				cbbModelTrinhDo.addElement(new TrinhDo("xxx", "Tìm tất cả"));
+				cbbModelTrinhDo.addAll(danhSachTrinhDo);
+				if (!danhSachTrinhDo.isEmpty()) {
+					cmbTrinhDo.setSelectedIndex(0);
+				}
+
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}).start();
 	}
 }

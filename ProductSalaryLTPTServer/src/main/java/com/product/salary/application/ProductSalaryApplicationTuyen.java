@@ -311,6 +311,19 @@ public class ProductSalaryApplicationTuyen {
                                 dos.flush();
                                 break;
                             }
+                            case "timKiemNhanVien": {
+                                NhanVien nhanVien = AppUtils.convert((Map<String, Object>) requestObject.getData(), NhanVien.class);
+                                List<NhanVien> nhanViens = nhanVienService.timKiemNhanVien(nhanVien);
+
+                                ResponseDTO response = ResponseDTO.builder()
+                                        .data(nhanViens)
+                                        .build();
+                                json = AppUtils.GSON.toJson(response);
+                                byte[] bytes = json.getBytes(StandardCharsets.UTF_8);
+                                dos.write(bytes);
+                                dos.flush();
+                                break;
+                            }
                         }
                         break;
                     }
