@@ -14,6 +14,12 @@ import java.util.Objects;
 @NoArgsConstructor
 @Entity
 @Table(name = "CongDoanSanPham")
+@NamedQueries({
+		@NamedQuery(name = "CongDoanSanPham.timTatCaCongDoanSanPham", query = "SELECT cd FROM CongDoanSanPham cd WHERE cd.sanPham.maSanPham = :maSanPham"),
+		@NamedQuery(name = "CongDoanSanPham.timTatCaCongDoanSanPhamDangHoatDongBangMaSanPham", query = "SELECT cd FROM CongDoanSanPham cd WHERE cd.sanPham.maSanPham = :maSanPham AND cd.trangThai = true ORDER BY cd.maCongDoan ASC"),
+		@NamedQuery(name = "CongDoanSanPham.timMaCongDoanSanPhamCuoiCungBangMaSanPham", query = "SELECT cd FROM CongDoanSanPham cd WHERE cd.sanPham.maSanPham = :maSanPham ORDER BY cd.maCongDoan DESC"),
+		@NamedQuery(name = "CongDoanSanPham.timCongDoanlamSauBangMaCongDoan", query = "SELECT cd FROM CongDoanSanPham cd WHERE cd.congDoanLamTruoc.maCongDoan = :maCongDoanLamTruoc"),
+})
 public class CongDoanSanPham implements Serializable {
 	@Id
 	@Column(name = "MaCongDoan", length = 15)

@@ -12,16 +12,14 @@ public class CongDoanSanPhamDAOImpl extends AbstractDAO implements CongDoanSanPh
     @Override
     public List<CongDoanSanPham> timTatCaCongDoanSanPham(String maSanPham) {
         try (var em = getEntityManager()) {
-            String query = "SELECT cd FROM CongDoanSanPham cd WHERE cd.sanPham.maSanPham = :maSanPham";
-            return em.createQuery(query, CongDoanSanPham.class).setParameter("maSanPham", maSanPham).getResultList();
+            return em.createNamedQuery("CongDoanSanPham.timTatCaCongDoanSanPham", CongDoanSanPham.class).setParameter("maSanPham", maSanPham).getResultList();
         }
     }
 
     @Override
     public List<CongDoanSanPham> timTatCaCongDoanSanPhamDangHoatDongBangMaSanPham(String maSanPham) {
         try (var em = getEntityManager()) {
-            String query = "SELECT cd FROM CongDoanSanPham cd WHERE cd.sanPham.maSanPham = :maSanPham AND cd.trangThai = true ORDER BY cd.maCongDoan ASC";
-            return em.createQuery(query, CongDoanSanPham.class)
+            return em.createNamedQuery("CongDoanSanPham.timTatCaCongDoanSanPhamDangHoatDongBangMaSanPham", CongDoanSanPham.class)
                     .setParameter("maSanPham", maSanPham)
                     .getResultList();
         }
@@ -80,8 +78,7 @@ public class CongDoanSanPhamDAOImpl extends AbstractDAO implements CongDoanSanPh
     @Override
     public String timMaCongDoanSanPhamCuoiCungBangMaSanPham(String maSanPham) {
         try (EntityManager em = getEntityManager()) {
-            String query = "SELECT cd FROM CongDoanSanPham cd WHERE cd.sanPham.maSanPham = :maSanPham ORDER BY cd.maCongDoan DESC";
-            List<CongDoanSanPham> sanPhams = em.createQuery(query, CongDoanSanPham.class)
+            List<CongDoanSanPham> sanPhams = em.createNamedQuery("CongDoanSanPham.timMaCongDoanSanPhamCuoiCungBangMaSanPham", CongDoanSanPham.class)
                     .setParameter("maSanPham", maSanPham)
                     .setMaxResults(1)
                     .getResultList();
@@ -123,8 +120,7 @@ public class CongDoanSanPhamDAOImpl extends AbstractDAO implements CongDoanSanPh
     @Override
     public CongDoanSanPham timCongDoanlamSauBangMaCongDoan(String maCongDoan) {
         try(var em = getEntityManager()) {
-           String query = "SELECT cd FROM CongDoanSanPham cd WHERE cd.congDoanLamTruoc.maCongDoan = :maCongDoanLamTruoc";
-           return em.createQuery(query, CongDoanSanPham.class)
+           return em.createNamedQuery("CongDoanSanPham.timCongDoanlamSauBangMaCongDoan", CongDoanSanPham.class)
                    .setParameter("maCongDoanLamTruoc", maCongDoan)
                    .getSingleResult();
         }

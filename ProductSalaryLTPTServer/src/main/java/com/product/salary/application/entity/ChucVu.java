@@ -4,10 +4,7 @@
 
 package com.product.salary.application.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -21,6 +18,11 @@ import java.util.Objects;
 @AllArgsConstructor
 @Setter
 @Getter
+@NamedQueries({
+		@NamedQuery(name = "ChucVu.timKiemTatCaChucVu", query = "SELECT cv FROM ChucVu cv"),
+		@NamedQuery(name = "ChucVu.timMaChucVuCuoiCung", query = "SELECT cv FROM ChucVu cv ORDER BY cv.maChucVu DESC")
+
+})
 public class ChucVu implements Serializable {
 	@Id
 	@Column(name = "MaChucVu", length = 15)
