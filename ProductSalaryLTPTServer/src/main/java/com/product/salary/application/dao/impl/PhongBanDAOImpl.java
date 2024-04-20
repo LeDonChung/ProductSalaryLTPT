@@ -19,7 +19,7 @@ public class PhongBanDAOImpl extends AbstractDAO implements PhongBanDAO {
     @Override
     public List<PhongBan> timKiemTatCaPhongBan() {
         try (var em = getEntityManager()) {
-            return em.createQuery("SELECT pb FROM PhongBan pb", PhongBan.class).getResultList();
+            return em.createNamedQuery("PhongBan.timKiemTatCaPhongBan", PhongBan.class).getResultList();
         }
     }
 
@@ -114,8 +114,7 @@ public class PhongBanDAOImpl extends AbstractDAO implements PhongBanDAO {
     @Override
     public String timMaPhongbanCuoiCung() {
         try (EntityManager em = getEntityManager()) {
-            String query = "SELECT pb FROM PhongBan pb ORDER BY pb.maPhongBan DESC";
-            List<PhongBan> phongBans = em.createQuery(query, PhongBan.class).setMaxResults(1).getResultList();
+            List<PhongBan> phongBans = em.createNamedQuery("PhongBan.timMaPhongbanCuoiCung", PhongBan.class).setMaxResults(1).getResultList();
             return phongBans.isEmpty() ? null : phongBans.get(0).getMaPhongBan();
         }
     }
@@ -123,8 +122,7 @@ public class PhongBanDAOImpl extends AbstractDAO implements PhongBanDAO {
     @Override
     public List<PhongBan> timKiemTatCaPhongBanDangHoatDong() {
         try (var em = getEntityManager()){
-            String query = "SELECT pb FROM PhongBan pb WHERE pb.trangThai = true ";
-            return em.createQuery(query, PhongBan.class).getResultList();
+            return em.createNamedQuery("PhongBan.timKiemTatCaPhongBanDangHoatDong", PhongBan.class).getResultList();
         }
     }
 }

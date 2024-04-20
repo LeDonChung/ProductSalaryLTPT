@@ -14,6 +14,11 @@ import java.util.Set;
 @Getter
 @Setter
 @NoArgsConstructor
+@NamedQueries({
+		@NamedQuery(name = "PhongBan.timKiemTatCaPhongBan", query = "SELECT pb FROM PhongBan pb"),
+		@NamedQuery(name = "PhongBan.timMaPhongbanCuoiCung", query = "SELECT pb FROM PhongBan pb ORDER BY pb.maPhongBan DESC"),
+		@NamedQuery(name = "PhongBan.timKiemTatCaPhongBanDangHoatDong", query = "SELECT pb FROM PhongBan pb WHERE pb.trangThai = true ")
+})
 public class PhongBan implements Serializable {
 
 	@Id

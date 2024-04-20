@@ -16,6 +16,32 @@ import java.util.Set;
 @Setter
 @NoArgsConstructor
 @ToString
+@NamedQueries({
+		@NamedQuery(name = "LuongCongNhan.tinhTongTienCongNhanTheoMaCongNhanVaThangVaNam",
+				query = "SELECT SUM(cdsp.giaCongDoan * cc.soLuongHoanThanh) " +
+						"FROM ChamCongCongNhan cc " +
+						"JOIN PhanCongCongNhan pc ON cc.phanCongCongNhan.maPhanCong = pc.maPhanCong " +
+						"JOIN CongDoanSanPham cdsp ON pc.congDoanSanPham.maCongDoan = cdsp.maCongDoan " +
+						"WHERE MONTH(cc.ngayChamCong) = :thang AND YEAR(cc.ngayChamCong) = :nam AND pc.congNhan.maCongNhan = :maCongNhan"),
+		@NamedQuery(name = "LuongCongNhan.timTatCaLuongCongNhanTheoThangVaNam", query = "SELECT lcn FROM LuongCongNhan lcn WHERE lcn.thang = :thang AND lcn.nam = :nam"),
+		@NamedQuery(name = "LuongCongNhan.timTatCaChiTietLuongTheoThangVaNam",
+				query = "SELECT cc.maChamCong, cc.phanCongCongNhan.congNhan.maCongNhan, cc.phanCongCongNhan.congNhan.hoTen, " +
+						"cdsp.sanPham.tenSanPham, cdsp.tenCongDoan, cc.ngayChamCong, cc.caLam.tenCa, cc.soLuongHoanThanh, " +
+						"(cc.soLuongHoanThanh * cdsp.giaCongDoan) AS tongTien, cc.trangThai " +
+						"FROM ChamCongCongNhan cc " +
+						"JOIN PhanCongCongNhan pc ON cc.phanCongCongNhan.maPhanCong = pc.maPhanCong " +
+						"JOIN CongDoanSanPham cdsp ON pc.congDoanSanPham.maCongDoan = cdsp.maCongDoan " +
+						"WHERE MONTH(cc.ngayChamCong) = :thang AND YEAR(cc.ngayChamCong) = :nam AND pc.congNhan.maCongNhan = :maCongNhan"),
+		@NamedQuery(name = "LuongCongNhan.thongKeLuongCongNhanTheoNam",
+				query = "SELECT lcn.nam, SUM(lcn.luong) " +
+						"FROM LuongCongNhan lcn " +
+						"GROUP BY lcn.nam"),
+		@NamedQuery(name = "LuongCongNhan.thongKeLuongCongNhanTheoThang",
+				query = "SELECT lcn.thang, SUM(lcn.luong) " +
+						"FROM LuongCongNhan lcn " +
+						"WHERE lcn.nam = :nam " +
+						"GROUP BY lcn.thang ORDER BY lcn.thang"),
+})
 public class LuongCongNhan implements Serializable {
 	@Id
 	@Column(name = "MaLuong", length = 16)

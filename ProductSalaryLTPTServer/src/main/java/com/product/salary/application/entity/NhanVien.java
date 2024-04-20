@@ -18,6 +18,13 @@ import java.util.Objects;
 @NoArgsConstructor
 @Setter
 @Getter
+@NamedQueries({
+        @NamedQuery(name = "NhanVien.timKiemTatCaNhanVien", query = "SELECT nv FROM NhanVien nv"),
+        @NamedQuery(name = "NhanVien.timKiemNhanVienBangMaPhongBan", query = "SELECT nv FROM NhanVien nv WHERE nv.phongBan.maPhongBan = :maPhongBan"),
+        @NamedQuery(name = "NhanVien.layMaNhanVienCuoiCungCuaNam", query = "SELECT nv FROM NhanVien nv WHERE year(nv.ngayVaoLam) = :nam order by nv.maNhanVien DESC "),
+        @NamedQuery(name = "NhanVien.tongSoLuongNhanVien", query = "SELECT COUNT(nv) FROM NhanVien nv"),
+        @NamedQuery(name = "NhanVien.timKiemBangMaNhanVienVaCccd", query = "SELECT nv FROM NhanVien  nv WHERE nv.maNhanVien = :maNhanVien AND nv.cccd = :cccd"),
+})
 public class NhanVien implements Serializable {
     @Id
     @Column(name = "MaNhanVien", length = 15)

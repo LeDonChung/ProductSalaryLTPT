@@ -1,7 +1,6 @@
 package com.product.salary.application.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -9,13 +8,18 @@ import lombok.Setter;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 
 @NoArgsConstructor
 @Getter
 @Setter
 @Table(name = "SanPham")
 @Entity
+@NamedQueries({
+		@NamedQuery(name = "SanPham.timKiemTatCaSanPham", query = "SELECT s FROM SanPham s"),
+		@NamedQuery(name = "SanPham.timMaSanPhamCuoiCung", query = "SELECT sp FROM SanPham sp ORDER BY sp.maSanPham DESC"),
+		@NamedQuery(name = "SanPham.timTatCaSanPhamDangSanXuat", query = "SELECT sp FROM SanPham sp WHERE sp.trangThai = true"),
+		@NamedQuery(name = "SanPham.tongSoLuongSanPham", query = "SELECT COUNT(sp) FROM SanPham sp"),
+})
 public class SanPham implements Serializable {
 
 	@Id

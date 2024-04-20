@@ -24,7 +24,7 @@ public class NhanVienDAOImpl extends AbstractDAO implements NhanVienDAO, Seriali
     @Override
     public List<NhanVien> timKiemTatCaNhanVien() {
         try (var em = getEntityManager()) {
-            return em.createQuery("SELECT nv FROM NhanVien nv", NhanVien.class).getResultList();
+            return em.createNamedQuery("NhanVien.timKiemTatCaNhanVien", NhanVien.class).getResultList();
         }
     }
 
@@ -142,16 +142,14 @@ public class NhanVienDAOImpl extends AbstractDAO implements NhanVienDAO, Seriali
     @Override
     public List<NhanVien> timKiemNhanVienBangMaPhongBan(String maPhongBan) {
         try (var em = getEntityManager()) {
-            String query = "SELECT nv FROM NhanVien nv WHERE nv.phongBan.maPhongBan = :maPhongBan";
-            return em.createQuery(query, NhanVien.class).setParameter("maPhongBan", maPhongBan).getResultList();
+            return em.createNamedQuery("NhanVien.timKiemNhanVienBangMaPhongBan", NhanVien.class).setParameter("maPhongBan", maPhongBan).getResultList();
         }
     }
 
     @Override
     public String layMaNhanVienCuoiCungCuaNam(int nam) {
         try (var em = getEntityManager()) {
-            String query = "SELECT nv FROM NhanVien nv WHERE year(nv.ngayVaoLam) = :nam order by nv.maNhanVien DESC ";
-            List<NhanVien> nhanViens = em.createQuery(query, NhanVien.class).setParameter("nam", nam)
+            List<NhanVien> nhanViens = em.createNamedQuery("NhanVien.layMaNhanVienCuoiCungCuaNam", NhanVien.class).setParameter("nam", nam)
                     .setMaxResults(1).getResultList();
             return nhanViens.isEmpty() ? null : nhanViens.get(0).getMaNhanVien();
         }
@@ -160,15 +158,14 @@ public class NhanVienDAOImpl extends AbstractDAO implements NhanVienDAO, Seriali
     @Override
     public int tongSoLuongNhanVien() {
         try (var em = getEntityManager()) {
-            String query = "SELECT COUNT(nv) FROM NhanVien nv";
-            return em.createQuery(query, Long.class).getSingleResult().intValue();
+            return em.createNamedQuery("NhanVien.tongSoLuongNhanVien", Long.class).getSingleResult().intValue();
         }
     }
 
     @Override
     public NhanVien timKiemBangMaNhanVienVaCccd(String maNhanVien, String cccd) {
         try (var em = getEntityManager()){
-            Query query = em.createQuery("SELECT nv FROM NhanVien  nv WHERE nv.maNhanVien = :maNhanVien AND nv.cccd = :cccd", NhanVien.class);
+            Query query = em.createNamedQuery("NhanVien.timKiemBangMaNhanVienVaCccd", NhanVien.class);
             query.setParameter("maNhanVien", maNhanVien);
             query.setParameter("cccd", cccd);
             return (NhanVien) query.getResultList().stream().findFirst().get();

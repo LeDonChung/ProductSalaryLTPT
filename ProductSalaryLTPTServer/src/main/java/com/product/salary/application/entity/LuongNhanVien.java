@@ -17,6 +17,36 @@ import java.util.Set;
 @Setter
 @NoArgsConstructor
 @ToString
+@NamedQueries({
+		@NamedQuery(name = "LuongNhanVien.thongKeLuongNhanVienTheoNam", query = "SELECT l.nam, SUM(l.luong) FROM LuongNhanVien l GROUP BY l.nam"),
+		@NamedQuery(name = "LuongNhanVien.laySoLuongCaSangVaChieuKhongThuocNgayChuNhatBangMaNhanVien",
+				query = "SELECT COUNT(*) FROM ChamCongNhanVien ccnv " +
+						"WHERE ccnv.nhanVien.maNhanVien = :maNhanVien AND MONTH(ccnv.ngayChamCong) = :thang " +
+						"AND YEAR(ccnv.ngayChamCong) = :nam AND ccnv.caLam.maCa IN ('SA', 'CH') AND ccnv.trangThai = 1"),
+		@NamedQuery(name = "LuongNhanVien.laySoLuongCaToiKhongThuocNgayChuNhatBangMaNhanVien",
+				query = "SELECT COUNT(*) FROM ChamCongNhanVien ccnv " +
+						"WHERE ccnv.nhanVien.maNhanVien = :maNhanVien AND MONTH(ccnv.ngayChamCong) = :thang " +
+						"AND YEAR(ccnv.ngayChamCong) = :nam AND ccnv.caLam.maCa = 'TO' AND ccnv.trangThai IN (1, 2)"),
+		@NamedQuery(name = "LuongNhanVien.laySoLuongCaLamNgayChuNhatBangMaNhanVien",
+				query = "SELECT COUNT(*) FROM ChamCongNhanVien ccnv " +
+						"WHERE ccnv.nhanVien.maNhanVien = :maNhanVien AND MONTH(ccnv.ngayChamCong) = :thang " +
+						"AND YEAR(ccnv.ngayChamCong) = :nam AND ccnv.trangThai IN (1, 2)"),
+		@NamedQuery(name = "LuongNhanVien.timKiemTatCaLuongNhanVienTheoThangVaNam",
+				query = "SELECT l FROM LuongNhanVien l WHERE l.thang = :thang AND l.nam = :nam"),
+		@NamedQuery(name = "LuongNhanVien.timTatCaChiTietLuongTheoThangVaNam",
+				query = "SELECT ccnv.maChamCong, ccnv.caLam.tenCa, ccnv.ngayChamCong, ccnv.trangThai FROM ChamCongNhanVien ccnv " +
+						"WHERE ccnv.nhanVien.maNhanVien = :maNhanVien AND MONTH(ccnv.ngayChamCong) = :thang " +
+						"AND YEAR(ccnv.ngayChamCong) = :nam"),
+		@NamedQuery(name = "LuongNhanVien.thongKeLuongNhanVienTheoThang",
+				query = "SELECT l.thang AS thang, SUM(l.luong) AS tongLuong " +
+						"FROM LuongNhanVien l WHERE l.nam = :nam GROUP BY l.thang"),
+		@NamedQuery(name = "LuongNhanVien.demSoLuongDiLamTreCuaNhanVien",
+				query = "SELECT COUNT(*) FROM ChamCongNhanVien ccnv " +
+						"WHERE ccnv.nhanVien.maNhanVien = :maNhanVien AND MONTH(ccnv.ngayChamCong) = :thang " +
+						"AND YEAR(ccnv.ngayChamCong) = :nam AND ccnv.trangThai = 2"),
+
+
+})
 public class LuongNhanVien implements Serializable {
 
 	@Id

@@ -19,14 +19,14 @@ public class ToNhomDAOImpl extends AbstractDAO implements ToNhomDAO {
 	@Override
 	public List<ToNhom> timKiemTatCaToNhom() {
 		try (var em = getEntityManager()) {
-			return em.createQuery("SELECT t FROM ToNhom t", ToNhom.class).getResultList();
+			return em.createNamedQuery("ToNhom.timKiemTatCaToNhom", ToNhom.class).getResultList();
 		}
 	}
 
 	@Override
 	public List<ToNhom> timKiemTatCaToNhomDangHoatDong() {
 		try (var em = getEntityManager()) {
-			return em.createQuery("SELECT t FROM ToNhom t WHERE t.trangThai = true", ToNhom.class).getResultList();
+			return em.createNamedQuery("ToNhom.timKiemTatCaToNhomDangHoatDong", ToNhom.class).getResultList();
 		}
 	}
 
@@ -53,30 +53,6 @@ public class ToNhomDAOImpl extends AbstractDAO implements ToNhomDAO {
 			TypedQuery<ToNhom> query = em.createQuery(cq);
 			return query.getResultList();
 		}
-	}
-
-	private String getConditions(ToNhom toNhom) {
-		StringBuilder query = new StringBuilder("");
-
-		List<String> conditions = new ArrayList<String>();
-
-		conditions.add(!StringUtils.isBlank(toNhom.getMaToNhom())
-				? String.format("MaToNhom LIKE '%%%s%%'", toNhom.getMaToNhom())
-				: "");
-		conditions.add(!StringUtils.isBlank(toNhom.getTenToNhom())
-				? String.format("TenToNhom LIKE N'%%%s%%'", toNhom.getTenToNhom())
-				: "");
-		if (toNhom.isTrangThai() != null) {
-			conditions.add((toNhom.isTrangThai() == true) ? "TrangThai = 1" : "TrangThai = 0");
-		}
-
-		conditions.removeIf((v) -> v.equals(""));
-
-		if (!conditions.isEmpty()) {
-			String conditionsValue = StringUtils.join(conditions, " AND ");
-			query.append(String.format(" WHERE %s", conditionsValue));
-		}
-		return query.toString();
 	}
 
 	@Override
