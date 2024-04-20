@@ -59,6 +59,7 @@ public class TayNgheServiceImpl implements TayNgheService {
 				//JOptionPane.showMessageDialog(null, "Tay nghề đã tồn tại.");
 				return null;
 			}
+			tayNghe.setMaTayNghe(generegateMaTayNghe());
 			return tayNgheDao.themTayNghe(tayNghe);
 
 		} catch (Exception e) {
