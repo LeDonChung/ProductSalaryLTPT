@@ -18,8 +18,7 @@ public class HopDongDAOImpl extends AbstractDAO implements HopDongDAO, Serializa
 	public List<HopDong> timTatCaHopDong() {
 
 		try(EntityManager em = getEntityManager()) {
-			String query = "SELECT hd FROM HopDong hd";
-            return em.createQuery(query, HopDong.class).getResultList();
+            return em.createNamedQuery("HopDong.timTatCaHopDong", HopDong.class).getResultList();
 		}
 	}
 
@@ -70,8 +69,7 @@ public class HopDongDAOImpl extends AbstractDAO implements HopDongDAO, Serializa
 	@Override
 	public String timMaHopDongCuoiCung() {
 		try(EntityManager em = getEntityManager()) {
-			String query = "SELECT hd FROM HopDong hd ORDER BY hd.maHopDong DESC";
-			List<HopDong> hopDongs = em.createQuery(query, HopDong.class).setMaxResults(1).getResultList();
+			List<HopDong> hopDongs = em.createNamedQuery("HopDong.timMaHopDongCuoiCung", HopDong.class).setMaxResults(1).getResultList();
 			return hopDongs.isEmpty() ? null : hopDongs.get(0).getMaHopDong();
 		}
 	}
@@ -79,8 +77,7 @@ public class HopDongDAOImpl extends AbstractDAO implements HopDongDAO, Serializa
 	@Override
 	public int tongSoLuongHopDong() {
 		try(var em = getEntityManager()) {
-			String query = "SELECT COUNT(hd) FROM HopDong hd";
-			return ((Long) em.createQuery(query).getSingleResult()).intValue();
+			return ((Long) em.createNamedQuery("HopDong.tongSoLuongHopDong").getSingleResult()).intValue();
 		}
 	}
 
@@ -96,8 +93,7 @@ public class HopDongDAOImpl extends AbstractDAO implements HopDongDAO, Serializa
 	@Override
 	public List<ChiTietHopDong> timTatCaChiTietHopDongBangMaHopDong(String maHopDong) {
 		try(EntityManager em = getEntityManager()) {
-			String query = "SELECT cthd FROM ChiTietHopDong cthd WHERE cthd.hopDong.maHopDong = :maHopDong";
-			return em.createQuery(query, ChiTietHopDong.class).setParameter("maHopDong", maHopDong).getResultList();
+			return em.createNamedQuery("HopDong.timTatCaChiTietHopDongBangMaHopDong", ChiTietHopDong.class).setParameter("maHopDong", maHopDong).getResultList();
 		}
 	}
 

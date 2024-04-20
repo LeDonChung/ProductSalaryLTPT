@@ -15,7 +15,7 @@ public class LuongNhanVienDAOImpl extends AbstractDAO implements LuongNhanVienDA
     public Map<String, Double> thongKeLuongNhanVienTheoNam() {
 
         try(var em = getEntityManager()) {
-            Query query = em.createQuery("SELECT l.nam, SUM(l.luong) FROM LuongNhanVien l GROUP BY l.nam");
+            Query query = em.createNamedQuery("LuongNhanVien.thongKeLuongNhanVienTheoNam");
             List<Object[]> results = query.getResultList();
             Map<String, Double> map = new HashMap<>();
             for (Object[] result : results) {
@@ -28,9 +28,7 @@ public class LuongNhanVienDAOImpl extends AbstractDAO implements LuongNhanVienDA
     @Override
     public Long laySoLuongCaSangVaChieuKhongThuocNgayChuNhatBangMaNhanVien(String maNhanVien, int thang, int nam) {
         try (var em = getEntityManager()) {
-            Query query = em.createQuery("SELECT COUNT(*) FROM ChamCongNhanVien ccnv " +
-                    "WHERE ccnv.nhanVien.maNhanVien = :maNhanVien AND MONTH(ccnv.ngayChamCong) = :thang " +
-                    "AND YEAR(ccnv.ngayChamCong) = :nam AND ccnv.caLam.maCa IN ('SA', 'CH') AND ccnv.trangThai = 1");
+            Query query = em.createNamedQuery("LuongNhanVien.laySoLuongCaSangVaChieuKhongThuocNgayChuNhatBangMaNhanVien");
             query.setParameter("maNhanVien", maNhanVien);
             query.setParameter("thang", thang);
             query.setParameter("nam", nam);
@@ -41,9 +39,7 @@ public class LuongNhanVienDAOImpl extends AbstractDAO implements LuongNhanVienDA
     @Override
     public Long laySoLuongCaToiKhongThuocNgayChuNhatBangMaNhanVien(String maNhanVien, int thang, int nam) {
         try (var em = getEntityManager()) {
-            Query query = em.createQuery("SELECT COUNT(*) FROM ChamCongNhanVien ccnv " +
-                    "WHERE ccnv.nhanVien.maNhanVien = :maNhanVien AND MONTH(ccnv.ngayChamCong) = :thang " +
-                    "AND YEAR(ccnv.ngayChamCong) = :nam AND ccnv.caLam.maCa = 'TO' AND ccnv.trangThai IN (1, 2)");
+            Query query = em.createNamedQuery("LuongNhanVien.laySoLuongCaToiKhongThuocNgayChuNhatBangMaNhanVien");
             query.setParameter("maNhanVien", maNhanVien);
             query.setParameter("thang", thang);
             query.setParameter("nam", nam);
@@ -57,9 +53,7 @@ public class LuongNhanVienDAOImpl extends AbstractDAO implements LuongNhanVienDA
             // Query: SELECT COUNT(*) FROM ChamCongNhanVien ccnv WHERE ccnv.nhanVien.maNhanVien = :maNhanVien AND MONTH(ccnv.ngayChamCong) = :thang AND YEAR(ccnv.ngayChamCong) = :nam AND  (ccnv.ngayChamCong) = 1 AND ccnv.trangThai IN (1, 2)
             // So sánh ngày chủ nhật trong tuần sửa dụng jpa: DAYOFWEEK(ccnv.ngayChamCong) = 1
 
-            Query query = em.createQuery("SELECT COUNT(*) FROM ChamCongNhanVien ccnv " +
-                    "WHERE ccnv.nhanVien.maNhanVien = :maNhanVien AND MONTH(ccnv.ngayChamCong) = :thang " +
-                    "AND YEAR(ccnv.ngayChamCong) = :nam AND ccnv.trangThai IN (1, 2)");
+            Query query = em.createNamedQuery("LuongNhanVien.laySoLuongCaLamNgayChuNhatBangMaNhanVien");
             query.setParameter("maNhanVien", maNhanVien);
             query.setParameter("thang", thang);
             query.setParameter("nam", nam);
@@ -70,7 +64,7 @@ public class LuongNhanVienDAOImpl extends AbstractDAO implements LuongNhanVienDA
     @Override
     public List<LuongNhanVien> timKiemTatCaLuongNhanVienTheoThangVaNam(int thang, int nam) {
         try (var em = getEntityManager()) {
-            Query query = em.createQuery("SELECT l FROM LuongNhanVien l WHERE l.thang = :thang AND l.nam = :nam", LuongNhanVien.class);
+            Query query = em.createNamedQuery("LuongNhanVien.timKiemTatCaLuongNhanVienTheoThangVaNam", LuongNhanVien.class);
             query.setParameter("thang", thang);
             query.setParameter("nam", nam);
             return query.getResultList();
@@ -108,9 +102,7 @@ public class LuongNhanVienDAOImpl extends AbstractDAO implements LuongNhanVienDA
     @Override
     public List<Map<String, Object>> timTatCaChiTietLuongTheoThangVaNam(String maNhanVien, int thang, int nam) {
         try (var em = getEntityManager()) {
-            Query query = em.createQuery("SELECT ccnv.maChamCong, ccnv.caLam.tenCa, ccnv.ngayChamCong, ccnv.trangThai FROM ChamCongNhanVien ccnv " +
-                    "WHERE ccnv.nhanVien.maNhanVien = :maNhanVien AND MONTH(ccnv.ngayChamCong) = :thang " +
-                    "AND YEAR(ccnv.ngayChamCong) = :nam", Object[].class);
+            Query query = em.createNamedQuery("LuongNhanVien.timTatCaChiTietLuongTheoThangVaNam", Object[].class);
             query.setParameter("maNhanVien", maNhanVien);
             query.setParameter("thang", thang);
             query.setParameter("nam", nam);
@@ -138,8 +130,7 @@ public class LuongNhanVienDAOImpl extends AbstractDAO implements LuongNhanVienDA
     @Override
     public Map<String, Double> thongKeLuongNhanVienTheoThang(int nam) {
         try (var em = getEntityManager()) {
-            Query query = em.createQuery("SELECT l.thang AS thang, SUM(l.luong) AS tongLuong " +
-                    "FROM LuongNhanVien l WHERE l.nam = :nam GROUP BY l.thang", Object[].class);
+            Query query = em.createNamedQuery("LuongNhanVien.thongKeLuongNhanVienTheoThang", Object[].class);
             query.setParameter("nam", nam);
             List<Object[]> results = query.getResultList();
             Map<String, Double> map = new HashMap<>();
@@ -168,9 +159,7 @@ public class LuongNhanVienDAOImpl extends AbstractDAO implements LuongNhanVienDA
     @Override
     public Long demSoLuongDiLamTreCuaNhanVien(String maNhanVien, int thang, int nam) {
         try (var em = getEntityManager()) {
-            Query query = em.createQuery("SELECT COUNT(*) FROM ChamCongNhanVien ccnv " +
-                    "WHERE ccnv.nhanVien.maNhanVien = :maNhanVien AND MONTH(ccnv.ngayChamCong) = :thang " +
-                    "AND YEAR(ccnv.ngayChamCong) = :nam AND ccnv.trangThai = 2", Integer.class);
+            Query query = em.createNamedQuery("LuongNhanVien.demSoLuongDiLamTreCuaNhanVien", Integer.class);
             query.setParameter("maNhanVien", maNhanVien);
             query.setParameter("thang", thang);
             query.setParameter("nam", nam);
