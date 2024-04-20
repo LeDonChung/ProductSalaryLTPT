@@ -32,7 +32,7 @@ public class TayNgheServiceImpl implements TayNgheService {
 	}
 
 	@Override
-	public TayNghe capNhatTayNghe(TayNghe tayNghe) {
+	public synchronized TayNghe capNhatTayNghe(TayNghe tayNghe) {
 		try {
 			TayNghe isExists = tayNgheDao.timKiemBangMaTayNghe(tayNghe.getMaTayNghe());
 			if (isExists == null) {
@@ -51,7 +51,7 @@ public class TayNgheServiceImpl implements TayNgheService {
 	}
 
 	@Override
-	public TayNghe themTayNghe(TayNghe tayNghe) {
+	public synchronized TayNghe themTayNghe(TayNghe tayNghe) {
 		try {
 			TayNghe isExists = tayNgheDao.timKiemBangMaTayNghe(tayNghe.getMaTayNghe());
 			if (isExists != null) {
@@ -81,7 +81,7 @@ public class TayNgheServiceImpl implements TayNgheService {
 	}
 
 	@Override
-	public String generegateMaTayNghe() {
+	public synchronized String generegateMaTayNghe() {
 		// 780001
 		String rs = "780001";
 		String maChuVu = tayNgheDao.timMaTayNgheCuoiCung();
@@ -94,7 +94,7 @@ public class TayNgheServiceImpl implements TayNgheService {
 	}
 
 	@Override
-	public boolean xoaTayNgheBangMa(String maTayNghe) {
+	public synchronized boolean xoaTayNgheBangMa(String maTayNghe) {
 		try {
 			return tayNgheDao.xoaTayNgheBangMa(maTayNghe);
 		} catch (Exception e) {

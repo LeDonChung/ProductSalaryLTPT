@@ -40,7 +40,7 @@ public class HopDongServiceImpl implements HopDongService {
 	}
 
 	@Override
-	public HopDong themHopDong(HopDong hopDongNew, List<ChiTietHopDong> chiTietHopDongs) {
+	public synchronized HopDong themHopDong(HopDong hopDongNew, List<ChiTietHopDong> chiTietHopDongs) {
 		try {
 			String maHopDong = generateMaHopDong();
 			hopDongNew.setMaHopDong(maHopDong);
@@ -75,7 +75,7 @@ public class HopDongServiceImpl implements HopDongService {
 	}
 
 	@Override
-	public boolean thanhLyHopDong(String maHopDong) {
+	public synchronized boolean thanhLyHopDong(String maHopDong) {
 		try {
 			// Tìm hợp đồng xem có tồn tại không
 			HopDong hopDong = this.hopDongDAO.timHopDongBangMaHopDong(maHopDong);
@@ -123,7 +123,7 @@ public class HopDongServiceImpl implements HopDongService {
 	}
 
 	@Override
-	public String generateMaHopDong() {
+	public synchronized String generateMaHopDong() {
 		StringBuilder maHopDong = new StringBuilder("50");
 		int dayOfMonth = LocalDate.now().getDayOfMonth();
 		int month = LocalDate.now().getMonthValue();

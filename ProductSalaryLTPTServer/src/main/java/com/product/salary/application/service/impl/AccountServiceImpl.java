@@ -47,7 +47,7 @@ public class AccountServiceImpl implements AccountService {
 	}
 
 	@Override
-	public boolean capNhatMatKhau(String taiKhoan, String matKhau) {
+	public synchronized boolean capNhatMatKhau(String taiKhoan, String matKhau) {
 		try {
 			// Kiểm tra tồn tại bằng cách mã hóa thông tin mật khẩu nhập vào
 			String matKhauMaHoa = PasswordUtils.toSHA1(matKhau);

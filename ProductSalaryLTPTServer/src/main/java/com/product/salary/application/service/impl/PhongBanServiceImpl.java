@@ -60,7 +60,7 @@ public class PhongBanServiceImpl implements PhongBanService {
     }
 
     @Override
-    public PhongBan capNhatPhongBan(PhongBan phongBan) {
+    public synchronized PhongBan capNhatPhongBan(PhongBan phongBan) {
 
         try {
             PhongBan exists = phongBanDAO.timKiemBangMaPhongBan(phongBan.getMaPhongBan());
@@ -93,7 +93,7 @@ public class PhongBanServiceImpl implements PhongBanService {
     }
 
     @Override
-    public boolean capNhatTrangThaiPhongBan(String maPhongBan, boolean trangThai) {
+    public synchronized boolean capNhatTrangThaiPhongBan(String maPhongBan, boolean trangThai) {
         try {
             PhongBan exists = phongBanDAO.timKiemBangMaPhongBan(maPhongBan);
             if (exists == null) {
@@ -120,7 +120,7 @@ public class PhongBanServiceImpl implements PhongBanService {
     }
 
     @Override
-    public PhongBan themPhongBan(PhongBan phongBan) {
+    public synchronized PhongBan themPhongBan(PhongBan phongBan) {
         try {
             phongBan.setMaPhongBan(generateMaPhongBan());
             PhongBan exists = phongBanDAO.timKiemBangMaPhongBan(phongBan.getMaPhongBan());
@@ -142,7 +142,7 @@ public class PhongBanServiceImpl implements PhongBanService {
     }
 
     @Override
-    public boolean capNhatSoLuongNhanVienBangMaPhongBan(String maPhongBan, int soLuong) {
+    public synchronized boolean capNhatSoLuongNhanVienBangMaPhongBan(String maPhongBan, int soLuong) {
         try {
             PhongBan exists = phongBanDAO.timKiemBangMaPhongBan(maPhongBan);
             if (exists == null) {
@@ -159,7 +159,7 @@ public class PhongBanServiceImpl implements PhongBanService {
     }
 
     @Override
-    public String generateMaPhongBan() {
+    public synchronized String generateMaPhongBan() {
         String maPhongBanCuoi = phongBanDAO.timMaPhongbanCuoiCung();
         String maPhongBanMoi = "";
         if (maPhongBanCuoi == null) {
@@ -189,7 +189,7 @@ public class PhongBanServiceImpl implements PhongBanService {
     }
 
     @Override
-    public List<PhongBan> themNhieuPhongBan(List<PhongBan> dsPhongBan) {
+    public synchronized List<PhongBan> themNhieuPhongBan(List<PhongBan> dsPhongBan) {
         List<PhongBan> dsPhongBanThem = new ArrayList<PhongBan>();
         try {
             for (PhongBan phongBan : dsPhongBan) {

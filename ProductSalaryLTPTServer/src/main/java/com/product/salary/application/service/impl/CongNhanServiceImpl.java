@@ -37,7 +37,7 @@ public class CongNhanServiceImpl implements CongNhanService {
 	}
 
 	@Override
-	public CongNhan capNhatCongNhan(CongNhan congNhan) {
+	public synchronized CongNhan capNhatCongNhan(CongNhan congNhan) {
 		try {
 			CongNhan isExists = congNhanDao.timKiemBangMaCongNhan(congNhan.getMaCongNhan());
 			if (isExists == null) {
@@ -76,7 +76,7 @@ public class CongNhanServiceImpl implements CongNhanService {
 	}
 
 	@Override
-	public boolean capNhatTrangThaiCongNhan(String maCongNhan, boolean trangThai) {
+	public synchronized boolean capNhatTrangThaiCongNhan(String maCongNhan, boolean trangThai) {
 		try {
 			CongNhan cn = (CongNhan) congNhanDao.timKiemBangMaCongNhan(maCongNhan);
 			if (cn == null) {
@@ -110,7 +110,7 @@ public class CongNhanServiceImpl implements CongNhanService {
 	}
 
 	@Override
-	public CongNhan themCongNhan(CongNhan congNhan) {
+	public synchronized CongNhan themCongNhan(CongNhan congNhan) {
 		try {
 			congNhan.setTrangThai(true);
 			congNhan.setMaCongNhan(generateMaCongNhan(congNhan));
@@ -145,7 +145,7 @@ public class CongNhanServiceImpl implements CongNhanService {
 	}
 
 	@Override
-	public String generateMaCongNhan(CongNhan congNhan) {
+	public synchronized String generateMaCongNhan(CongNhan congNhan) {
 		// 20 là số nhận dạng là công nhân, XXXX năm vào làm của nhân viên,
 		// XXXX là 4 số tự tăng trong năm vào làm của nv
 		String maCongNhanCuoiCung = congNhanDao.layMaCongNhanCuoiCungCuaNam(congNhan.getNgayVaoLam().getYear());
@@ -220,7 +220,7 @@ public class CongNhanServiceImpl implements CongNhanService {
 	}
 
 	@Override
-	public List<CongNhan> themNhieuCongNhan(List<CongNhan> dsCongNhan) {
+	public synchronized List<CongNhan> themNhieuCongNhan(List<CongNhan> dsCongNhan) {
 		List<CongNhan> dsCongNhanThem = new ArrayList<CongNhan>();
 		try {
 			for (CongNhan temp : dsCongNhan) {

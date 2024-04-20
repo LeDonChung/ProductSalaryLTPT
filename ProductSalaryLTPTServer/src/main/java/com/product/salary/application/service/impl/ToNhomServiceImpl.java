@@ -75,7 +75,7 @@ public class ToNhomServiceImpl implements ToNhomService {
 	}
 
 	@Override
-	public ToNhom capNhatToNhom(ToNhom toNhom) {
+	public synchronized ToNhom capNhatToNhom(ToNhom toNhom) {
 		try {
 			ToNhom exists = toNhomDAO.timKiemBangMaToNhom(toNhom.getMaToNhom());
 			if (exists == null) {
@@ -105,7 +105,7 @@ public class ToNhomServiceImpl implements ToNhomService {
 	}
 
 	@Override
-	public boolean capNhatTrangThaiToNhom(String maToNhom, boolean trangThai) {
+	public synchronized boolean capNhatTrangThaiToNhom(String maToNhom, boolean trangThai) {
 		try {
 			ToNhom exists = toNhomDAO.timKiemBangMaToNhom(maToNhom);
 			if (exists == null) {
@@ -131,7 +131,7 @@ public class ToNhomServiceImpl implements ToNhomService {
 	}
 
 	@Override
-	public ToNhom themToNhom(ToNhom toNhom) {
+	public synchronized ToNhom themToNhom(ToNhom toNhom) {
 		try {
 			toNhom.setMaToNhom(generateMaToNhom());
 			ToNhom exists = toNhomDAO.timKiemBangMaToNhom(toNhom.getMaToNhom());
@@ -152,7 +152,7 @@ public class ToNhomServiceImpl implements ToNhomService {
 	}
 
 	@Override
-	public String generateMaToNhom() {
+	public synchronized String generateMaToNhom() {
 		String maToNhomCuoi = toNhomDAO.timMaToNhomCuoiCung();
 		String maToNhomMoi = "";
 		if (maToNhomCuoi == null) {
@@ -166,7 +166,7 @@ public class ToNhomServiceImpl implements ToNhomService {
 	}
 
 	@Override
-	public boolean capNhatSoLuongCongNhanBangMaToNhom(String maToNhom, int soLuong) {
+	public synchronized boolean capNhatSoLuongCongNhanBangMaToNhom(String maToNhom, int soLuong) {
 		try {
 			ToNhom exists = toNhomDAO.timKiemBangMaToNhom(maToNhom);
 			if (exists != null) {
@@ -182,7 +182,7 @@ public class ToNhomServiceImpl implements ToNhomService {
 	}
 
 	@Override
-	public List<ToNhom> themNhieuToNhom(List<ToNhom> dsToNhom) {
+	public synchronized List<ToNhom> themNhieuToNhom(List<ToNhom> dsToNhom) {
 		List<ToNhom> dsToNhomThem = new ArrayList<ToNhom>();
 		try {
 			for (ToNhom toNhom : dsToNhom) {
