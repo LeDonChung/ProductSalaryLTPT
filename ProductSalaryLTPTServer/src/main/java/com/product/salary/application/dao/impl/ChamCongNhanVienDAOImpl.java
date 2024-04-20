@@ -12,7 +12,7 @@ public class ChamCongNhanVienDAOImpl extends AbstractDAO implements ChamCongNhan
 	@Override
 	public List<ChamCongNhanVien> timKiemTatCaChamCongNhanVienTheoCaVaNgay(LocalDate ngayChamCong, String maCa) {
 		try (var em = getEntityManager()){
-			Query query = em.createQuery("SELECT ccnv FROM ChamCongNhanVien ccnv WHERE ccnv.ngayChamCong = :ngayChamCong AND ccnv.caLam.maCa = :maCa", ChamCongNhanVien.class);
+			Query query = em.createNamedQuery("ChamCongNhanVien.timKiemTatCaChamCongNhanVienTheoCaVaNgay", ChamCongNhanVien.class);
 			query.setParameter("ngayChamCong", ngayChamCong);
 			query.setParameter("maCa", maCa);
 			return query.getResultList();
@@ -22,9 +22,7 @@ public class ChamCongNhanVienDAOImpl extends AbstractDAO implements ChamCongNhan
 	@Override
 	public List<NhanVien> timKiemNhanVienChuaChamCongBangCaLamVaNgayChamCong(LocalDate ngayChamCong, String caLam) {
 		try (var em = getEntityManager()){
-			Query query = em.createQuery("SELECT nv FROM NhanVien nv WHERE nv.maNhanVien NOT IN " +
-					"(SELECT ccnv.nhanVien.maNhanVien FROM ChamCongNhanVien ccnv " +
-					" WHERE ccnv.ngayChamCong = :ngayChamCong AND ccnv.caLam.maCa = :maCa)");
+			Query query = em.createNamedQuery("ChamCongNhanVien.timKiemNhanVienChuaChamCongBangCaLamVaNgayChamCong", NhanVien.class);
 			query.setParameter("ngayChamCong", ngayChamCong);
 			query.setParameter("maCa", caLam);
 
@@ -33,7 +31,7 @@ public class ChamCongNhanVienDAOImpl extends AbstractDAO implements ChamCongNhan
 	}
 
 	@Override
-	public ChamCongNhanVien themChamCongNhanVien(ChamCongNhanVien chamCongNV) {
+	public synchronized ChamCongNhanVien themChamCongNhanVien(ChamCongNhanVien chamCongNV) {
 		try (var em = getEntityManager()){
 			em.getTransaction().begin();
 			em.persist(chamCongNV);
@@ -53,7 +51,7 @@ public class ChamCongNhanVienDAOImpl extends AbstractDAO implements ChamCongNhan
 	@Override
 	public String timKiemMaChamCongNhanVienCuoiCungTheoNgayVaCaLam(LocalDate ngayChamCong, String caLam) {
 		try (var em = getEntityManager()){
-			List<ChamCongNhanVien> chamCongNhanViens = em.createQuery("SELECT ccnv FROM ChamCongNhanVien ccnv WHERE ccnv.ngayChamCong = :ngayChamCong AND ccnv.caLam.maCa = :maCa ORDER BY ccnv.maChamCong DESC", ChamCongNhanVien.class)
+			List<ChamCongNhanVien> chamCongNhanViens = em.createNamedQuery("ChamCongNhanVien.timKiemMaChamCongNhanVienCuoiCungTheoNgayVaCaLam", ChamCongNhanVien.class)
 					.setParameter("ngayChamCong", ngayChamCong)
 					.setParameter("maCa", caLam)
 					.setMaxResults(1)
@@ -63,7 +61,7 @@ public class ChamCongNhanVienDAOImpl extends AbstractDAO implements ChamCongNhan
 	}
 
 	@Override
-	public boolean capNhatTrangThaiDiLamCuaNhanVien(String maChamCong, int trangThai) {
+	public synchronized boolean capNhatTrangThaiDiLamCuaNhanVien(String maChamCong, int trangThai) {
 		try (var em = getEntityManager()){
 			ChamCongNhanVien chamCongNhanVien = em.find(ChamCongNhanVien.class, maChamCong);
 			if (chamCongNhanVien != null){
@@ -82,8 +80,7 @@ public class ChamCongNhanVienDAOImpl extends AbstractDAO implements ChamCongNhan
 	@Override
 	public List<NhanVien> timKiemDanhSachNhanVienDiLamBangThangVaNam(int thang, int nam) {
 		try (var em = getEntityManager()){
-			Query query = em.createQuery("SELECT nv FROM NhanVien nv WHERE nv.maNhanVien IN " +
-					"(SELECT ccnv.nhanVien.maNhanVien FROM ChamCongNhanVien ccnv WHERE MONTH(ccnv.ngayChamCong) = :thang AND YEAR(ccnv.ngayChamCong) = :nam)");
+			Query query = em.createNamedQuery("ChamCongNhanVien.timKiemDanhSachNhanVienDiLamBangThangVaNam", NhanVien.class);
 			query.setParameter("thang", thang);
 			query.setParameter("nam", nam);
 			return query.getResultList();
@@ -91,10 +88,9 @@ public class ChamCongNhanVienDAOImpl extends AbstractDAO implements ChamCongNhan
 	}
 
 	@Override
-	public boolean capNhatMaLuongBangMaNhanVienVaThangVaNam(String maNhanVien, int thang, int nam, String maLuong) {
+	public synchronized boolean capNhatMaLuongBangMaNhanVienVaThangVaNam(String maNhanVien, int thang, int nam, String maLuong) {
 		try (var em = getEntityManager()){
-			Query query = em.createQuery("UPDATE ChamCongNhanVien ccnv SET ccnv.luongNhanVien.maLuong = :maLuong " +
-					"WHERE ccnv.nhanVien.maNhanVien = :maNhanVien AND MONTH(ccnv.ngayChamCong) = :thang AND YEAR(ccnv.ngayChamCong) = :nam");
+			Query query = em.createNamedQuery("ChamCongNhanVien.capNhatMaLuongBangMaNhanVienVaThangVaNam");
 			query.setParameter("maLuong", maLuong);
 			query.setParameter("maNhanVien", maNhanVien);
 			query.setParameter("thang", thang);
@@ -110,10 +106,7 @@ public class ChamCongNhanVienDAOImpl extends AbstractDAO implements ChamCongNhan
 	public List<ChamCongNhanVien> timKiemChamCongNhanVienTheoMaNhanVienVaThangVaNam(String maNhanVien, int thang,
 			int nam) {
 		try (var em = getEntityManager()){
-			Query query = em.createQuery("SELECT ccnv FROM ChamCongNhanVien ccnv " +
-					"WHERE ccnv.nhanVien.maNhanVien = :maNhanVien " +
-					"AND MONTH(ccnv.ngayChamCong) = :thang " +
-					"AND YEAR(ccnv.ngayChamCong) = :nam", ChamCongNhanVien.class);
+			Query query = em.createNamedQuery("ChamCongNhanVien.timKiemChamCongNhanVienTheoMaNhanVienVaThangVaNam", ChamCongNhanVien.class);
 			query.setParameter("maNhanVien", maNhanVien);
 			query.setParameter("thang", thang);
 			query.setParameter("nam", nam);

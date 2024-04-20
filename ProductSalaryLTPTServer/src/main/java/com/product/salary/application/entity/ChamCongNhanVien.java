@@ -15,6 +15,28 @@ import java.time.LocalDate;
 @ToString
 @Entity
 @Table(name = "ChamCongNhanVien")
+@NamedQueries({
+        @NamedQuery(name = "ChamCongNhanVien.timKiemTatCaChamCongNhanVienTheoCaVaNgay",
+                query = "SELECT ccnv FROM ChamCongNhanVien ccnv WHERE ccnv.ngayChamCong = :ngayChamCong AND ccnv.caLam.maCa = :maCa"),
+        @NamedQuery(name = "ChamCongNhanVien.timKiemNhanVienChuaChamCongBangCaLamVaNgayChamCong",
+                query = "SELECT nv FROM NhanVien nv WHERE nv.maNhanVien NOT IN " +
+                        "(SELECT ccnv.nhanVien.maNhanVien FROM ChamCongNhanVien ccnv " +
+                        " WHERE ccnv.ngayChamCong = :ngayChamCong AND ccnv.caLam.maCa = :maCa)"),
+        @NamedQuery(name = "ChamCongNhanVien.timKiemMaChamCongNhanVienCuoiCungTheoNgayVaCaLam",
+                query = "SELECT ccnv FROM ChamCongNhanVien ccnv WHERE ccnv.ngayChamCong = :ngayChamCong AND ccnv.caLam.maCa = :maCa ORDER BY ccnv.maChamCong DESC"),
+        @NamedQuery(name = "ChamCongNhanVien.timKiemDanhSachNhanVienDiLamBangThangVaNam",
+                query = "SELECT nv FROM NhanVien nv WHERE nv.maNhanVien IN " +
+                        "(SELECT ccnv.nhanVien.maNhanVien FROM ChamCongNhanVien ccnv WHERE MONTH(ccnv.ngayChamCong) = :thang AND YEAR(ccnv.ngayChamCong) = :nam)"),
+        @NamedQuery(name = "ChamCongNhanVien.capNhatMaLuongBangMaNhanVienVaThangVaNam",
+                query = "UPDATE ChamCongNhanVien ccnv SET ccnv.luongNhanVien.maLuong = :maLuong " +
+                        "WHERE ccnv.nhanVien.maNhanVien = :maNhanVien AND MONTH(ccnv.ngayChamCong) = :thang AND YEAR(ccnv.ngayChamCong) = :nam"),
+        @NamedQuery(name = "ChamCongNhanVien.timKiemChamCongNhanVienTheoMaNhanVienVaThangVaNam",
+                query = "SELECT ccnv FROM ChamCongNhanVien ccnv " +
+                        "WHERE ccnv.nhanVien.maNhanVien = :maNhanVien " +
+                        "AND MONTH(ccnv.ngayChamCong) = :thang " +
+                        "AND YEAR(ccnv.ngayChamCong) = :nam"),
+
+})
 public class ChamCongNhanVien implements Serializable {
 
     @Id

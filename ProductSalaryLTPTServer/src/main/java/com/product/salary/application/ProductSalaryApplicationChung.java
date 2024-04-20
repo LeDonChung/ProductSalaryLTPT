@@ -57,6 +57,12 @@ public class ProductSalaryApplicationChung {
 		private final PhanCongCongViecService phanCongCongViecService;
 		private final TayNgheService tayNgheService;
 		private final ToNhomService toNhomService;
+		private final PhongBanService phongBanService;
+		private final ChucVuService chucVuService;
+		private final TrinhDoService trinhDoService;
+		private final ChamCongNhanVienService chamCongNhanVienService;
+
+
 		public handlerClient(Socket socket) {
 			this.socket = socket;
 			this.accountService = new AccountServiceImpl();
@@ -71,6 +77,10 @@ public class ProductSalaryApplicationChung {
 			this.phanCongCongViecService = new PhanCongCongViecServiceImpl();
 			this.tayNgheService = new TayNgheServiceImpl();
 			this.toNhomService = new ToNhomServiceImpl();
+			this.phongBanService = new PhongBanServiceImpl();
+			this.chucVuService = new ChucVuServiceImpl();
+			this.trinhDoService = new TrinhDoServiceImpl();
+			this.chamCongNhanVienService = new ChamCongNhanVienServiceImpl();
 		}
 
 
@@ -84,6 +94,299 @@ public class ProductSalaryApplicationChung {
 				System.out.println("Request: " + requestObject);
 				String request = requestObject.getRequestType();
 				switch (request) {
+					case "ChamCongNhanVienForm":{
+						switch (requestObject.getRequest()){
+							case "timTatCaChamCongNhanVienTheoNgayVaCa": {
+								ChamCongNhanVien ccnv = AppUtils.convert((Map<String, Object>) requestObject.getData(), ChamCongNhanVien.class);
+								List<ChamCongNhanVien> chamCongNhanViens = chamCongNhanVienService.timKiemTatCaChamCongNhanVienTheoCaVaNgay(ccnv.getNgayChamCong(), ccnv.getCaLam().getMaCa());
+
+								ResponseDTO response = ResponseDTO.builder()
+										.data(chamCongNhanViens)
+										.build();
+								json = AppUtils.GSON.toJson(response);
+								byte[] bytes = json.getBytes(StandardCharsets.UTF_8);
+								dos.write(bytes);
+								dos.flush();
+								break;
+							}
+							case "timKiemNhanVienChuaChamCongBangCaLamVaNgayChamCong": {
+								ChamCongNhanVien ccnv = AppUtils.convert((Map<String, Object>) requestObject.getData(), ChamCongNhanVien.class);
+								List<NhanVien> nhanViens = chamCongNhanVienService.timKiemNhanVienChuaChamCongBangCaLamVaNgayChamCong(ccnv.getNgayChamCong(), ccnv.getCaLam().getMaCa());
+
+								ResponseDTO response = ResponseDTO.builder()
+										.data(nhanViens)
+										.build();
+								json = AppUtils.GSON.toJson(response);
+								byte[] bytes = json.getBytes(StandardCharsets.UTF_8);
+								dos.write(bytes);
+								dos.flush();
+								break;
+							}
+							case "themChamCongNhanVien": {
+								ChamCongNhanVien ccnv = AppUtils.convert((Map<String, Object>) requestObject.getData(), ChamCongNhanVien.class);
+
+								ChamCongNhanVien chamCongNhanVienThem = chamCongNhanVienService.themChamCongNhanVien(ccnv);
+
+								ResponseDTO response = ResponseDTO.builder()
+										.data(chamCongNhanVienThem)
+										.build();
+								json = AppUtils.GSON.toJson(response);
+								byte[] bytes = json.getBytes(StandardCharsets.UTF_8);
+								dos.write(bytes);
+								dos.flush();
+								break;
+							}
+							case "capNhatTrangThaiDiLamCuaNhanVien": {
+								Map<String, Object> data = (Map<String, Object>) requestObject.getData();
+								boolean status = chamCongNhanVienService.capNhatTrangThaiDiLamCuaNhanVien((String) data.get("maChamCong"), Integer.parseInt(data.get("trangThai").toString().replace(".0", "")));
+
+								ResponseDTO response = ResponseDTO.builder()
+										.data(status)
+										.build();
+								json = AppUtils.GSON.toJson(response);
+								byte[] bytes = json.getBytes(StandardCharsets.UTF_8);
+								dos.write(bytes);
+								dos.flush();
+								break;
+
+							}
+							case "chamCongTatCaNhanVien":{
+								List<Map<String, Object>> chamCongNhanViens = (List<Map<String, Object>>) requestObject.getData();
+								List<ChamCongNhanVien> chamCongNhanViensThem = chamCongNhanViens.stream().map((value) -> AppUtils.convert(value, ChamCongNhanVien.class)).toList();
+								int status = 0;
+								for (ChamCongNhanVien ccnv : chamCongNhanViensThem){
+									status += chamCongNhanVienService.themChamCongNhanVien(ccnv) != null ? 1 : 0;
+								}
+								if (status != 0){
+									ResponseDTO response = ResponseDTO.builder()
+											.data(true)
+											.build();
+									json = AppUtils.GSON.toJson(response);
+									byte[] bytes = json.getBytes(StandardCharsets.UTF_8);
+									dos.write(bytes);
+									dos.flush();
+								} else {
+									ResponseDTO response = ResponseDTO.builder()
+											.data(false)
+											.build();
+									json = AppUtils.GSON.toJson(response);
+									byte[] bytes = json.getBytes(StandardCharsets.UTF_8);
+									dos.write(bytes);
+									dos.flush();
+								}
+							}
+						}
+						break;
+					}
+					case "NhanVienForm": {
+						switch (requestObject.getRequest()) {
+							case "timKiemTatCaTrinhDo": {
+								List<TrinhDo> trinhDos = trinhDoService.timKiemTatCaTrinhDo();
+								ResponseDTO response = ResponseDTO.builder()
+										.data(trinhDos)
+										.build();
+								json = AppUtils.GSON.toJson(response);
+								byte[] bytes = json.getBytes(StandardCharsets.UTF_8);
+								dos.write(bytes);
+								dos.flush();
+								break;
+							}
+							case "timKiemTatCaNhanVien": {
+								List<NhanVien> nhanViens = nhanVienService.timKiemTatCaNhanVien();
+								ResponseDTO response = ResponseDTO.builder()
+										.data(nhanViens)
+										.build();
+								json = AppUtils.GSON.toJson(response);
+								byte[] bytes = json.getBytes(StandardCharsets.UTF_8);
+								dos.write(bytes);
+								dos.flush();
+								break;
+							}
+							case "themNhanVien": {
+								NhanVien nhanVien = AppUtils.convert((Map<String, Object>) requestObject.getData(), NhanVien.class);
+								NhanVien nhanVienThem = nhanVienService.themNhanVien(nhanVien);
+
+								ResponseDTO response = ResponseDTO.builder()
+										.data(nhanVienThem)
+										.build();
+								json = AppUtils.GSON.toJson(response);
+								byte[] bytes = json.getBytes(StandardCharsets.UTF_8);
+								dos.write(bytes);
+								dos.flush();
+								break;
+							}
+							case "capNhatNhanVien": {
+								NhanVien nhanVien = AppUtils.convert((Map<String, Object>) requestObject.getData(), NhanVien.class);
+								NhanVien nhanVienCapNhat = nhanVienService.capNhatNhanVien(nhanVien);
+
+								ResponseDTO response = ResponseDTO.builder()
+										.data(nhanVienCapNhat)
+										.build();
+								json = AppUtils.GSON.toJson(response);
+								byte[] bytes = json.getBytes(StandardCharsets.UTF_8);
+								dos.write(bytes);
+								dos.flush();
+								break;
+							}
+							case "capNhatTrangThaiNhanVien": {
+								String maNhanVien = (String) requestObject.getData();
+								boolean status = nhanVienService.capNhatTrangThaiNghiLamCuaNhanVien(maNhanVien);
+
+								ResponseDTO response = ResponseDTO.builder()
+										.data(status)
+										.build();
+								json = AppUtils.GSON.toJson(response);
+								byte[] bytes = json.getBytes(StandardCharsets.UTF_8);
+								dos.write(bytes);
+								dos.flush();
+								break;
+							}
+							case "timKiemNhanVien": {
+								NhanVien nhanVien = AppUtils.convert((Map<String, Object>) requestObject.getData(), NhanVien.class);
+								List<NhanVien> nhanViens = nhanVienService.timKiemNhanVien(nhanVien);
+
+								ResponseDTO response = ResponseDTO.builder()
+										.data(nhanViens)
+										.build();
+								json = AppUtils.GSON.toJson(response);
+								byte[] bytes = json.getBytes(StandardCharsets.UTF_8);
+								dos.write(bytes);
+								dos.flush();
+								break;
+							}
+						}
+						break;
+					}
+					case "ChucVuForm": {
+						switch (requestObject.getRequest()) {
+							case "timKiemTatCaChucVu": {
+								List<ChucVu> chucVus = chucVuService.timKiemTatCaChucVu();
+								ResponseDTO response = ResponseDTO.builder()
+										.data(chucVus)
+										.build();
+								json = AppUtils.GSON.toJson(response);
+								byte[] bytes = json.getBytes(StandardCharsets.UTF_8);
+								dos.write(bytes);
+								dos.flush();
+								break;
+							}
+							case "themChucVu": {
+								ChucVu chucVu = AppUtils.convert((Map<String, Object>) requestObject.getData(), ChucVu.class);
+								ChucVu chucVuThem = chucVuService.themChucVu(chucVu);
+
+								ResponseDTO response = ResponseDTO.builder()
+										.data(chucVuThem)
+										.build();
+								json = AppUtils.GSON.toJson(response);
+								byte[] bytes = json.getBytes(StandardCharsets.UTF_8);
+								dos.write(bytes);
+								dos.flush();
+								break;
+							}
+							case "capNhatChucVu": {
+								ChucVu chucVu = AppUtils.convert((Map<String, Object>) requestObject.getData(), ChucVu.class);
+								ChucVu chucVuCapNhat = chucVuService.capNhatChucVu(chucVu);
+
+								ResponseDTO response = ResponseDTO.builder()
+										.data(chucVuCapNhat)
+										.build();
+								json = AppUtils.GSON.toJson(response);
+								byte[] bytes = json.getBytes(StandardCharsets.UTF_8);
+								dos.write(bytes);
+								dos.flush();
+								break;
+
+							}
+							case "xoaChucVu": {
+								ChucVu chucVu = AppUtils.convert((Map<String, Object>) requestObject.getData(), ChucVu.class);
+								boolean status = chucVuService.xoaChucVuBangMa(chucVu.getMaChucVu());
+
+								ResponseDTO response = ResponseDTO.builder()
+										.data(status)
+										.build();
+								json = AppUtils.GSON.toJson(response);
+								byte[] bytes = json.getBytes(StandardCharsets.UTF_8);
+								dos.write(bytes);
+								dos.flush();
+								break;
+
+							}
+						}
+						break;
+					}
+					case "PhongBanForm": {
+						switch (requestObject.getRequest()) {
+							case "timKiemTatCaPhongBan": {
+								List<PhongBan> phongBans = phongBanService.timKiemTatCaPhongBan();
+//								phongBans.forEach(System.out::println);
+								ResponseDTO response = ResponseDTO.builder()
+										.data(phongBans)
+										.build();
+
+								json = AppUtils.GSON.toJson(response);
+								System.out.println("Response: " + json);
+								byte[] bytes = json.getBytes(StandardCharsets.UTF_8);
+								dos.write(bytes);
+								dos.flush();
+								break;
+							}
+							case "themPhongBan": {
+								PhongBan phongBan = AppUtils.convert((Map<String, Object>) requestObject.getData(), PhongBan.class);
+								PhongBan phongBanThem = phongBanService.themPhongBan(phongBan);
+
+								ResponseDTO response = ResponseDTO.builder()
+										.data(phongBanThem)
+										.build();
+								json = AppUtils.GSON.toJson(response);
+								byte[] bytes = json.getBytes(StandardCharsets.UTF_8);
+								dos.write(bytes);
+								dos.flush();
+								break;
+							}
+							case "capNhatPhongBan": {
+								PhongBan phongBan = AppUtils.convert((Map<String, Object>) requestObject.getData(), PhongBan.class);
+								PhongBan phongBanCapNhat = phongBanService.capNhatPhongBan(phongBan);
+
+								ResponseDTO response = ResponseDTO.builder()
+										.data(phongBanCapNhat)
+										.build();
+								json = AppUtils.GSON.toJson(response);
+								byte[] bytes = json.getBytes(StandardCharsets.UTF_8);
+								dos.write(bytes);
+								dos.flush();
+								break;
+							}
+							case "xoaPhongBan": {
+								PhongBan phongBan = AppUtils.convert((Map<String, Object>) requestObject.getData(), PhongBan.class);
+								phongBanService.capNhatTrangThaiPhongBan(phongBan.getMaPhongBan(), false);
+
+								ResponseDTO response = ResponseDTO.builder()
+										.data(null)
+										.build();
+								json = AppUtils.GSON.toJson(response);
+								byte[] bytes = json.getBytes(StandardCharsets.UTF_8);
+								dos.write(bytes);
+								dos.flush();
+								break;
+
+							}
+							case "timKiemPhongBan": {
+								PhongBan phongBan = AppUtils.convert((Map<String, Object>) requestObject.getData(), PhongBan.class);
+								List<PhongBan> phongBans = phongBanService.timKiemPhongBan(phongBan);
+
+								ResponseDTO response = ResponseDTO.builder()
+										.data(phongBans)
+										.build();
+								json = AppUtils.GSON.toJson(response);
+								byte[] bytes = json.getBytes(StandardCharsets.UTF_8);
+								dos.write(bytes);
+								dos.flush();
+								break;
+
+							}
+						}
+						break;
+					}
 					case "PhanCongCongNhanForm": {
 						switch (requestObject.getRequest()) {
 							case "phanCongCongNhan": {
