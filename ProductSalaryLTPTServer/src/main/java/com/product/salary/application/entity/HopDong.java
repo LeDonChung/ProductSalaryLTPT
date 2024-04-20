@@ -18,6 +18,12 @@ import java.util.Set;
 @ToString
 @Getter
 @Setter
+@NamedQueries({
+		@NamedQuery(name = "HopDong.timTatCaHopDong", query = "SELECT hd FROM HopDong hd"),
+		@NamedQuery(name = "HopDong.timMaHopDongCuoiCung", query = "SELECT hd FROM HopDong hd ORDER BY hd.maHopDong DESC"),
+		@NamedQuery(name = "HopDong.tongSoLuongHopDong", query = "SELECT COUNT(hd) FROM HopDong hd"),
+		@NamedQuery(name = "HopDong.timTatCaChiTietHopDongBangMaHopDong", query = "SELECT cthd FROM ChiTietHopDong cthd WHERE cthd.hopDong.maHopDong = :maHopDong"),
+})
 public class HopDong implements Serializable {
 
 	@Id

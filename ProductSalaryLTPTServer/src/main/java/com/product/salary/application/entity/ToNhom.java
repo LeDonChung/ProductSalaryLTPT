@@ -16,6 +16,10 @@ import java.util.Set;
 @Entity
 @Getter
 @Setter
+@NamedQueries({
+		@NamedQuery(name = "ToNhom.timKiemTatCaToNhom", query = "SELECT t FROM ToNhom t"),
+		@NamedQuery(name = "ToNhom.timKiemTatCaToNhomDangHoatDong", query = "SELECT t FROM ToNhom t WHERE t.trangThai = true"),
+})
 public class ToNhom implements Serializable {
 
 	@Id

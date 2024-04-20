@@ -1,9 +1,6 @@
 package com.product.salary.application.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.*;
 
 import java.io.Serializable;
@@ -14,6 +11,10 @@ import java.util.Objects;
 @Entity
 @Getter
 @Setter
+@NamedQueries({
+		@NamedQuery(name = "TayNghe.timKiemTatCaTayNghe", query = "SELECT t FROM TayNghe t"),
+		@NamedQuery(name = "TayNghe.timMaTayNgheCuoiCung", query = "SELECT MAX(t.maTayNghe) FROM TayNghe t")
+})
 @Table(name = "TayNghe")
 public class TayNghe implements Serializable {
 	@Id

@@ -13,7 +13,7 @@ public class TayNgheDAOImpl extends AbstractDAO implements TayNgheDAO, Serializa
 	@Override
 	public List<TayNghe> timKiemTatCaTayNghe() {
 		try(var em = getEntityManager()) {
-			return em.createQuery("SELECT t FROM TayNghe t", TayNghe.class).getResultList();
+			return em.createNamedQuery("TayNghe.timKiemTatCaTayNghe", TayNghe.class).getResultList();
 		}
 	}
 
@@ -48,7 +48,7 @@ public class TayNgheDAOImpl extends AbstractDAO implements TayNgheDAO, Serializa
 	@Override
 	public String timMaTayNgheCuoiCung() {
 		try(var em = getEntityManager()){
-			return em.createQuery("SELECT MAX(t.maTayNghe) FROM TayNghe t", String.class).getSingleResult();
+			return em.createNamedQuery("TayNghe.timMaTayNgheCuoiCung", String.class).getSingleResult();
 		}
 	}
 

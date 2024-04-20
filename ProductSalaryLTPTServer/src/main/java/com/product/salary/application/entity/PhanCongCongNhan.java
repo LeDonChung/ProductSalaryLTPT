@@ -15,6 +15,12 @@ import java.time.LocalDate;
 @Setter
 @NoArgsConstructor
 @ToString
+@NamedQueries({
+		@NamedQuery(name = "PhanCongCongNhan.timMaPhanCongCuoiCung", query = "SELECT MAX(p.maPhanCong) FROM PhanCongCongNhan p"),
+		@NamedQuery(name = "PhanCongCongNhan.timTatCaPhanCongTheoMaCongNhanChuaHoanThanh", query = "SELECT p FROM PhanCongCongNhan p WHERE p.congNhan.maCongNhan = :maCongNhan AND p.trangThai = false"),
+		@NamedQuery(name = "PhanCongCongNhan.timTatCaCongNhanChuaPhanCongVaoCongDoan", query = "SELECT c FROM CongNhan c WHERE c.maCongNhan NOT IN (SELECT DISTINCT p.congNhan.maCongNhan FROM PhanCongCongNhan p JOIN p.congDoanSanPham cd WHERE cd.sanPham.maSanPham = :maSanPham AND cd.maCongDoan = :maCongDoan AND p.trangThai = false)"),
+		@NamedQuery(name = "PhanCongCongNhan.timTatCaPhanCongTheoMaCongDoan", query = "SELECT p FROM PhanCongCongNhan p WHERE p.congDoanSanPham.maCongDoan = :maCongDoan"),
+})
 public class PhanCongCongNhan implements Serializable {
 	@Id
 	@Column(name = "MaPhanCong", length = 15)

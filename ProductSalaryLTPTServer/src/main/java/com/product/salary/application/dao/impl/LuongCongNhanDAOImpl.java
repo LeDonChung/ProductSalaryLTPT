@@ -14,13 +14,7 @@ public class LuongCongNhanDAOImpl extends AbstractDAO implements LuongCongNhanDA
     public double tinhTongTienCongNhanTheoMaCongNhanVaThangVaNam(String maCongNhan, int thang, int nam) {
 
         try (var em = getEntityManager()) {
-            String query = "SELECT SUM(cdsp.giaCongDoan * cc.soLuongHoanThanh) " +
-                    "FROM ChamCongCongNhan cc " +
-                    "JOIN PhanCongCongNhan pc ON cc.phanCongCongNhan.maPhanCong = pc.maPhanCong " +
-                    "JOIN CongDoanSanPham cdsp ON pc.congDoanSanPham.maCongDoan = cdsp.maCongDoan " +
-                    "WHERE MONTH(cc.ngayChamCong) = :thang AND YEAR(cc.ngayChamCong) = :nam AND pc.congNhan.maCongNhan = :maCongNhan";
-
-            return em.createQuery(query, Double.class).setParameter("thang", thang)
+            return em.createNamedQuery("LuongCongNhan.tinhTongTienCongNhanTheoMaCongNhanVaThangVaNam", Double.class).setParameter("thang", thang)
                     .setParameter("nam", nam)
                     .setParameter("maCongNhan", maCongNhan)
                     .getSingleResult();
@@ -58,7 +52,7 @@ public class LuongCongNhanDAOImpl extends AbstractDAO implements LuongCongNhanDA
     @Override
     public List<LuongCongNhan> timTatCaLuongCongNhanTheoThangVaNam(int thangS, int namS) {
         try (var em = getEntityManager()) {
-            var query = em.createQuery("SELECT lcn FROM LuongCongNhan lcn WHERE lcn.thang = :thang AND lcn.nam = :nam", LuongCongNhan.class);
+            var query = em.createNamedQuery("LuongCongNhan.timTatCaLuongCongNhanTheoThangVaNam", LuongCongNhan.class);
             query.setParameter("thang", thangS);
             query.setParameter("nam", namS);
             return query.getResultList();
@@ -68,13 +62,7 @@ public class LuongCongNhanDAOImpl extends AbstractDAO implements LuongCongNhanDA
     @Override
     public List<Map<String, Object>> timTatCaChiTietLuongTheoThangVaNam(String maCongNhan, int thang, int nam) {
         try (var em = getEntityManager()) {
-            var query = em.createQuery("SELECT cc.maChamCong, cc.phanCongCongNhan.congNhan.maCongNhan, cc.phanCongCongNhan.congNhan.hoTen, " +
-                    "cdsp.sanPham.tenSanPham, cdsp.tenCongDoan, cc.ngayChamCong, cc.caLam.tenCa, cc.soLuongHoanThanh, " +
-                    "(cc.soLuongHoanThanh * cdsp.giaCongDoan) AS tongTien, cc.trangThai " +
-                    "FROM ChamCongCongNhan cc " +
-                    "JOIN PhanCongCongNhan pc ON cc.phanCongCongNhan.maPhanCong = pc.maPhanCong " +
-                    "JOIN CongDoanSanPham cdsp ON pc.congDoanSanPham.maCongDoan = cdsp.maCongDoan " +
-                    "WHERE MONTH(cc.ngayChamCong) = :thang AND YEAR(cc.ngayChamCong) = :nam AND pc.congNhan.maCongNhan = :maCongNhan", Object[].class);
+            var query = em.createNamedQuery("LuongCongNhan.timTatCaChiTietLuongTheoThangVaNam", Object[].class);
             query.setParameter("thang", thang);
             query.setParameter("nam", nam);
             query.setParameter("maCongNhan", maCongNhan);
@@ -110,9 +98,7 @@ public class LuongCongNhanDAOImpl extends AbstractDAO implements LuongCongNhanDA
     @Override
     public Map<String, Double> thongKeLuongCongNhanTheoNam() {
         try (var em = getEntityManager()) {
-            var query = em.createQuery("SELECT lcn.nam, SUM(lcn.luong) " +
-                    "FROM LuongCongNhan lcn " +
-                    "GROUP BY lcn.nam", Object[].class);
+            var query = em.createNamedQuery("LuongCongNhan.thongKeLuongCongNhanTheoNam", Object[].class);
 
             List<Object[]> results = query.getResultList();
             return results.stream()
@@ -124,10 +110,7 @@ public class LuongCongNhanDAOImpl extends AbstractDAO implements LuongCongNhanDA
     public Map<String, Double> thongKeLuongCongNhanTheoThang(int nam) {
 
         try (var em = getEntityManager()) {
-            var query = em.createQuery("SELECT lcn.thang, SUM(lcn.luong) " +
-                    "FROM LuongCongNhan lcn " +
-                    "WHERE lcn.nam = :nam " +
-                    "GROUP BY lcn.thang ORDER BY lcn.thang", Object[].class);
+            var query = em.createNamedQuery("LuongCongNhan.thongKeLuongCongNhanTheoThang", Object[].class);
             query.setParameter("nam", nam);
 
             List<Object[]> results = query.getResultList();

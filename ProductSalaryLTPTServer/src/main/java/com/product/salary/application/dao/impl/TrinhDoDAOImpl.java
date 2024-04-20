@@ -15,7 +15,7 @@ public class TrinhDoDAOImpl extends AbstractDAO implements TrinhDoDAO {
 	@Override
 	public List<TrinhDo> timKiemTatCaTrinhDo() {
 		try (var em = getEntityManager()){
-			return em.createQuery("SELECT td FROM TrinhDo td", TrinhDo.class).getResultList();
+			return em.createNamedQuery("TrinhDo.timKiemTatCaTrinhDo", TrinhDo.class).getResultList();
 		}
 	}
 

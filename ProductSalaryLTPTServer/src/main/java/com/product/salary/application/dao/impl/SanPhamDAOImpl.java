@@ -1,6 +1,5 @@
 package com.product.salary.application.dao.impl;
 
-import com.product.salary.application.entity.HopDong;
 import com.product.salary.application.entity.SanPham;
 import com.product.salary.application.dao.SanPhamDAO;
 import jakarta.persistence.EntityManager;
@@ -12,7 +11,6 @@ import jakarta.persistence.criteria.Root;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.Serializable;
-import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,7 +19,7 @@ public class SanPhamDAOImpl extends AbstractDAO implements SanPhamDAO, Serializa
 	@Override
 	public List<SanPham> timKiemTatCaSanPham() {
 		try(var em = getEntityManager()) {
-			return em.createQuery("SELECT s FROM SanPham s", SanPham.class).getResultList();
+			return em.createNamedQuery("SanPham.timKiemTatCaSanPham", SanPham.class).getResultList();
 		}
 	}
 
@@ -109,8 +107,7 @@ public class SanPhamDAOImpl extends AbstractDAO implements SanPhamDAO, Serializa
 	@Override
 	public String timMaSanPhamCuoiCung() {
 		try(EntityManager em = getEntityManager()) {
-			String query = "SELECT sp FROM SanPham sp ORDER BY sp.maSanPham DESC";
-			List<SanPham> sanPhams = em.createQuery(query, SanPham.class).setMaxResults(1).getResultList();
+			List<SanPham> sanPhams = em.createNamedQuery("SanPham.timMaSanPhamCuoiCung", SanPham.class).setMaxResults(1).getResultList();
 			return sanPhams.isEmpty() ? null : sanPhams.get(0).getMaSanPham();
 		}
 	}
@@ -118,8 +115,7 @@ public class SanPhamDAOImpl extends AbstractDAO implements SanPhamDAO, Serializa
 	@Override
 	public List<SanPham> timTatCaSanPhamDangSanXuat() {
 		try(var em = getEntityManager()) {
-			String query = "SELECT sp FROM SanPham sp WHERE sp.trangThai = true";
-			return em.createQuery(query, SanPham.class).getResultList();
+			return em.createNamedQuery("SanPham.timTatCaSanPhamDangSanXuat", SanPham.class).getResultList();
 		}
 	}
 
@@ -150,8 +146,7 @@ public class SanPhamDAOImpl extends AbstractDAO implements SanPhamDAO, Serializa
 	@Override
 	public int tongSoLuongSanPham() {
 		try(var em = getEntityManager()) {
-			String query = "SELECT COUNT(sp) FROM SanPham sp";
-			return em.createQuery(query, Long.class).getSingleResult().intValue();
+			return em.createNamedQuery("SanPham.tongSoLuongSanPham", Long.class).getSingleResult().intValue();
 		}
 	}
 }
