@@ -33,7 +33,7 @@ public class SanPhamServiceImpl implements SanPhamService {
 	}
 
 	@Override
-	public SanPham capNhatSanPham(SanPham sanPham) {
+	public synchronized SanPham capNhatSanPham(SanPham sanPham) {
 		try {
 			SanPham isExists = sanPhamDao.timKiemBangMaSanPham(sanPham.getMaSanPham());
 			if (isExists == null) {
@@ -57,7 +57,7 @@ public class SanPhamServiceImpl implements SanPhamService {
 	}
 
 	@Override
-	public boolean capNhatTrangThaiSanPham(String maSanPham, boolean trangThai) {
+	public synchronized boolean capNhatTrangThaiSanPham(String maSanPham, boolean trangThai) {
 		try {
 			SanPham isExists = sanPhamDao.timKiemBangMaSanPham(maSanPham);
 			if (isExists == null) {
@@ -90,7 +90,7 @@ public class SanPhamServiceImpl implements SanPhamService {
 	}
 
 	@Override
-	public SanPham themSanPham(SanPham sanPham) {
+	public synchronized SanPham themSanPham(SanPham sanPham) {
 		try {
 			SanPham isExists = sanPhamDao.timKiemBangMaSanPham(sanPham.getMaSanPham());
 			if (isExists != null) {
@@ -111,7 +111,7 @@ public class SanPhamServiceImpl implements SanPhamService {
 	}
 
 	@Override
-	public String generateMaSanPham() {
+	public synchronized String generateMaSanPham() {
 		// 300001
 		String rs = "300001";
 		String maSanPham = sanPhamDao.timMaSanPhamCuoiCung();
@@ -138,7 +138,7 @@ public class SanPhamServiceImpl implements SanPhamService {
 	}
 
 	@Override
-	public int tongSoLuongSanPham() {
+	public synchronized int tongSoLuongSanPham() {
 		int soLuong = 0;
 		try {
 			soLuong = this.sanPhamDao.tongSoLuongSanPham();
@@ -150,7 +150,7 @@ public class SanPhamServiceImpl implements SanPhamService {
 	}
 
 	@Override
-	public List<SanPham> themNhieuSanPham(List<SanPham> sanPhams) {
+	public synchronized List<SanPham> themNhieuSanPham(List<SanPham> sanPhams) {
 		List<SanPham> sanPhamThems = new ArrayList<SanPham>();
 		try {
 			for (SanPham sanPham : sanPhams) {

@@ -67,26 +67,8 @@ public class LuongNhanVienServiceImpl implements LuongNhanVienService {
 		return results;
 	}
 
-	public static void main(String[] args) {
-		LuongNhanVienDAO luongNhanVienDAO1 = new LuongNhanVienDAOImpl();
-		// Lay so ca lam da cham cong
-		Long soCaLamSangVaChieu = luongNhanVienDAO1.laySoLuongCaSangVaChieuKhongThuocNgayChuNhatBangMaNhanVien(
-				"1020180001", 2, 2022);
-		Long soCaLamToi = luongNhanVienDAO1
-				.laySoLuongCaToiKhongThuocNgayChuNhatBangMaNhanVien("1020180001", 2, 2022);
-		Long soCaLamThuocNgayChuNhat = luongNhanVienDAO1
-				.laySoLuongCaLamNgayChuNhatBangMaNhanVien("1020180001", 2, 2022);
-
-		// lấy số lần đi trễ của nv
-		Long soLanDitre = luongNhanVienDAO1.demSoLuongDiLamTreCuaNhanVien("1020180001", 2, 2022);
-
-		System.out.println(soCaLamSangVaChieu);
-		System.out.println(soCaLamToi);
-		System.out.println(soCaLamThuocNgayChuNhat);
-		System.out.println(soLanDitre);
-	}
 	@Override
-	public boolean tinhLuongNhanVien(int thang, int nam) {
+	public synchronized boolean tinhLuongNhanVien(int thang, int nam) {
 		try {
 			// Danh sách nhân viên đi làm tháng, năm
 			List<NhanVien> dsNhanVien = chamCongNhanVienDAO.timKiemDanhSachNhanVienDiLamBangThangVaNam(thang, nam);
@@ -155,7 +137,7 @@ public class LuongNhanVienServiceImpl implements LuongNhanVienService {
 	}
 
 	@Override
-	public String generateMaLuong(String maNhanVien, int thang, int nam) {
+	public synchronized String generateMaLuong(String maNhanVien, int thang, int nam) {
 		String maLuong = String.format("%02d%04d%s", thang, nam, maNhanVien);
 		return maLuong;
 	}
@@ -269,7 +251,7 @@ public class LuongNhanVienServiceImpl implements LuongNhanVienService {
 	}
 
 	@Override
-	public void capNhatLuongThuong(String maLuong, double luongThuong) {
+	public synchronized void capNhatLuongThuong(String maLuong, double luongThuong) {
 		try {
 			luongNhanVienDAO.capNhatLuongThuong(maLuong, luongThuong);
 		} catch (Exception e) {

@@ -18,6 +18,13 @@ import java.util.Objects;
 @ToString
 @Getter
 @Setter
+@NamedQueries({
+	@NamedQuery(name = "CongNhan.timKiemTatCaCongNhan", query = "SELECT c FROM CongNhan c"),
+	@NamedQuery(name = "CongNhan.timKiemBangCCCD", query = "SELECT c FROM CongNhan c WHERE c.cccd = :cccd"),
+	@NamedQuery(name = "CongNhan.timKiemCongNhanBangMaToNhom", query = "SELECT c FROM CongNhan c WHERE c.toNhom.maToNhom = :maToNhom"),
+	@NamedQuery(name = "CongNhan.layMaCongNhanCuoiCungCuaNam", query = "SELECT cn FROM CongNhan cn WHERE year(cn.ngayVaoLam) = :nam order by cn.maCongNhan DESC"),
+	@NamedQuery(name = "CongNhan.tongSoLuongCongNhan", query = "SELECT COUNT(c) FROM CongNhan c"),
+})
 public class CongNhan implements Serializable {
 	@Id
 	@Column(name = "MaCongNhan", length = 15)

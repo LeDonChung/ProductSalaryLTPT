@@ -14,7 +14,7 @@ public class ChucVuDAOImpl extends AbstractDAO implements ChucVuDAO, Serializabl
 	@Override
 	public List<ChucVu> timKiemTatCaChucVu() {
 		try (var em = getEntityManager()){
-			return em.createQuery("SELECT cv FROM ChucVu cv", ChucVu.class).getResultList();
+			return em.createNamedQuery("ChucVu.timKiemTatCaChucVu", ChucVu.class).getResultList();
 		}
 	}
 
@@ -49,8 +49,7 @@ public class ChucVuDAOImpl extends AbstractDAO implements ChucVuDAO, Serializabl
 	@Override
 	public String timMaChucVuCuoiCung() {
 		try (var em = getEntityManager()){
-			String query = "SELECT cv FROM ChucVu cv ORDER BY cv.maChucVu DESC";
-			List<ChucVu> chucVus = em.createQuery(query, ChucVu.class).setMaxResults(1).getResultList();
+			List<ChucVu> chucVus = em.createNamedQuery("ChucVu.timMaChucVuCuoiCung", ChucVu.class).setMaxResults(1).getResultList();
 			return chucVus.isEmpty() ? null : chucVus.get(0).getMaChucVu();
 		}
 	}

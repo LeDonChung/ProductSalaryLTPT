@@ -45,7 +45,7 @@ public class CongDoanSanPhamServiceImpl implements CongDoanSanPhamService {
 	}
 
 	@Override
-	public CongDoanSanPham capNhatCongDoanSanPham(CongDoanSanPham congDoanSanPham) {
+	public synchronized CongDoanSanPham capNhatCongDoanSanPham(CongDoanSanPham congDoanSanPham) {
 		try {
 			CongDoanSanPham isExists = congDoanSanPhamDAO.timKiemBangMaCongDoan(congDoanSanPham.getMaCongDoan());
 			if (isExists == null) {
@@ -79,7 +79,7 @@ public class CongDoanSanPhamServiceImpl implements CongDoanSanPhamService {
 	}
 
 	@Override
-	public boolean capNhatTrangThaiCongDoanSanPham(String maCongDoanSanPham, boolean trangThai) {
+	public synchronized boolean capNhatTrangThaiCongDoanSanPham(String maCongDoanSanPham, boolean trangThai) {
 		try {
 			CongDoanSanPham isExists = congDoanSanPhamDAO.timKiemBangMaCongDoan(maCongDoanSanPham);
 			if (isExists == null) {
@@ -108,7 +108,7 @@ public class CongDoanSanPhamServiceImpl implements CongDoanSanPhamService {
 	}
 
 	@Override
-	public CongDoanSanPham themCongDoanSanPham(CongDoanSanPham congDoanSanPham) {
+	public synchronized CongDoanSanPham themCongDoanSanPham(CongDoanSanPham congDoanSanPham) {
 		try {
 			congDoanSanPham.setMaCongDoan(generateMaCongDoanSanPham(congDoanSanPham.getSanPham().getMaSanPham()));
 			CongDoanSanPham isExists = congDoanSanPhamDAO.timKiemBangMaCongDoan(congDoanSanPham.getMaCongDoan());
@@ -134,7 +134,7 @@ public class CongDoanSanPhamServiceImpl implements CongDoanSanPhamService {
 	}
 
 	@Override
-	public String generateMaCongDoanSanPham(String maSanPham) {
+	public synchronized String generateMaCongDoanSanPham(String maSanPham) {
 		// 000101
 
 		String rs = "000101";
@@ -151,7 +151,7 @@ public class CongDoanSanPhamServiceImpl implements CongDoanSanPhamService {
 	}
 
 	@Override
-	public List<CongDoanSanPham> themNhieuCongDoanSanPham(SanPham sanPham, List<CongDoanSanPham> congDoanSanPhams) {
+	public synchronized List<CongDoanSanPham> themNhieuCongDoanSanPham(SanPham sanPham, List<CongDoanSanPham> congDoanSanPhams) {
 		List<CongDoanSanPham> congDoanSanPhamThems = new ArrayList<CongDoanSanPham>();
 		try {
 			for (CongDoanSanPham congDoanSanPham : congDoanSanPhams) {
@@ -175,7 +175,7 @@ public class CongDoanSanPhamServiceImpl implements CongDoanSanPhamService {
 	}
 
 	@Override
-	public void capNhatSoLuongCanCuaCongDoan(String maCongDoan, int soLuong) {
+	public synchronized void capNhatSoLuongCanCuaCongDoan(String maCongDoan, int soLuong) {
 		try {
 			// Kiểm tra có công đoạn làm sau đó hay không
 			// Nếu có thì đẩy số lượng cho công đoạn sau

@@ -16,7 +16,7 @@ public class AccountDAOImpl extends AbstractDAO implements AccountDAO, Serializa
 	@Override
 	public Account timKiemTaiKhoanHoatDongBangTaiKhoanVaMatKhau(String taiKhoanS, String matKhauS) {
 		EntityManager em = getEntityManager();
-		Query query = em.createQuery("SELECT a FROM Account a WHERE a.taiKhoan = :taiKhoan AND a.matKhau = :matKhau AND a.trangThai = true", Account.class);
+		Query query = em.createNamedQuery("Account.timKiemTaiKhoanHoatDongBangTaiKhoanVaMatKhau", Account.class);
 		query.setParameter("taiKhoan", taiKhoanS);
 		query.setParameter("matKhau", matKhauS);
 		return query.getResultList().isEmpty() ? null : (Account) query.getSingleResult();
@@ -25,12 +25,9 @@ public class AccountDAOImpl extends AbstractDAO implements AccountDAO, Serializa
 	@Override
 	public List<Account> timKiemTatCaTaiKhoan() {
 		try(var em = getEntityManager()) {
-			return em.createQuery("SELECT a FROM Account a", Account.class).getResultList();
+			return em.createNamedQuery("Account.timKiemTatCaTaiKhoan", Account.class).getResultList();
 		}
 	}
-
-
-
 
 
 	@Override

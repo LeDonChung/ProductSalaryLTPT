@@ -16,13 +16,7 @@ public class ChamCongCongNhanDAOImpl extends AbstractDAO implements ChamCongCong
 	public List<CongNhan> timDanhSachCongNhanDiLamBangThangVaNam(int thang, int nam) {
 
 		try(var em = getEntityManager()) {
-			var query = em.createQuery("SELECT cn FROM CongNhan cn WHERE cn.maCongNhan IN " +
-					"(" +
-					"SELECT cn.maCongNhan FROM ChamCongCongNhan cc " +
-					"JOIN PhanCongCongNhan pc ON cc.phanCongCongNhan.maPhanCong = pc.maPhanCong " +
-					"JOIN CongNhan cn ON pc.congNhan.maCongNhan = cn.maCongNhan " +
-					"WHERE MONTH(cc.ngayChamCong) = :thang AND YEAR(cc.ngayChamCong) = :nam " +
-					")", CongNhan.class);
+			var query = em.createNamedQuery("ChamCongCongNhan.timDanhSachCongNhanDiLamBangThangVaNam", CongNhan.class);
 			query.setParameter("thang", thang);
 			query.setParameter("nam", nam);
 			return query.getResultList();
@@ -33,11 +27,7 @@ public class ChamCongCongNhanDAOImpl extends AbstractDAO implements ChamCongCong
 	public boolean capNhatChamCongCongNhanBangMaCongNhanVaThangVaNam(String maCongNhan, int thang, int nam,
 			String maLuong) {
 		try(var em = getEntityManager()) {
-			var query = em.createQuery("UPDATE ChamCongCongNhan cc SET cc.luongCongNhan.maLuong = :maLuong " +
-					"WHERE cc.maChamCong IN " +
-					"(SELECT cc.maChamCong FROM ChamCongCongNhan cc " +
-					"JOIN PhanCongCongNhan pc ON cc.phanCongCongNhan.maPhanCong = pc.maPhanCong " +
-					"WHERE YEAR(cc.ngayChamCong) = :nam AND MONTH(cc.ngayChamCong) = :thang AND pc.congNhan.maCongNhan = :maCongNhan)");
+			var query = em.createNamedQuery("ChamCongCongNhan.capNhatChamCongCongNhanBangMaCongNhanVaThangVaNam");
 			query.setParameter("maLuong", maLuong);
 			query.setParameter("nam", nam);
 			query.setParameter("thang", thang);
@@ -53,7 +43,7 @@ public class ChamCongCongNhanDAOImpl extends AbstractDAO implements ChamCongCong
 	public List<ChamCongCongNhan> timTatCaChamCongCongNhan(LocalDate ngayChamCong) {
 
 		try(var em = getEntityManager()) {
-			var query = em.createQuery("SELECT cc FROM ChamCongCongNhan cc WHERE cc.ngayChamCong = :ngayChamCong", ChamCongCongNhan.class);
+			var query = em.createNamedQuery("ChamCongCongNhan.timTatCaChamCongCongNhan", ChamCongCongNhan.class);
 			query.setParameter("ngayChamCong", ngayChamCong);
 			return query.getResultList();
 		}
@@ -63,10 +53,7 @@ public class ChamCongCongNhanDAOImpl extends AbstractDAO implements ChamCongCong
 	public List<CongNhan> timTatCaCongNhanChuaChamCongTheoCaVaNgayChamCong(LocalDate ngayChamCong, String caLam) {
 
 		try(var em = getEntityManager()) {
-			var query = em.createQuery("SELECT cn FROM CongNhan cn " +
-					"WHERE cn.trangThai = true AND cn.maCongNhan NOT IN " +
-					"(SELECT pc.congNhan.maCongNhan FROM ChamCongCongNhan cc JOIN PhanCongCongNhan pc ON cc.phanCongCongNhan.maPhanCong = pc.maPhanCong " +
-					"WHERE cc.ngayChamCong = :ngayChamCong AND cc.caLam.maCa = :caLam)", CongNhan.class);
+			var query = em.createNamedQuery("ChamCongCongNhan.timTatCaCongNhanChuaChamCongTheoCaVaNgayChamCong", CongNhan.class);
 			query.setParameter("ngayChamCong", ngayChamCong);
 			query.setParameter("caLam", caLam);
 			return query.getResultList();
@@ -95,7 +82,7 @@ public class ChamCongCongNhanDAOImpl extends AbstractDAO implements ChamCongCong
 	public String timKiemMaChamCongCongNhanCuoiCungTheoNgayVaCaLam(LocalDate ngayChamCong, String caLam) {
 
 		try(var em = getEntityManager()) {
-			var query = em.createQuery("SELECT cc.maChamCong FROM ChamCongCongNhan cc WHERE cc.ngayChamCong = :ngayChamCong AND cc.caLam.maCa = :caLam ORDER BY cc.maChamCong DESC", String.class);
+			var query = em.createNamedQuery("ChamCongCongNhan.timKiemMaChamCongCongNhanCuoiCungTheoNgayVaCaLam", String.class);
 			query.setParameter("ngayChamCong", ngayChamCong);
 			query.setParameter("caLam", caLam);
 			query.setMaxResults(1);

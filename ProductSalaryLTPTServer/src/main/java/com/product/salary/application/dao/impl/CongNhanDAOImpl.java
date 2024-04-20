@@ -23,7 +23,7 @@ public class CongNhanDAOImpl extends AbstractDAO implements CongNhanDAO, Seriali
 	@Override
 	public List<CongNhan> timKiemTatCaCongNhan() {
 		try(var em = getEntityManager()) {
-			return em.createQuery("SELECT c FROM CongNhan c", CongNhan.class).getResultList();
+			return em.createNamedQuery("CongNhan.timKiemTatCaCongNhan", CongNhan.class).getResultList();
 		}
 	}
 
@@ -137,8 +137,7 @@ public class CongNhanDAOImpl extends AbstractDAO implements CongNhanDAO, Seriali
 	@Override
 	public CongNhan timKiemBangCCCD(String cccdS) {
 		try(var em = getEntityManager()) {
-			String query = "SELECT c FROM CongNhan c WHERE c.cccd = :cccd";
-			return em.createQuery(query, CongNhan.class).setParameter("cccd", cccdS)
+			return em.createNamedQuery("CongNhan.timKiemBangCCCD", CongNhan.class).setParameter("cccd", cccdS)
 					.getResultList().stream().findFirst().orElse(null);
 		}
 	}
@@ -146,16 +145,14 @@ public class CongNhanDAOImpl extends AbstractDAO implements CongNhanDAO, Seriali
 	@Override
 	public List<CongNhan> timKiemCongNhanBangMaToNhom(String maToNhom) {
 		try(var em = getEntityManager()) {
-			String query = "SELECT c FROM CongNhan c WHERE c.toNhom.maToNhom = :maToNhom";
-			return em.createQuery(query, CongNhan.class).setParameter("maToNhom", maToNhom).getResultList();
+			return em.createNamedQuery("CongNhan.timKiemCongNhanBangMaToNhom", CongNhan.class).setParameter("maToNhom", maToNhom).getResultList();
 		}
 	}
 
 	@Override
 	public String layMaCongNhanCuoiCungCuaNam(int nam) {
 		try(var em = getEntityManager()) {
-			String query = "SELECT cn FROM CongNhan cn WHERE year(cn.ngayVaoLam) = :nam order by cn.maCongNhan DESC ";
-			List<CongNhan> congNhans = em.createQuery(query, CongNhan.class)
+			List<CongNhan> congNhans = em.createNamedQuery("CongNhan.layMaCongNhanCuoiCungCuaNam", CongNhan.class)
 								.setParameter("nam", nam)
 								.setMaxResults(1)
 								.getResultList();
@@ -166,8 +163,7 @@ public class CongNhanDAOImpl extends AbstractDAO implements CongNhanDAO, Seriali
 	@Override
 	public int tongSoLuongCongNhan() {
 		try(var em = getEntityManager()) {
-			String query = "SELECT COUNT(c) FROM CongNhan c";
-			return em.createQuery(query, Long.class).getSingleResult().intValue();
+			return em.createNamedQuery("CongNhan.tongSoLuongCongNhan", Long.class).getSingleResult().intValue();
 		}
 	}
 }

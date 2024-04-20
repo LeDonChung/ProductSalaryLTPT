@@ -27,7 +27,7 @@ public class LuongCongNhanServiceImpl implements LuongCongNhanService {
 	}
 
 	@Override
-	public boolean tinhLuongCongNhan(int thang, int nam) {
+	public synchronized boolean tinhLuongCongNhan(int thang, int nam) {
 		try {
 			// Tìm công nhân làm vào tháng và năm
 			List<CongNhan> congNhans = chamCongCongNhanDAO.timDanhSachCongNhanDiLamBangThangVaNam(thang, nam);
@@ -80,7 +80,7 @@ public class LuongCongNhanServiceImpl implements LuongCongNhanService {
 	}
 
 	@Override
-	public String generateMaLuong(String maCongNhan, int thang, int nam) {
+	public synchronized String generateMaLuong(String maCongNhan, int thang, int nam) {
         return String.format("%02d%04d%s", thang, nam, maCongNhan);
 	}
 
@@ -213,7 +213,7 @@ public class LuongCongNhanServiceImpl implements LuongCongNhanService {
 	}
 
 	@Override
-	public void capNhatLuongThuong(String maLuong, double luongThuong) {
+	public synchronized void capNhatLuongThuong(String maLuong, double luongThuong) {
 		try {
 			this.luongCongNhanDAO.capNhatLuongThuong(maLuong, luongThuong);
 		} catch (Exception e) {

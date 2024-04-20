@@ -32,7 +32,7 @@ public class ChucVuServiceImpl implements ChucVuService {
 	}
 
 	@Override
-	public ChucVu capNhatChucVu(ChucVu chucVu) {
+	public synchronized ChucVu capNhatChucVu(ChucVu chucVu) {
 		try {
 			ChucVu isExists = chucVuDao.timKiemBangMaChucVu(chucVu.getMaChucVu());
 			if (isExists == null) {
@@ -51,7 +51,7 @@ public class ChucVuServiceImpl implements ChucVuService {
 	}
 
 	@Override
-	public ChucVu themChucVu(ChucVu chucVu) {
+	public synchronized ChucVu themChucVu(ChucVu chucVu) {
 		try {
 			chucVu.setMaChucVu(generateMaChucVu());
 			ChucVu isExists = chucVuDao.timKiemBangMaChucVu(chucVu.getMaChucVu());
@@ -82,7 +82,7 @@ public class ChucVuServiceImpl implements ChucVuService {
 	}
 
 	@Override
-	public String generateMaChucVu() {
+	public synchronized String generateMaChucVu() {
 		// 990001
 		String rs = "990001";
 		String maChuVu = chucVuDao.timMaChucVuCuoiCung();
@@ -95,7 +95,7 @@ public class ChucVuServiceImpl implements ChucVuService {
 	}
 
 	@Override
-	public boolean xoaChucVuBangMa(String maChucVu) {
+	public synchronized boolean xoaChucVuBangMa(String maChucVu) {
 		try {
 			return chucVuDao.xoaChucVuBangMa(maChucVu);
 		} catch (Exception e) {

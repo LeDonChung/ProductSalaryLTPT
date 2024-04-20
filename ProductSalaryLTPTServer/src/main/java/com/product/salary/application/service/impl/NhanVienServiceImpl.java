@@ -35,7 +35,7 @@ public class NhanVienServiceImpl implements NhanVienService {
     }
 
     @Override
-    public NhanVien capNhatNhanVien(NhanVien nhanVien) {
+    public synchronized NhanVien capNhatNhanVien(NhanVien nhanVien) {
         try {
 
             NhanVien isExists = nhanVienDAO.timKiemBangMaNhanVien(nhanVien.getMaNhanVien());
@@ -94,7 +94,7 @@ public class NhanVienServiceImpl implements NhanVienService {
     }
 
     @Override
-    public boolean capNhatTrangThaiNghiLamCuaNhanVien(String maNhanVien) {
+    public synchronized boolean capNhatTrangThaiNghiLamCuaNhanVien(String maNhanVien) {
         try {
             NhanVien isExists = nhanVienDAO.timKiemBangMaNhanVien(maNhanVien);
             if (isExists == null) {
@@ -144,7 +144,7 @@ public class NhanVienServiceImpl implements NhanVienService {
     }
 
     @Override
-    public NhanVien themNhanVien(NhanVien nhanVien) {
+    public synchronized NhanVien themNhanVien(NhanVien nhanVien) {
         try {
             nhanVien.setMaNhanVien(generateMaNhanVien(nhanVien));
             nhanVien.setTrangThai(true);
@@ -195,7 +195,7 @@ public class NhanVienServiceImpl implements NhanVienService {
     }
 
     @Override
-    public String generateMaNhanVien(NhanVien nhanVien) {
+    public synchronized String generateMaNhanVien(NhanVien nhanVien) {
         // 10 là số nhận dạng là nhân viên, XXXX năm vào làm của nhân viên, XXXX là 4 số
         // tự tăng trong năm vào làm của nv
 
@@ -237,7 +237,7 @@ public class NhanVienServiceImpl implements NhanVienService {
     }
 
     @Override
-    public List<NhanVien> themNhieuNhanVien(List<NhanVien> dsNhanVien) {
+    public synchronized List<NhanVien> themNhieuNhanVien(List<NhanVien> dsNhanVien) {
         List<NhanVien> danhSachNhanVienThem = new ArrayList<NhanVien>();
         try {
             for (NhanVien nhanVien : dsNhanVien) {
@@ -267,7 +267,7 @@ public class NhanVienServiceImpl implements NhanVienService {
     }
 
     @Override
-    public NhanVien timKiemBangMaNhanVienVaCccd(String maNhanVien, String cccd) {
+    public synchronized NhanVien timKiemBangMaNhanVienVaCccd(String maNhanVien, String cccd) {
         try {
             NhanVien nhanVien = nhanVienDAO.timKiemBangMaNhanVienVaCccd(maNhanVien, cccd);
             if (nhanVien != null)

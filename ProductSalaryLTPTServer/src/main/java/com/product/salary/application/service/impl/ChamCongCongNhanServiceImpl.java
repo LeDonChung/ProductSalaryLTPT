@@ -45,7 +45,7 @@ public class ChamCongCongNhanServiceImpl implements ChamCongCongNhanService {
 	}
 
 	@Override
-	public ChamCongCongNhan themChamCongCongNhan(ChamCongCongNhan chamCong) {
+	public synchronized ChamCongCongNhan themChamCongCongNhan(ChamCongCongNhan chamCong) {
 		try {
 			String maPhanCong = genertateMaChamCongCongNhan(chamCong.getNgayChamCong(), chamCong.getCaLam());
 			chamCong.setMaChamCong(maPhanCong);
@@ -64,7 +64,7 @@ public class ChamCongCongNhanServiceImpl implements ChamCongCongNhanService {
 		}
 	}
 
-	public String genertateMaChamCongCongNhan(LocalDate ngayChamCong, CaLam caLam) {
+	public synchronized String genertateMaChamCongCongNhan(LocalDate ngayChamCong, CaLam caLam) {
 		String maChamCong = "";
 		String maChamCongCuoiCungTheoCa = chamCongDAO.timKiemMaChamCongCongNhanCuoiCungTheoNgayVaCaLam(ngayChamCong, caLam.getMaCa());
 		int soTuTang = 0;
@@ -82,7 +82,7 @@ public class ChamCongCongNhanServiceImpl implements ChamCongCongNhanService {
 	}
 
 	@Override
-	public boolean capNhatChamCongCongNhan(String maChamCong, int trangThai, int soLuongHoanThanh) {
+	public synchronized boolean capNhatChamCongCongNhan(String maChamCong, int trangThai, int soLuongHoanThanh) {
 		try {
 			ChamCongCongNhan isExists = chamCongDAO.timKiemBangMaChamCongCongNhan(maChamCong);
 			if (isExists == null) {

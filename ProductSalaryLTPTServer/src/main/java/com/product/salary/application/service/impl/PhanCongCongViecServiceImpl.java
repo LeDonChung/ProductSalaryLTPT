@@ -29,7 +29,7 @@ public class PhanCongCongViecServiceImpl implements PhanCongCongViecService {
 
 
 	@Override
-	public PhanCongCongNhan capNhatPhanCongCongNhan(PhanCongCongNhan phanCongCongNhan) {
+	public synchronized PhanCongCongNhan capNhatPhanCongCongNhan(PhanCongCongNhan phanCongCongNhan) {
 		try {
 			PhanCongCongNhan isExists = phanCongDAO.timKiemBangMaPhanCong(phanCongCongNhan.getMaPhanCong());
 			if (isExists == null) {
@@ -49,7 +49,7 @@ public class PhanCongCongViecServiceImpl implements PhanCongCongViecService {
 	}
 
 	@Override
-	public boolean xoaPhanCongCongNhan(String maPhanCong) {
+	public synchronized boolean xoaPhanCongCongNhan(String maPhanCong) {
 		try {
 			return phanCongDAO.xoaPhanCongCongNhan(maPhanCong);
 		} catch (Exception e) {
@@ -60,7 +60,7 @@ public class PhanCongCongViecServiceImpl implements PhanCongCongViecService {
 	}
 
 	@Override
-	public PhanCongCongNhan phanCongCongNhan(PhanCongCongNhan phanCongCongNhan) {
+	public synchronized PhanCongCongNhan phanCongCongNhan(PhanCongCongNhan phanCongCongNhan) {
 		try {
 			PhanCongCongNhan isExists = phanCongDAO.timKiemBangMaPhanCong(phanCongCongNhan.getMaPhanCong());
 			if (isExists != null) {
@@ -82,7 +82,7 @@ public class PhanCongCongViecServiceImpl implements PhanCongCongViecService {
 	}
 
 	@Override
-	public List<PhanCongCongNhan> phanCongNhieuCongNhan(List<PhanCongCongNhan> phanCongCongNhans) {
+	public synchronized List<PhanCongCongNhan> phanCongNhieuCongNhan(List<PhanCongCongNhan> phanCongCongNhans) {
 		List<PhanCongCongNhan> phanCongCongNhanNews = new ArrayList<PhanCongCongNhan>();
 		try {
 			for (PhanCongCongNhan phanCongCongNhan : phanCongCongNhans) {
@@ -107,7 +107,7 @@ public class PhanCongCongViecServiceImpl implements PhanCongCongViecService {
 	}
 
 	@Override
-	public String generateMaPhanCongCongNhan(String maCongNhan, String maCongDoan) {
+	public synchronized String generateMaPhanCongCongNhan(String maCongNhan, String maCongDoan) {
 		String rs = "";
 		CongNhan macn = congNhanDAO.timKiemBangMaCongNhan(maCongNhan);
 		CongDoanSanPham congDoan = congDoanDAO.timKiemBangMaCongDoan(maCongDoan);
