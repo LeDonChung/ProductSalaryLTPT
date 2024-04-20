@@ -704,6 +704,45 @@ public class ProductSalaryApplicationServer {
 								dos.flush();
 								break;
 							}
+							case "themTayNghe": {
+								TayNghe tayNghe = AppUtils.convert((Map<String, Object>) requestObject.getData(), TayNghe.class);
+								TayNghe result = tayNgheService.themTayNghe(tayNghe);
+								ResponseDTO response = ResponseDTO.builder()
+										.data(result)
+										.build();
+								//System.out.println("Response: " + response);
+								json = AppUtils.GSON.toJson(response);
+								byte[] bytes = json.getBytes(StandardCharsets.UTF_8);
+								dos.write(bytes);
+								dos.flush();
+								break;
+							}
+							case "capNhatTayNghe": {
+								TayNghe tayNghe = AppUtils.convert((Map<String, Object>) requestObject.getData(), TayNghe.class);
+								TayNghe result = tayNgheService.capNhatTayNghe(tayNghe);
+								ResponseDTO response = ResponseDTO.builder()
+										.data(result)
+										.build();
+								//System.out.println("Response: " + response);
+								json = AppUtils.GSON.toJson(response);
+								byte[] bytes = json.getBytes(StandardCharsets.UTF_8);
+								dos.write(bytes);
+								dos.flush();
+								break;
+							}
+							case "xoaTayNgheBangMa": {
+								String ma = (String) requestObject.getData();
+								boolean result = tayNgheService.xoaTayNgheBangMa(ma);
+								ResponseDTO response = ResponseDTO.builder()
+										.data(result)
+										.build();
+								//System.out.println("Response: " + response);
+								json = AppUtils.GSON.toJson(response);
+								byte[] bytes = json.getBytes(StandardCharsets.UTF_8);
+								dos.write(bytes);
+								dos.flush();
+								break;
+							}
 						}
 						break;
 					}
