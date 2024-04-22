@@ -45,6 +45,7 @@ public class SanPhamServiceImpl implements SanPhamService {
 			isExists.setTenSanPham(sanPham.getTenSanPham());
 			isExists.setChatLieu(sanPham.getChatLieu());
 			isExists.setTrangThai(sanPham.getTrangThai());
+			isExists.setSoLuongTon(sanPham.getSoLuongTon());
 			isExists.setHinhAnh(sanPham.getHinhAnh());
 
 			return sanPhamDao.capNhatSanPham(isExists);
